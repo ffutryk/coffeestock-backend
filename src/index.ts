@@ -1,10 +1,14 @@
 import express, { type Request, type Response } from "express";
-import { PORT } from "./config/envs.js";
+import cors from "cors";
+import morgan from "morgan";
+import { DEBUG, PORT } from "./config/envs.js";
 import { AppDataSource } from "./config/data-source.js";
 
 const app = express();
 
+app.use(morgan(DEBUG ? "dev" : "combined"));
 app.use(express.json());
+app.use(cors());
 
 app.get("/", (req: Request, res: Response) => {
   res.sendStatus(200);
