@@ -11,6 +11,8 @@
     "target": "ES2022",
     "moduleResolution": "nodenext",
     "types": ["node"],
+    "experimentalDecorators": true, // Esto sirve para decoradores
+    "emitDecoratorMetadata": true, // Esto sirve para decoradores
     // For nodejs:
     // "lib": ["esnext"],
     // "types": ["node"],
