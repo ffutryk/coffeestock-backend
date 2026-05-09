@@ -1,4 +1,4 @@
-import { Venta } from "../models/Venta.js";
+import { Venta } from "../models/Venta";
 
 export interface VentaDao {
   save(venta: Venta): Promise<Venta>;

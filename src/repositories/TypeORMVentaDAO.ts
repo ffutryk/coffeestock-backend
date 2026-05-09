@@ -1,6 +1,6 @@
-import { AppDataSource } from "../config/data-source.js";
-import { Venta } from "../models/Venta.js";
-import type { VentaDao } from "../daos/VentaDao.js";
+import { AppDataSource } from "../config/data-source";
+import { Venta } from "../models/Venta";
+import type { VentaDao } from "../daos/VentaDao";
 
 export class TypeOrmVentaDao implements VentaDao {
   private repository = AppDataSource.getRepository(Venta);

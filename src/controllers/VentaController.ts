@@ -1,31 +1,21 @@
-import type { Request, Response } from "express";
+import type { Request, Response, NextFunction } from "express";
 import { VentaService } from "../services/VentaService";
-import { CrearVentaSchema } from "../dtos/venta.dto";
+import { VentaResponseDTO } from "../dtos/ventaResponse.dto";
 
 export class VentaController {
   constructor(private readonly ventaService: VentaService) {}
 
-  crear = async (req: Request, res: Response) => {
+  crear = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const datosValidados = CrearVentaSchema.parse(req.body);
-      const nuevaVenta = await this.ventaService.crearVenta(datosValidados);
+      const nuevaVenta = await this.ventaService.crearVenta(req.body);
+      const respuesta = new VentaResponseDTO(nuevaVenta);
 
       return res.status(201).json({
-        mensaje: "Venta creada con éxito",
-        data: nuevaVenta,
-        total: nuevaVenta.getPrecioTotal()
+        data: respuesta
       });
 
     } catch (error: any) {
-      if (error.name === "ZodError") {
-        return res.status(400).json({
-          error: "Error de validación",
-          detalles: error.errors
-        });
-      }
-      return res.status(500).json({ error: "No se pudo crear la venta. Vuelve a intentarlo." });
-
-      // next(error); si implementamos un middleware de manejo de errores global.
+      next(error);
     }
   };
 }
