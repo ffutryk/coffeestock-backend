@@ -32,6 +32,7 @@ export class VentaService {
       item.tipo = productoInfo.tipo;
       item.cantidad = itemDto.cantidad;
       item.venta = nuevaVenta;
+      item.producto = productoInfo;
       
       return item;
     });
