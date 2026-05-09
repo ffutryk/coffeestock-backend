@@ -1,13 +1,14 @@
 import { Column, CreateDateColumn, DeleteDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { ItemVenta } from "./ItemVenta";
+import { MedioDePago } from "./MedioDePago";
 
 @Entity("ventas")
 export class Venta {
     @PrimaryGeneratedColumn()
     id!: number;
 
-    @Column({ name: "medio_de_pago" })
-    medioDePago!: string;
+    @Column({type: "enum", enum: MedioDePago, name: "medio_de_pago"})
+    medioDePago!: MedioDePago;
 
     @OneToMany(() => ItemVenta, (item) => item.venta, { cascade: true })
     items!: ItemVenta[];

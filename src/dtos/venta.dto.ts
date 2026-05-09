@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { MedioDePago } from '../models/MedioDePago';
 
 export const CrearItemVentaSchema = z.object({
   productoId: z.number().int().positive("ID de producto inválido"),
@@ -6,7 +7,7 @@ export const CrearItemVentaSchema = z.object({
 });
 
 export const CrearVentaSchema = z.object({
-  medioDePago: z.string().min(1, "El medio de pago es requerido"),
+  medioDePago: z.enum(MedioDePago, "Medio de pago inválido"),
   items: z.array(CrearItemVentaSchema).min(1, "Debe haber al menos un item"),
 });
 
