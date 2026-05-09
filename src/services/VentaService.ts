@@ -20,8 +20,14 @@ export class VentaService {
 
     const productosEnDB = await this.productoDao.findByIds(ids);
 
+    if (productosEnDB.length !== new Set(ids).size) {
+      throw new Error("Uno o más productos solicitados no existen en el catálogo");
+    }
+
+    const productosMap = new Map(productosEnDB.map(p => [p.id, p]));
+
     nuevaVenta.items = datos.items.map(itemDto => {
-      const productoInfo = productosEnDB.find(p => p.id === itemDto.productoId);
+      const productoInfo = productosMap.get(itemDto.productoId);
 
       if (!productoInfo) {
         throw new Error(`Producto con ID ${itemDto.productoId} no existe`);
@@ -32,8 +38,8 @@ export class VentaService {
       item.precio = productoInfo.precio;
       item.tipo = productoInfo.tipo;
       item.cantidad = itemDto.cantidad;
+      item.producto = productoInfo; 
       item.venta = nuevaVenta;
-      item.producto = productoInfo;
       
       return item;
     });
