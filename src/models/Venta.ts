@@ -9,7 +9,7 @@ export class Venta {
     @Column({ name: "medio_de_pago" })
     medioDePago!: string;
 
-    @OneToMany(() => ItemVenta, (item) => item.venta)
+    @OneToMany(() => ItemVenta, (item) => item.venta, { cascade: true })
     items!: ItemVenta[];
 
     @CreateDateColumn({ name: "created_at" })
