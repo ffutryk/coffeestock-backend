@@ -5,6 +5,7 @@ import {
   UpdateDateColumn,
   DeleteDateColumn,
 } from "typeorm";
+import { TipoItemVenta } from "./TipoItemVenta";
 
 @Entity({ name: "productos" })
 export class Producto {
@@ -22,6 +23,13 @@ export class Producto {
 
   @Column()
   precio!: number;
+
+  @Column({
+        type: "enum",
+        enum: TipoItemVenta,
+        default: TipoItemVenta.PRODUCTO
+    })
+    tipo!: TipoItemVenta;
 
   @Column({ default: false })
   sinTacc!: boolean;
