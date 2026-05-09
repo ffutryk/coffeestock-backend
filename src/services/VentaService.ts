@@ -12,7 +12,7 @@ export class VentaService {
   ) {}
 
   // DESCOMENTAR CUANDO SE IMPLEMENTE AUTENTICACIÓN
-  async crearVenta(datos: CrearVentaDTO/*, userId: number*/): Promise<Venta> {
+  async crearVenta(datos: CrearVentaDTO/*, createdBy_id: number*/): Promise<Venta> {
     const queryRunner = AppDataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
@@ -29,7 +29,7 @@ export class VentaService {
         const nuevaVenta = new Venta();
         nuevaVenta.medioDePago = datos.medioDePago;
         nuevaVenta.createdBy = 1; // BORRAR CUANDO SE IMPLEMENTE AUTENTICACIÓN
-        // nuevaVenta.createdBy = userId; DESCOMENTAR CUANDO SE IMPLEMENTE AUTENTICACIÓN
+        // nuevaVenta.createdBy = createdBy_id; DESCOMENTAR CUANDO SE IMPLEMENTE AUTENTICACIÓN
 
         nuevaVenta.items = datos.items.map(itemDto => {
             const producto = productosMap.get(itemDto.productoId)!;
@@ -50,6 +50,7 @@ export class VentaService {
     } catch (error) {
         await queryRunner.rollbackTransaction();
         throw error;
+
     } finally {
         await queryRunner.release();
     }
