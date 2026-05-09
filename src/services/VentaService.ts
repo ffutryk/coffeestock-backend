@@ -14,6 +14,7 @@ export class VentaService {
     const nuevaVenta = new Venta();
     nuevaVenta.medioDePago = datos.medioDePago;
     // nuevaVenta.createdBy = userId;
+    nuevaVenta.createdBy = 1; // BORRAR CUANDO SE IMPLEMENTE AUTENTICACIÓN
 
     const ids = datos.items.map(item => item.productoId);
 
