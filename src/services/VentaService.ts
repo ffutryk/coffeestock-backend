@@ -9,7 +9,7 @@ export class VentaService {
     private readonly ventaDao: VentaDao,
     private readonly productoDao: ProductoDao
   ) {}
-  
+
   // DESCOMENTAR CUANDO SE IMPLEMENTE AUTENTICACIÓN
   async crearVenta(datos: CrearVentaDTO/*, userId: number*/): Promise<Venta> {
     const ids = datos.items.map(item => item.productoId);
@@ -27,16 +27,7 @@ export class VentaService {
 
     nuevaVenta.items = datos.items.map(itemDto => {
       const productoInfo = productosMap.get(itemDto.productoId)!;
-
-      const item = new ItemVenta();
-      item.nombre = productoInfo.nombre;
-      item.precio = productoInfo.precio;
-      item.tipo = productoInfo.tipo;
-      item.cantidad = itemDto.cantidad;
-      item.producto = productoInfo; 
-      item.venta = nuevaVenta;
-      
-      return item;
+      return ItemVenta.create(productoInfo, itemDto.cantidad, nuevaVenta);
     });
 
     return await this.ventaDao.save(nuevaVenta);

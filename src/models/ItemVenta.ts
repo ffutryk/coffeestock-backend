@@ -27,4 +27,15 @@ export class ItemVenta {
     @ManyToOne(() => Producto, { nullable: true, onDelete: 'SET NULL' })
     @JoinColumn({ name: "producto_id" })
     producto!: Producto;
+
+    static create(producto: Producto, cantidad: number, venta: Venta): ItemVenta {
+        const item = new ItemVenta();
+        item.nombre = producto.nombre;
+        item.precio = producto.precio;
+        item.tipo = producto.tipo;
+        item.cantidad = cantidad;
+        item.producto = producto;
+        item.venta = venta;
+        return item;
+    }
 }
