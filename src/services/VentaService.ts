@@ -33,6 +33,7 @@ export class VentaService {
 
         nuevaVenta.items = datos.items.map(itemDto => {
             const producto = productosMap.get(itemDto.productoId)!;
+            
             if (producto.stock < itemDto.cantidad) {
                 throw new Error(`Stock insuficiente para el producto: ${producto.nombre}`);
             }
