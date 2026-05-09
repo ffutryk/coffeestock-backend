@@ -9,14 +9,26 @@ export class ProductService {
     // uso el dao para acceder al DataSource
     const producto = await this.productoDao.findById(id);
 
-    if (!producto) return null;
+    if (!producto) throw new Error("No se pudo encontrar el producto");
+
+    producto.updatedBy = "Usuario_Prueba";
 
     Object.assign(producto, datosNuevos);
     return await this.productoDao.save(producto);
   }
 
-  async eliminarProducto(id: number): Promise<boolean> {
-    return await this.productoDao.softDelete(id); // lo hago con borrado logico
+  async eliminarProducto(id: number, deletedBy: string): Promise<boolean> {
+    const producto = await this.productoDao.findById(id);
+
+    if (!producto) {
+      throw new Error("No se pudo encontrar el producto");
+    }
+
+    // se guarda quien lo borra
+    producto.deletedBy = deletedBy;
+    await this.productoDao.save(producto);
+
+    return await this.productoDao.delete(id);
   }
 }
 

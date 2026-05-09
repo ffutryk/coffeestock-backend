@@ -1,9 +1,9 @@
-import { Router, type Request, type Response } from "express";
 import { ProductService } from "../services/ProductService.js";
 import { ProductController } from "../controllers/ProductController.js";
 import { validateBody } from "../middlewares/validate.js";
 import { ActualizarProductoSchema } from "../dtos/product.dto.js";
 import { TypeOrmProductoDao } from "../repositories/TypeORMProductoDAO.js";
+import { Router } from "express";
 
 
 const router = Router();

@@ -13,7 +13,7 @@ export class TypeOrmProductoDao implements ProductoDao {
     return await this.repository.save(producto);
   }
 
-  async softDelete(id: number): Promise<boolean> {
+  async delete(id: number): Promise<boolean> {
     const resultado = await this.repository.softDelete(id);
     return (resultado.affected ?? 0) > 0;
   }

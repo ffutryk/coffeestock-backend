@@ -6,6 +6,8 @@ export const ActualizarProductoSchema = z
     descripcion: z.string().optional(),
     stock: z.number().int().min(0, "El stock no puede ser negativo").nullable().optional(),
     precio: z.number().min(0, "El precio no puede ser negativo").optional(),
+    sinTacc: z.boolean().optional(), 
+    updatedBy: z.string().optional(),
   })
   .strict();
 

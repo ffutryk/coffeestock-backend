@@ -23,7 +23,15 @@ export class Producto {
   @Column("decimal")
   precio!: number;
 
-  // Soft delete
+  @Column({ default: false })
+  sinTacc!: boolean;
+
+  @Column({ nullable: true })
+  updatedBy?: string;
+
+  @Column({ nullable: true })
+  deletedBy?: string;
+
   @DeleteDateColumn()
   deleted_at?: Date;
 
