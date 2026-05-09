@@ -18,17 +18,13 @@ export class Producto {
   @Column({ nullable: true })
   descripcion?: string;
 
-  @Column("int", { nullable: true })
-  stock!: number | null;
+  @Column("int", {default: 0 })
+  stock!: number;
 
   @Column()
   precio!: number;
 
-  @Column({
-        type: "enum",
-        enum: TipoItemVenta,
-        default: TipoItemVenta.PRODUCTO
-    })
+  @Column({type: "enum", enum: TipoItemVenta})
     tipo!: TipoItemVenta;
 
   @Column({ default: false })

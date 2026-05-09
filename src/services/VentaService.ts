@@ -1,3 +1,4 @@
+import { AppDataSource } from "../config/data-source";
 import { Venta } from "../models/Venta";
 import { ItemVenta } from "../models/ItemVenta";
 import { VentaDao } from "../daos/VentaDao";
@@ -12,24 +13,44 @@ export class VentaService {
 
   // DESCOMENTAR CUANDO SE IMPLEMENTE AUTENTICACIÓN
   async crearVenta(datos: CrearVentaDTO/*, userId: number*/): Promise<Venta> {
-    const ids = datos.items.map(item => item.productoId);
-    const productosEnDB = await this.productoDao.findByIds(ids);
-    
-    if (productosEnDB.length !== ids.length) {
-      throw new Error("Uno o más productos solicitados no existen en el catálogo");
+    const queryRunner = AppDataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+        const ids = datos.items.map(item => item.productoId);
+        const productosEnDB = await this.productoDao.findByIds(ids);
+        
+        if (productosEnDB.length !== new Set(ids).size) {
+            throw new Error("Uno o más productos no existen");
+        }
+
+        const productosMap = new Map(productosEnDB.map(p => [p.id, p]));
+        const nuevaVenta = new Venta();
+        nuevaVenta.medioDePago = datos.medioDePago;
+        nuevaVenta.createdBy = 1; // BORRAR CUANDO SE IMPLEMENTE AUTENTICACIÓN
+        // nuevaVenta.createdBy = userId; DESCOMENTAR CUANDO SE IMPLEMENTE AUTENTICACIÓN
+
+        nuevaVenta.items = datos.items.map(itemDto => {
+            const producto = productosMap.get(itemDto.productoId)!;
+
+            if (producto.stock < itemDto.cantidad) {
+                throw new Error(`Stock insuficiente para el producto: ${producto.nombre}`);
+            }
+            producto.stock -= itemDto.cantidad;
+
+            return ItemVenta.create(producto, itemDto.cantidad, nuevaVenta);
+        });
+        await queryRunner.manager.save(productosEnDB);
+        const ventaGuardada = await queryRunner.manager.save(nuevaVenta);
+
+        await queryRunner.commitTransaction();
+        return ventaGuardada;
+    } catch (error) {
+        await queryRunner.rollbackTransaction();
+        throw error;
+    } finally {
+        await queryRunner.release();
     }
-
-    const productosMap = new Map(productosEnDB.map(p => [p.id, p]));
-
-    const nuevaVenta = new Venta();
-    nuevaVenta.medioDePago = datos.medioDePago;
-    nuevaVenta.createdBy = 1; // BORRAR CUANDO SE IMPLEMENTE AUTENTICACIÓN
-
-    nuevaVenta.items = datos.items.map(itemDto => {
-      const productoInfo = productosMap.get(itemDto.productoId)!;
-      return ItemVenta.create(productoInfo, itemDto.cantidad, nuevaVenta);
-    });
-
-    return await this.ventaDao.save(nuevaVenta);
   }
 }
