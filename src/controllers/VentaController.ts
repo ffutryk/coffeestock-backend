@@ -14,7 +14,7 @@ export class VentaController {
         data: respuesta
       });
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       next(error);
     }
   };

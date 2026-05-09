@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from "typeorm";
-import type { Venta } from "./Venta";
+import { Venta } from "./Venta";
 import type { TipoItemVenta } from "./TipoItemVenta";
 
 @Entity("item_venta")
@@ -19,7 +19,7 @@ export class ItemVenta {
     @Column()
     tipo!: TipoItemVenta;
 
-    @ManyToOne("Venta", (venta: any) => venta.items)
+    @ManyToOne(() => Venta, (venta) => venta.items)
     @JoinColumn({ name: "venta_id" })
     venta!: Venta;
 }
