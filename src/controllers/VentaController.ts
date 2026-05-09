@@ -7,6 +7,14 @@ export class VentaController {
 
   crear = async (req: Request, res: Response, next: NextFunction) => {
     try {
+      /* AGREGAR CUANDO SE IMPLEMENTE AUTENTICACIÓN
+      const userId = req.user?.id; 
+
+      if (!userId) {
+          return res.status(401).json({ message: "Usuario no autenticado" });
+      }
+      */
+
       const nuevaVenta = await this.ventaService.crearVenta(req.body);
       const respuesta = new VentaResponseDTO(nuevaVenta);
 

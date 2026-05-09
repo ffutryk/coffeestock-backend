@@ -7,7 +7,6 @@ export const CrearItemVentaSchema = z.object({
 
 export const CrearVentaSchema = z.object({
   medioDePago: z.string().min(1, "El medio de pago es requerido"),
-  createdBy: z.number().int(),
   items: z.array(CrearItemVentaSchema).min(1, "Debe haber al menos un item"),
 });
 

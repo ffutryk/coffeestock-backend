@@ -9,11 +9,11 @@ export class VentaService {
     private readonly ventaDao: VentaDao,
     private readonly productoDao: ProductoDao
   ) {}
-
-  async crearVenta(datos: CrearVentaDTO): Promise<Venta> {
+  // DESCOMENTAR CUANDO SE IMPLEMENTE AUTENTICACIÓN
+  async crearVenta(datos: CrearVentaDTO/*, userId: number*/): Promise<Venta> {
     const nuevaVenta = new Venta();
     nuevaVenta.medioDePago = datos.medioDePago;
-    nuevaVenta.createdBy = datos.createdBy;
+    // nuevaVenta.createdBy = userId;
 
     const ids = datos.items.map(item => item.productoId);
 
