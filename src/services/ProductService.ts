@@ -1,7 +1,7 @@
-import { AppDataSource } from "../config/data-source.js";
-import { Producto } from "../entities/Producto.js";
-import type { ProductoDao } from "../daos/ProductoDao.js";
-import type { ActualizarProductoDTO } from "../dtos/product.dto.js";
+import { AppDataSource } from "../config/data-source";
+import { Producto } from "../entities/Producto";
+import type { ProductoDao } from "../daos/ProductoDao";
+import type { ActualizarProductoDTO } from "../dtos/product.dto";
 
 export class ProductService {
   constructor(private readonly productoDao: ProductoDao) {}

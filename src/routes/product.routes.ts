@@ -1,8 +1,8 @@
-import { ProductService } from "../services/ProductService.js";
-import { ProductController } from "../controllers/ProductController.js";
-import { validateBody } from "../middlewares/validate.js";
-import { ActualizarProductoSchema } from "../dtos/product.dto.js";
-import { TypeOrmProductoDao } from "../repositories/TypeORMProductoDAO.js";
+import { ProductService } from "../services/ProductService";
+import { ProductController } from "../controllers/ProductController";
+import { validateBody } from "../middlewares/validate";
+import { ActualizarProductoSchema } from "../dtos/product.dto";
+import { TypeOrmProductoDao } from "../repositories/TypeORMProductoDAO";
 import { Router } from "express";
 
 

@@ -1,6 +1,6 @@
-import { AppDataSource } from "../config/data-source.js";
-import { Producto } from "../entities/Producto.js";
-import type { ProductoDao } from "../daos/ProductoDao.js";
+import { AppDataSource } from "../config/data-source";
+import { Producto } from "../entities/Producto";
+import type { ProductoDao } from "../daos/ProductoDao";
 
 export class TypeOrmProductoDao implements ProductoDao {
   private repository = AppDataSource.getRepository(Producto);
