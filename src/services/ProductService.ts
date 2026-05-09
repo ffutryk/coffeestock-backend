@@ -1,17 +1,22 @@
 import { AppDataSource } from "../config/data-source.js";
 import { Producto } from "../entities/Producto.js";
 import type { ProductoDao } from "../daos/ProductoDao.js";
+import type { ActualizarProductoDTO } from "../dtos/product.dto.js";
 
 export class ProductService {
   constructor(private readonly productoDao: ProductoDao) {}
 
-  async actualizarProducto(id: number, datosNuevos: Partial<Producto>): Promise<Producto | null> {
+  async actualizarProducto(
+    id: number,
+    datosNuevos: ActualizarProductoDTO,
+    updatedBy: string,
+  ): Promise<Producto | null> {
     // uso el dao para acceder al DataSource
     const producto = await this.productoDao.findById(id);
 
     if (!producto) throw new Error("No se pudo encontrar el producto");
 
-    producto.updatedBy = "Usuario_Prueba";
+    producto.updatedBy = updatedBy;
 
     Object.assign(producto, datosNuevos);
     return await this.productoDao.save(producto);

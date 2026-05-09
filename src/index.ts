@@ -4,12 +4,14 @@ import morgan from "morgan";
 import { DEBUG, PORT } from "./config/envs.js";
 import { AppDataSource } from "./config/data-source.js";
 import { errorHandler } from "./middlewares/errorHandler.js";
+import productoRouter from "./routes/product.routes.js";
 
 const app = express();
 
 app.use(morgan(DEBUG ? "dev" : "combined"));
 app.use(express.json());
 app.use(cors());
+app.use("/productos", productoRouter);
 
 app.get("/", (req: Request, res: Response) => {
   res.sendStatus(200);

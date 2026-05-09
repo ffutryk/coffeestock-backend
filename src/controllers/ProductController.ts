@@ -13,7 +13,7 @@ export class ProductController {
       }
 
       const id = parseInt(idParam);
-      const actualizado = await this.productService.actualizarProducto(id, req.body);
+      const actualizado = await this.productService.actualizarProducto(id, req.body, "UsuarioDePrueba");
 
       return res.status(200).send(actualizado);
     } catch (err) {
