@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from "typeorm";
 import { Venta } from "./Venta.js";
 import type { TipoItemVenta } from "./TipoItemVenta.js";
 
@@ -19,6 +19,7 @@ export class ItemVenta {
     @Column()
     tipo!: TipoItemVenta;
 
-    @OneToMany(() => Venta, (venta) => venta.productos)
+    @ManyToOne(() => Venta, (venta) => venta.productos)
+    @JoinColumn({ name: "venta_id" })
     venta!: Venta;
 }

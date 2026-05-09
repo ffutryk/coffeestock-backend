@@ -1,4 +1,4 @@
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { ItemVenta } from "./ItemVenta.js";
 
 @Entity("ventas")
@@ -9,7 +9,7 @@ export class Venta {
     @Column({ name: "medio_de_pago" })
     medioDePago!: string;
 
-    @ManyToOne(() => ItemVenta, (item) => item.venta)
+    @OneToMany(() => ItemVenta, (item) => item.venta)
     productos!: ItemVenta[];
 
     @CreateDateColumn({ name: "created_at" })

@@ -1,4 +1,4 @@
-enum TipoItemVenta {
+export enum TipoItemVenta {
     PRODUCTO = "PRODUCTO",
     COMBO = "COMBO",
 }
