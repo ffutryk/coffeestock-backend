@@ -10,7 +10,7 @@ export class Venta {
     medioDePago!: string;
 
     @OneToMany(() => ItemVenta, (item) => item.venta)
-    productos!: ItemVenta[];
+    items!: ItemVenta[];
 
     @CreateDateColumn({ name: "created_at" })
     createdAt!: Date;
@@ -31,6 +31,6 @@ export class Venta {
     deletedBy?: number;
 
     getPrecioTotal(): number {
-        return this.productos.reduce((total, item) => total + (item.precio * item.cantidad), 0);
+        return this.items.reduce((total, item) => total + (item.precio * item.cantidad), 0);
     }
 }

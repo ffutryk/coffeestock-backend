@@ -19,7 +19,7 @@ export class ItemVenta {
     @Column()
     tipo!: TipoItemVenta;
 
-    @ManyToOne(() => Venta, (venta) => venta.productos)
+    @ManyToOne(() => Venta, (venta) => venta.items)
     @JoinColumn({ name: "venta_id" })
     venta!: Venta;
 }
