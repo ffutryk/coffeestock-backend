@@ -1,4 +1,5 @@
 import { Column, CreateDateColumn, DeleteDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { ItemVenta } from "./ItemVenta.js";
 
 @Entity("ventas")
 export class Venta {
@@ -28,4 +29,8 @@ export class Venta {
 
     @Column({ name: "deleted_by" })
     deletedBy?: number;
+
+    getPrecioTotal(): number {
+        return this.productos.reduce((total, item) => total + (item.precio * item.cantidad), 0);
+    }
 }
