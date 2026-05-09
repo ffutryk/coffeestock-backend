@@ -17,8 +17,8 @@ export class Producto {
   @Column({ nullable: true })
   descripcion?: string;
 
-  @Column("int", { default: 0 })
-  stock!: number;
+  @Column("int", { nullable: true })
+  stock!: number | null;
 
   @Column("decimal")
   precio!: number;

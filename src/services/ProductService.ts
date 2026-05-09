@@ -1,29 +1,22 @@
 import { AppDataSource } from "../config/data-source.js";
-import { Producto } from "../Entities/Producto.js";
+import { Producto } from "../entities/Producto.js";
+import type { ProductoDao } from "../daos/ProductoDao.js";
 
 export class ProductService {
+  constructor(private readonly productoDao: ProductoDao) {}
+
   async actualizarProducto(id: number, datosNuevos: Partial<Producto>): Promise<Producto | null> {
-    const productRepo = AppDataSource.getRepository(Producto);
+    // uso el dao para acceder al DataSource
+    const producto = await this.productoDao.findById(id);
 
-    const producto = await productRepo.findOneBy({ id });
-    if (!producto) {
-      return null;
-    }
+    if (!producto) return null;
 
-    const productoActualizado = productRepo.merge(producto, datosNuevos);
-
-    return await productRepo.save(productoActualizado);
+    Object.assign(producto, datosNuevos);
+    return await this.productoDao.save(producto);
   }
 
-
-
   async eliminarProducto(id: number): Promise<boolean> {
-    const productRepo = AppDataSource.getRepository(Producto);
-
-    const resultado = await productRepo.softDelete(id);
-
-    // Retornamos true si se afectó al menos una fila, de lo contrario false
-    return (resultado.affected ?? 0) > 0;
+    return await this.productoDao.softDelete(id); // lo hago con borrado logico
   }
 }
 
