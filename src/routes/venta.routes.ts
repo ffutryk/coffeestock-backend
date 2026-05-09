@@ -12,10 +12,6 @@ const productoDao = new TypeOrmProductoDao();
 const ventaService = new VentaService(ventaDao, productoDao);
 const ventaController = new VentaController(ventaService);
 
-router.post(
-  "/crear",
-  validateBody(CrearVentaSchema),
-  ventaController.crear
-);
+router.post("/", validateBody(CrearVentaSchema), ventaController.crear);
 
 export default router;
