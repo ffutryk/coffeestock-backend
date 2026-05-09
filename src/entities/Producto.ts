@@ -11,25 +11,25 @@ export class Producto {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Column("varchar") // Especificamos que es un texto
+  @Column()
   nombre!: string;
 
-  @Column("text", { nullable: true }) // 'text' para descripciones largas
+  @Column({ nullable: true })
   descripcion?: string;
 
   @Column("int", { nullable: true })
   stock!: number | null;
 
-  @Column("decimal")
+  @Column()
   precio!: number;
 
-  @Column("boolean", { default: false }) // Especificamos que es booleano
+  @Column({ default: false })
   sinTacc!: boolean;
 
-  @Column("varchar", { nullable: true })
+  @Column({ nullable: true })
   updatedBy?: string;
 
-  @Column("varchar", { nullable: true })
+  @Column({ nullable: true })
   deletedBy?: string;
 
   @DeleteDateColumn()

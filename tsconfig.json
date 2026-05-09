@@ -7,9 +7,9 @@
 
     // Environment Settings
     // See also https://aka.ms/tsconfig/module
-    "module": "nodenext",
+    "module": "Node16",
     "target": "ES2022",
-    "moduleResolution": "nodenext",
+    "moduleResolution": "Node16",
     "types": ["node"],
     "experimentalDecorators": true, // Esto sirve para decoradores
     "emitDecoratorMetadata": true, // Esto sirve para decoradores
@@ -37,7 +37,7 @@
 
     // Recommended Options
     "strict": true,
-    "verbatimModuleSyntax": true,
+    // "verbatimModuleSyntax": true,
     "isolatedModules": true,
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
