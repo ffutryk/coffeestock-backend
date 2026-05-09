@@ -1,10 +1,10 @@
 import { Venta } from "../models/Venta.js";
 import { ItemVenta } from "../models/ItemVenta.js";
 import type { CrearVentaDTO, CrearItemVentaDTO } from "../dtos/venta.dto.js";
+import type { VentaDao } from "../daos/VentaDao.js";
 
 export class VentaService {
-  // Supongamos que recibes el DAO por constructor o lo tienes definido
-  // constructor(private readonly ventaDao: VentaDao) {}
+  constructor(private readonly ventaDao: VentaDao) {}
 
   async crearVenta(datos: CrearVentaDTO): Promise<Venta> {
     const nuevaVenta = new Venta();
@@ -22,9 +22,6 @@ export class VentaService {
       return item;
     });
 
-    // return await this.ventaDao.save(nuevaVenta);
-    
-    console.log("Venta y productos listos para persistir en cascada");
-    return nuevaVenta;
+    return await this.ventaDao.save(nuevaVenta);
   }
 }
