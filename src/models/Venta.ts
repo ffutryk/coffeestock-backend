@@ -1,5 +1,5 @@
 import { Column, CreateDateColumn, DeleteDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { ItemVenta } from "./ItemVenta.js";
+import { ItemVenta } from "./ItemVenta";
 
 @Entity("ventas")
 export class Venta {

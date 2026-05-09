@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from "typeorm";
-import type { Venta } from "./Venta.js";
-import type { TipoItemVenta } from "./TipoItemVenta.js";
+import type { Venta } from "./Venta";
+import type { TipoItemVenta } from "./TipoItemVenta";
 
 @Entity("item_venta")
 export class ItemVenta {

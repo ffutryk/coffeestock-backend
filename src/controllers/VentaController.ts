@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
-import { VentaService } from "../services/VentaService.js";
-import { CrearVentaSchema } from "../dtos/venta.dto.js";
+import { VentaService } from "../services/VentaService";
+import { CrearVentaSchema } from "../dtos/venta.dto";
 
 export class VentaController {
   constructor(private readonly ventaService: VentaService) {}
