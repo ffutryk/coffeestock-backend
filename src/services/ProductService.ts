@@ -9,7 +9,7 @@ export class ProductService {
   async actualizarProducto(
     id: number,
     datosNuevos: ActualizarProductoDTO,
-    updatedBy: string,
+    updatedBy: number,
   ): Promise<Producto | null> {
     // uso el dao para acceder al DataSource
     const producto = await this.productoDao.findById(id);
@@ -22,7 +22,7 @@ export class ProductService {
     return await this.productoDao.save(producto);
   }
 
-  async eliminarProducto(id: number, deletedBy: string): Promise<boolean> {
+  async eliminarProducto(id: number, deletedBy: number): Promise<boolean> {
     const producto = await this.productoDao.findById(id);
 
     if (!producto) {
