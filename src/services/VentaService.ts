@@ -39,8 +39,7 @@ export class VentaService {
     });
   }
 
-  // Descomentar createdBy_id cuando se implemente la Auth.
-  async crearVenta(datos: CrearVentaDTO, /*createdBy_id: number*/): Promise<Venta> {
+  async crearVenta(datos: CrearVentaDTO, createdBy_id: number): Promise<Venta> {
     const queryRunner = AppDataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
@@ -48,8 +47,7 @@ export class VentaService {
     try {
       const nuevaVenta = new Venta();
       nuevaVenta.medioDePago = datos.medioDePago;
-      nuevaVenta.createdBy = 1;
-      //nuevaVenta.createdBy = createdBy_id; Descomentar cuando se implemente la Auth.
+      nuevaVenta.createdBy = createdBy_id;
 
       nuevaVenta.items = await this.procesarYValidarItems(datos.items, nuevaVenta);
 
