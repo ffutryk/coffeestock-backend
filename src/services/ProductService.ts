@@ -1,6 +1,7 @@
 import { Producto } from "../models/Producto";
 import type { ProductoDao } from "../daos/ProductoDao";
 import type { ActualizarProductoDTO } from "../dtos/product.dto";
+import { NotFoundError } from "../errors";
 
 export class ProductService {
   constructor(private readonly productoDao: ProductoDao) {}
@@ -13,7 +14,7 @@ export class ProductService {
     // uso el dao para acceder al DataSource
     const producto = await this.productoDao.findById(id);
 
-    if (!producto) throw new Error("No se pudo encontrar el producto");
+    if (!producto) throw new NotFoundError("No se pudo encontrar el producto");
 
     producto.updatedBy = updatedBy;
 
@@ -25,7 +26,7 @@ export class ProductService {
     const producto = await this.productoDao.findById(id);
 
     if (!producto) {
-      throw new Error("No se pudo encontrar el producto");
+      throw new NotFoundError("No se pudo encontrar el producto");
     }
 
     // se guarda quien lo borra

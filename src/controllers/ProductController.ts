@@ -1,5 +1,6 @@
 import type { NextFunction, Request, Response } from "express";
 import { ProductService } from "../services/ProductService";
+import { BadRequestError } from "../errors";
 
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
@@ -9,7 +10,7 @@ export class ProductController {
       const { id: idParam } = req.params;
 
       if (!idParam || typeof idParam !== "string") {
-        return res.status(400).json({ error: "ID invalido" });
+        throw new BadRequestError("ID invalido");
       }
 
       const id = parseInt(idParam);
@@ -27,7 +28,7 @@ export class ProductController {
       const { id: idParam } = req.params;
 
       if (!idParam || typeof idParam !== "string") {
-        return res.status(400).json({ error: "ID invalido" });
+        throw new BadRequestError("ID invalido");
       }
 
       const id = parseInt(idParam);
