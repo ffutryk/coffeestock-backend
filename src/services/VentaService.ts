@@ -4,6 +4,8 @@ import { ItemVenta } from "../models/ItemVenta";
 import { VentaDao } from "../daos/VentaDao";
 import { ProductoDao } from "../daos/ProductoDao";
 import { CrearVentaDTO } from "../dtos/venta.dto";
+import { Paginacion } from "../models/Paginacion";
+import { ResultadoPaginado } from "../models/ResultadoPaginado";
 
 export class VentaService {
   constructor(
@@ -54,5 +56,9 @@ export class VentaService {
     } finally {
         await queryRunner.release();
     }
+  }
+
+  async obtenerMuchas(paginacion: Paginacion): Promise<ResultadoPaginado<Venta>> {
+    return this.ventaDao.findManyWithItems(paginacion);
   }
 }
