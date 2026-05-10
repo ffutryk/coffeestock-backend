@@ -5,6 +5,7 @@ import { DEBUG, PORT } from "./config/envs";
 import { AppDataSource } from "./config/data-source";
 import { errorHandler } from "./middlewares/errorHandler";
 import productoRouter from "./routes/product.routes";
+import ventaRouter from "./routes/venta.routes";
 
 const app = express();
 
@@ -12,6 +13,7 @@ app.use(morgan(DEBUG ? "dev" : "combined"));
 app.use(express.json());
 app.use(cors());
 app.use("/productos", productoRouter);
+app.use("/ventas", ventaRouter);
 
 app.get("/", (req: Request, res: Response) => {
   res.sendStatus(200);

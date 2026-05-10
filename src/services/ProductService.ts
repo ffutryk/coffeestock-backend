@@ -1,5 +1,4 @@
-import { AppDataSource } from "../config/data-source";
-import { Producto } from "../entities/Producto";
+import { Producto } from "../models/Producto";
 import type { ProductoDao } from "../daos/ProductoDao";
 import type { ActualizarProductoDTO } from "../dtos/product.dto";
 
