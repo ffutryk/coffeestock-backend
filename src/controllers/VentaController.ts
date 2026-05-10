@@ -15,11 +15,36 @@ export class VentaController {
           return res.status(401).json({ message: "Usuario no autenticado" });
       }
       */
-
-      const nuevaVenta = await this.ventaService.crearVenta(req.body);
+      const userId = 1;
+      const nuevaVenta = await this.ventaService.crearVenta(req.body, userId);
       const respuesta = new VentaResponseDTO(nuevaVenta);
 
       return res.status(201).json({
+        message: "Venta registrada exitosamente",
+        data: respuesta
+      });
+
+    } catch (error: unknown) {
+      next(error);
+    }
+  };
+
+  actualizar = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const id = parseInt(req.params.id as string);
+      
+      /* AGREGAR CUANDO SE IMPLEMENTE AUTENTICACIÓN
+      const userId = req.user?.id; 
+      if (!userId) {
+          return res.status(401).json({ message: "Usuario no autenticado" });
+      }
+      */
+      const userId = 1;
+      const ventaActualizada = await this.ventaService.actualizarVenta(id, req.body, userId);
+      const respuesta = new VentaResponseDTO(ventaActualizada);
+
+      return res.status(200).json({
+        message: "Venta modificada exitosamente",
         data: respuesta
       });
 

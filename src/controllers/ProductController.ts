@@ -43,7 +43,7 @@ export class ProductController {
       }
 
       const id = parseInt(idParam);
-      const actualizado = await this.productService.actualizarProducto(id, req.body, "UsuarioDePrueba");
+      const actualizado = await this.productService.actualizarProducto(id, req.body, 1 /*Id de prueba*/);
 
       return res.status(200).send(actualizado);
     } catch (err) {
@@ -61,7 +61,7 @@ export class ProductController {
       }
 
       const id = parseInt(idParam);
-      await this.productService.eliminarProducto(id, "alguienDePrueba");
+      await this.productService.eliminarProducto(id, 2 /*Id de prueba*/ );
 
       return res.status(200).json({
         success: true,

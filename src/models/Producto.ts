@@ -31,10 +31,10 @@ export class Producto {
   sinTacc!: boolean;
 
   @Column({ nullable: true })
-  updatedBy?: string;
+  updatedBy?: number;
 
   @Column({ nullable: true })
-  deletedBy?: string;
+  deletedBy?: number;
 
   @DeleteDateColumn()
   deleted_at?: Date;

@@ -11,5 +11,14 @@ export const CrearVentaSchema = z.object({
   items: z.array(CrearItemVentaSchema).min(1, "Debe haber al menos un item"),
 });
 
+export const ActualizarVentaSchema = z.object({
+  medioDePago: z.enum(MedioDePago).optional(),
+  items: z.array(z.object({
+    productoId: z.number().int().positive(),
+    cantidad: z.number().int().positive(),
+  })).min(1).optional(),
+});
+
+export type ActualizarVentaDTO = z.infer<typeof ActualizarVentaSchema>;
 export type CrearVentaDTO = z.infer<typeof CrearVentaSchema>;
 export type CrearItemVentaDTO = z.infer<typeof CrearItemVentaSchema>;

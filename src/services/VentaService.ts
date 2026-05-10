@@ -7,6 +7,8 @@ import { CrearVentaDTO } from "../dtos/venta.dto";
 import { BadRequestError, NotFoundError } from "../errors";
 import { Paginacion } from "../models/Paginacion";
 import { ResultadoPaginado } from "../models/ResultadoPaginado";
+import { Producto } from "../models/Producto";
+import { ActualizarVentaDTO } from "../dtos/venta.dto";
 
 export class VentaService {
   constructor(
@@ -14,48 +16,103 @@ export class VentaService {
     private readonly productoDao: ProductoDao
   ) {}
 
-  // DESCOMENTAR CUANDO SE IMPLEMENTE AUTENTICACIÓN
-  async crearVenta(datos: CrearVentaDTO/*, createdBy_id: number*/): Promise<Venta> {
+  private async procesarYValidarItems(itemsDto: { productoId: number, cantidad: number }[], venta: Venta): Promise<ItemVenta[]> {
+    const ids = itemsDto.map(i => i.productoId);
+
+    const productosEnDB = await this.productoDao.findByIds(ids);
+    if (productosEnDB.length !== ids.length) {
+        throw new NotFoundError("Uno o más productos no existen");
+    }
+
+    const productosMap = new Map(productosEnDB.map(p => [p.id, p]));
+
+    return itemsDto.map(itemDto => {
+      const producto = productosMap.get(itemDto.productoId)!;
+      
+      if (producto.stock !== null && producto.stock < itemDto.cantidad) {
+        throw new BadRequestError(`Stock insuficiente para: ${producto.nombre}`);
+      }
+      
+      if (producto.stock !== null) producto.stock -= itemDto.cantidad;
+
+      return ItemVenta.create(producto, itemDto.cantidad, venta);
+    });
+  }
+
+  async crearVenta(datos: CrearVentaDTO, createdBy_id: number): Promise<Venta> {
     const queryRunner = AppDataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
     try {
-        const ids = datos.items.map(item => item.productoId);
-        const productosEnDB = await this.productoDao.findByIds(ids);
-        
-        if (productosEnDB.length !== new Set(ids).size) {
-            throw new NotFoundError("Uno o más productos no existen");
-        }
+      const nuevaVenta = new Venta();
+      nuevaVenta.medioDePago = datos.medioDePago;
+      nuevaVenta.createdBy = createdBy_id;
 
-        const productosMap = new Map(productosEnDB.map(p => [p.id, p]));
-        const nuevaVenta = new Venta();
-        nuevaVenta.medioDePago = datos.medioDePago;
-        nuevaVenta.createdBy = 1; // BORRAR CUANDO SE IMPLEMENTE AUTENTICACIÓN
-        // nuevaVenta.createdBy = createdBy_id; DESCOMENTAR CUANDO SE IMPLEMENTE AUTENTICACIÓN
+      nuevaVenta.items = await this.procesarYValidarItems(datos.items, nuevaVenta);
 
-        nuevaVenta.items = datos.items.map(itemDto => {
-            const producto = productosMap.get(itemDto.productoId)!;
-            
-            if (producto.stock < itemDto.cantidad) {
-                throw new BadRequestError(`Stock insuficiente para el producto: ${producto.nombre}`);
-            }
-            producto.stock -= itemDto.cantidad;
+      const productosAActualizar = nuevaVenta.items.map(i => i.producto);
+      
+      await queryRunner.manager.save(productosAActualizar);
+      const ventaGuardada = await queryRunner.manager.save(nuevaVenta);
 
-            return ItemVenta.create(producto, itemDto.cantidad, nuevaVenta);
-        });
-        await queryRunner.manager.save(productosEnDB);
-        const ventaGuardada = await queryRunner.manager.save(nuevaVenta);
-
-        await queryRunner.commitTransaction();
-        return ventaGuardada;
-
+      await queryRunner.commitTransaction();
+      return ventaGuardada;
     } catch (error) {
-        await queryRunner.rollbackTransaction();
-        throw error;
-
+      await queryRunner.rollbackTransaction();
+      throw error;
     } finally {
-        await queryRunner.release();
+      await queryRunner.release();
+    }
+  }
+
+  async actualizarVenta(id: number, datos: ActualizarVentaDTO, updatedBy: number): Promise<Venta> {
+    const queryRunner = AppDataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      const ventaExistente = await queryRunner.manager.findOne(Venta, {
+        where: { id },
+        relations: ["items", "items.producto"]
+      });
+
+      if (!ventaExistente) throw new NotFoundError("Venta no encontrada");
+
+      const productosAfectados = new Set<Producto>();
+
+      for (const item of ventaExistente.items) {
+        if (item.producto && item.producto.stock !== null) {
+          item.producto.stock += item.cantidad;
+          productosAfectados.add(item.producto);
+        }
+      }
+
+      if (datos.medioDePago) ventaExistente.medioDePago = datos.medioDePago;
+      ventaExistente.updatedBy = updatedBy;
+
+      if (datos.items) {
+        await queryRunner.manager.remove(ventaExistente.items);
+        
+        const nuevosItems = await this.procesarYValidarItems(datos.items, ventaExistente);
+        ventaExistente.items = nuevosItems;
+
+        nuevosItems.forEach(item => productosAfectados.add(item.producto));
+      }
+
+      if (productosAfectados.size > 0) {
+        await queryRunner.manager.save(Array.from(productosAfectados));
+      }
+      
+      const ventaActualizada = await queryRunner.manager.save(ventaExistente);
+
+      await queryRunner.commitTransaction();
+      return ventaActualizada;
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw error;
+    } finally {
+      await queryRunner.release();
     }
   }
 

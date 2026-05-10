@@ -5,7 +5,6 @@ import { ActualizarProductoSchema, CrearProductoSchema } from "../dtos/product.d
 import { TypeOrmProductoDao } from "../repositories/TypeORMProductoDAO";
 import { Router } from "express";
 
-
 const router = Router();
 const productoDao = new TypeOrmProductoDao();
 const productService = new ProductService(productoDao);
@@ -18,11 +17,7 @@ router.post("/", validateBody(CrearProductoSchema), productController.crear,);
 router.get("/:id", productController.ver);
 
 // Ruta para actualizar
-router.put(
-  "/:id",
-  validateBody(ActualizarProductoSchema),
-  productController.actualizar,
-);
+router.put("/:id", validateBody(ActualizarProductoSchema), productController.actualizar,);
 
 // ruta para eiminar
 router.delete("/:id", productController.eliminar);
