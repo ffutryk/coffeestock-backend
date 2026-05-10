@@ -35,11 +35,11 @@ export class VentaController {
         
       return res.status(200).json({
         data: ventas.map(v => new VentaResponseDTO(v)),
-          metadata: {
-            total,
-            pagina: paginacion.page,
-            paginasTotales: Math.ceil(total / paginacion.limit),
-          }
+        metadata: {
+          total,
+          pagina: paginacion.page,
+          paginasTotales: Math.ceil(total / paginacion.limit),
+        }
       });
     } catch (error: unknown) {
       next(error);
