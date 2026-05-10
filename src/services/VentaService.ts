@@ -4,6 +4,7 @@ import { ItemVenta } from "../models/ItemVenta";
 import { VentaDao } from "../daos/VentaDao";
 import { ProductoDao } from "../daos/ProductoDao";
 import { CrearVentaDTO } from "../dtos/venta.dto";
+import { BadRequestError, NotFoundError } from "../errors";
 import { Paginacion } from "../models/Paginacion";
 import { ResultadoPaginado } from "../models/ResultadoPaginado";
 
@@ -24,7 +25,7 @@ export class VentaService {
         const productosEnDB = await this.productoDao.findByIds(ids);
         
         if (productosEnDB.length !== new Set(ids).size) {
-            throw new Error("Uno o más productos no existen");
+            throw new NotFoundError("Uno o más productos no existen");
         }
 
         const productosMap = new Map(productosEnDB.map(p => [p.id, p]));
@@ -37,7 +38,7 @@ export class VentaService {
             const producto = productosMap.get(itemDto.productoId)!;
             
             if (producto.stock < itemDto.cantidad) {
-                throw new Error(`Stock insuficiente para el producto: ${producto.nombre}`);
+                throw new BadRequestError(`Stock insuficiente para el producto: ${producto.nombre}`);
             }
             producto.stock -= itemDto.cantidad;
 
