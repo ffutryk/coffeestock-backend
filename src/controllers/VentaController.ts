@@ -70,4 +70,19 @@ export class VentaController {
       next(error);
     }
   }
+
+  eliminar = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const id = parseInt(req.params.id as string);
+      const deletedBy = 1; // Cambiar a userId cuando se implemente autenticación
+      const resultado = await this.ventaService.eliminar(id, deletedBy);
+
+      return res.status(200).json({
+        message: "Venta eliminada exitosamente",
+        data: resultado
+      });
+    } catch (error: unknown) {
+      next(error);
+    }
+  };
 }
