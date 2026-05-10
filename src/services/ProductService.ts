@@ -14,6 +14,14 @@ export class ProductService {
     return await this.productoDao.save(producto);
   }
 
+  async verProducto(id: number): Promise<Producto> {
+    const producto = await this.productoDao.findById(id);
+    if (!producto) {
+      throw new NotFoundError("No se pudo encontrar el producto");
+    }
+    return producto;
+  }
+
   async actualizarProducto(
     id: number,
     datosNuevos: ActualizarProductoDTO,

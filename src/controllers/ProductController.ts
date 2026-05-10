@@ -17,6 +17,23 @@ export class ProductController {
     }
   };
 
+  ver = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { id: idParam } = req.params;
+      if (!idParam || typeof idParam !== "string") {
+        throw new BadRequestError("ID invalido");
+      }
+      const id = parseInt(idParam);
+      if (isNaN(id)) {
+        throw new BadRequestError("ID invalido");
+      }
+      const producto = await this.productService.verProducto(id);
+      return res.status(200).json(producto);
+    } catch (err) {
+      next(err);
+    }
+  };
+
   actualizar = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { id: idParam } = req.params;
