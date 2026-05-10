@@ -119,4 +119,17 @@ export class VentaService {
   async obtenerMuchas(paginacion: Paginacion): Promise<ResultadoPaginado<Venta>> {
     return this.ventaDao.findManyWithItems(paginacion);
   }
+
+  async eliminar(id: number, deletedBy: number): Promise<boolean> {
+    const venta = await this.ventaDao.findById(id);
+
+    if (!venta) {
+      throw new NotFoundError("No se pudo encontrar la venta");
+    }
+
+    venta.deletedBy = deletedBy;
+    await this.ventaDao.save(venta);
+
+    return await this.ventaDao.delete(id);
+  }
 }
