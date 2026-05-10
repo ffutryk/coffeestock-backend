@@ -5,6 +5,18 @@ import { BadRequestError } from "../errors";
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
+  crear = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const creado = await this.productService.crearProducto(
+        req.body,
+        "UsuarioDePrueba",
+      );
+      return res.status(201).json(creado);
+    } catch (err) {
+      next(err);
+    }
+  };
+
   actualizar = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { id: idParam } = req.params;

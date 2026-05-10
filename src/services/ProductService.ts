@@ -1,10 +1,18 @@
 import { Producto } from "../models/Producto";
 import type { ProductoDao } from "../daos/ProductoDao";
 import type { ActualizarProductoDTO } from "../dtos/product.dto";
+import type { CrearProductoDTO } from "../dtos/product.dto";
 import { NotFoundError } from "../errors";
 
 export class ProductService {
   constructor(private readonly productoDao: ProductoDao) {}
+
+  async crearProducto(datos: CrearProductoDTO, createdBy: string,): Promise<Producto> {
+    const producto = new Producto();
+    Object.assign(producto, datos);
+    producto.updatedBy = createdBy;
+    return await this.productoDao.save(producto);
+  }
 
   async actualizarProducto(
     id: number,
