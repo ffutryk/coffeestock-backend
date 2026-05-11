@@ -4,7 +4,7 @@ import type { ActualizarProductoDTO } from "../dtos/producto/actualizar.dto";
 import type { CrearProductoDTO } from "../dtos/producto/crear.dto";
 import { NotFoundError } from "../errors";
 
-export class ProductService {
+export class ProductoService {
   constructor(private readonly productoRepository: ProductoRepository) {}
 
   async crearProducto(datos: CrearProductoDTO, createdBy: number): Promise<Producto> {
