@@ -1,14 +1,9 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  UpdateDateColumn,
-  DeleteDateColumn,
-} from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
 import { TipoItemVenta } from "../enums/tipo-item-venta";
+import { Auditable } from "../base/auditable";
 
 @Entity({ name: "productos" })
-export class Producto {
+export class Producto extends Auditable {
   @PrimaryGeneratedColumn()
   id!: number;
 
@@ -29,16 +24,4 @@ export class Producto {
 
   @Column({ default: false })
   sinTacc!: boolean;
-
-  @Column({ nullable: true })
-  updatedBy?: number;
-
-  @Column({ nullable: true })
-  deletedBy?: number;
-
-  @DeleteDateColumn()
-  deleted_at?: Date;
-
-  @UpdateDateColumn()
-  updated_at?: Date;
 }

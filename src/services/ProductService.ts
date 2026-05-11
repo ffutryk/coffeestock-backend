@@ -16,7 +16,7 @@ export class ProductService {
     // if (datos.stock !== undefined && datos.stock !== null) producto.stock = datos.stock;
     // if (datos.tipo !== undefined) producto.tipo = datos.tipo;
     // if (datos.sinTacc !== undefined) producto.sinTacc = datos.sinTacc;
-    producto.updatedBy = createdBy;
+    producto.createdBy = createdBy;
     return await this.productoDao.save(producto);
   }
 

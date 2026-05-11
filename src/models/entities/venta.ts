@@ -1,17 +1,10 @@
-import {
-  Column,
-  CreateDateColumn,
-  DeleteDateColumn,
-  Entity,
-  OneToMany,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from "typeorm";
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { ItemVenta } from "./item-venta";
 import { MedioDePago } from "../enums/medio-de-pago";
+import { Auditable } from "../base/auditable";
 
 @Entity("ventas")
-export class Venta {
+export class Venta extends Auditable {
   @PrimaryGeneratedColumn()
   id!: number;
 
@@ -20,24 +13,6 @@ export class Venta {
 
   @OneToMany(() => ItemVenta, (item) => item.venta, { cascade: true })
   items!: ItemVenta[];
-
-  @CreateDateColumn({ name: "created_at" })
-  createdAt!: Date;
-
-  @Column({ name: "created_by" })
-  createdBy!: number;
-
-  @UpdateDateColumn({ name: "updated_at", nullable: true })
-  updatedAt?: Date;
-
-  @Column({ name: "updated_by", nullable: true })
-  updatedBy?: number;
-
-  @DeleteDateColumn({ name: "deleted_at", nullable: true })
-  deletedAt?: Date;
-
-  @Column({ name: "deleted_by", nullable: true })
-  deletedBy?: number;
 
   getPrecioTotal(): number {
     return this.items.reduce((total, item) => total + item.precio * item.cantidad, 0);
