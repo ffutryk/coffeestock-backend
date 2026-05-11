@@ -1,7 +1,7 @@
 import type { Request, Response, NextFunction } from "express";
-import { VentaService } from "../services/VentaService";
-import { VentaResponseDTO } from "../dtos/ventaResponse.dto";
-import { Paginacion } from "../models/Paginacion";
+import { VentaService } from "../services/venta.service";
+import { VentaResponseDTO } from "../dtos/venta/response.dto";
+import { PaginacionDTO } from "../dtos/paginacion.dto";
 
 export class VentaController {
   constructor(private readonly ventaService: VentaService) {}
@@ -9,7 +9,7 @@ export class VentaController {
   crear = async (req: Request, res: Response, next: NextFunction) => {
     try {
       /* AGREGAR CUANDO SE IMPLEMENTE AUTENTICACIÓN
-      const userId = req.user?.id; 
+      const userId = req.user?.id;
 
       if (!userId) {
           return res.status(401).json({ message: "Usuario no autenticado" });
@@ -21,9 +21,8 @@ export class VentaController {
 
       return res.status(201).json({
         message: "Venta registrada exitosamente",
-        data: respuesta
+        data: respuesta,
       });
-
     } catch (error: unknown) {
       next(error);
     }
@@ -32,9 +31,9 @@ export class VentaController {
   actualizar = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const id = parseInt(req.params.id as string);
-      
+
       /* AGREGAR CUANDO SE IMPLEMENTE AUTENTICACIÓN
-      const userId = req.user?.id; 
+      const userId = req.user?.id;
       if (!userId) {
           return res.status(401).json({ message: "Usuario no autenticado" });
       }
@@ -45,9 +44,8 @@ export class VentaController {
 
       return res.status(200).json({
         message: "Venta modificada exitosamente",
-        data: respuesta
+        data: respuesta,
       });
-
     } catch (error: unknown) {
       next(error);
     }
@@ -55,21 +53,21 @@ export class VentaController {
 
   obtenerMuchas = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const paginacion = req.validatedQuery as Paginacion;
+      const paginacion = req.validatedQuery as PaginacionDTO;
       const { data: ventas, total } = await this.ventaService.obtenerMuchas(paginacion);
-        
+
       return res.status(200).json({
-        data: ventas.map(v => new VentaResponseDTO(v)),
+        data: ventas.map((v) => new VentaResponseDTO(v)),
         metadata: {
           total,
           pagina: paginacion.page,
           paginasTotales: Math.ceil(total / paginacion.limit),
-        }
+        },
       });
     } catch (error: unknown) {
       next(error);
     }
-  }
+  };
 
   eliminar = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -79,7 +77,7 @@ export class VentaController {
 
       return res.status(200).json({
         message: "Venta eliminada exitosamente",
-        data: resultado
+        data: resultado,
       });
     } catch (error: unknown) {
       next(error);

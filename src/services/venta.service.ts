@@ -1,38 +1,41 @@
 import { AppDataSource } from "../config/data-source";
-import { Venta } from "../models/Venta";
-import { ItemVenta } from "../models/ItemVenta";
-import { VentaDao } from "../daos/VentaDao";
-import { ProductoDao } from "../daos/ProductoDao";
-import { CrearVentaDTO } from "../dtos/venta.dto";
+import { Venta } from "../models/entities/venta";
+import { ItemVenta } from "../models/entities/item-venta";
 import { BadRequestError, NotFoundError } from "../errors";
-import { Paginacion } from "../models/Paginacion";
-import { ResultadoPaginado } from "../models/ResultadoPaginado";
-import { Producto } from "../models/Producto";
-import { ActualizarVentaDTO } from "../dtos/venta.dto";
+import { ResultadoPaginado } from "../models/types/resultado-paginado";
+import { Producto } from "../models/entities/producto";
+import { VentaRepository } from "../repositories/interfaces/venta.interface";
+import { ProductoRepository } from "../repositories/interfaces/producto.interface";
+import type { ActualizarVentaDTO } from "../dtos/venta/actualizar.dto";
+import type { CrearVentaDTO } from "../dtos/venta/crear.dto";
+import { PaginacionDTO } from "../dtos/paginacion.dto";
 
 export class VentaService {
   constructor(
-    private readonly ventaDao: VentaDao,
-    private readonly productoDao: ProductoDao
+    private readonly ventaRepository: VentaRepository,
+    private readonly productoRepository: ProductoRepository,
   ) {}
 
-  private async procesarYValidarItems(itemsDto: { productoId: number, cantidad: number }[], venta: Venta): Promise<ItemVenta[]> {
-    const ids = itemsDto.map(i => i.productoId);
+  private async procesarYValidarItems(
+    itemsDto: { productoId: number; cantidad: number }[],
+    venta: Venta,
+  ): Promise<ItemVenta[]> {
+    const ids = itemsDto.map((i) => i.productoId);
 
-    const productosEnDB = await this.productoDao.findByIds(ids);
+    const productosEnDB = await this.productoRepository.findByIds(ids);
     if (productosEnDB.length !== ids.length) {
-        throw new NotFoundError("Uno o más productos no existen");
+      throw new NotFoundError("Uno o más productos no existen");
     }
 
-    const productosMap = new Map(productosEnDB.map(p => [p.id, p]));
+    const productosMap = new Map(productosEnDB.map((p) => [p.id, p]));
 
-    return itemsDto.map(itemDto => {
+    return itemsDto.map((itemDto) => {
       const producto = productosMap.get(itemDto.productoId)!;
-      
+
       if (producto.stock !== null && producto.stock < itemDto.cantidad) {
         throw new BadRequestError(`Stock insuficiente para: ${producto.nombre}`);
       }
-      
+
       if (producto.stock !== null) producto.stock -= itemDto.cantidad;
 
       return ItemVenta.create(producto, itemDto.cantidad, venta);
@@ -51,8 +54,8 @@ export class VentaService {
 
       nuevaVenta.items = await this.procesarYValidarItems(datos.items, nuevaVenta);
 
-      const productosAActualizar = nuevaVenta.items.map(i => i.producto);
-      
+      const productosAActualizar = nuevaVenta.items.map((i) => i.producto);
+
       await queryRunner.manager.save(productosAActualizar);
       const ventaGuardada = await queryRunner.manager.save(nuevaVenta);
 
@@ -74,7 +77,7 @@ export class VentaService {
     try {
       const ventaExistente = await queryRunner.manager.findOne(Venta, {
         where: { id },
-        relations: ["items", "items.producto"]
+        relations: ["items", "items.producto"],
       });
 
       if (!ventaExistente) throw new NotFoundError("Venta no encontrada");
@@ -93,17 +96,17 @@ export class VentaService {
 
       if (datos.items) {
         await queryRunner.manager.remove(ventaExistente.items);
-        
+
         const nuevosItems = await this.procesarYValidarItems(datos.items, ventaExistente);
         ventaExistente.items = nuevosItems;
 
-        nuevosItems.forEach(item => productosAfectados.add(item.producto));
+        nuevosItems.forEach((item) => productosAfectados.add(item.producto));
       }
 
       if (productosAfectados.size > 0) {
         await queryRunner.manager.save(Array.from(productosAfectados));
       }
-      
+
       const ventaActualizada = await queryRunner.manager.save(ventaExistente);
 
       await queryRunner.commitTransaction();
@@ -116,20 +119,20 @@ export class VentaService {
     }
   }
 
-  async obtenerMuchas(paginacion: Paginacion): Promise<ResultadoPaginado<Venta>> {
-    return this.ventaDao.findManyWithItems(paginacion);
+  async obtenerMuchas(paginacion: PaginacionDTO): Promise<ResultadoPaginado<Venta>> {
+    return this.ventaRepository.findManyWithItems(paginacion);
   }
 
   async eliminar(id: number, deletedBy: number): Promise<boolean> {
-    const venta = await this.ventaDao.findById(id);
+    const venta = await this.ventaRepository.findById(id);
 
     if (!venta) {
       throw new NotFoundError("No se pudo encontrar la venta");
     }
 
     venta.deletedBy = deletedBy;
-    await this.ventaDao.save(venta);
+    await this.ventaRepository.save(venta);
 
-    return await this.ventaDao.delete(id);
+    return await this.ventaRepository.delete(id);
   }
 }
