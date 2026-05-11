@@ -4,7 +4,7 @@ import morgan from "morgan";
 import { DEBUG, PORT } from "./config/envs";
 import { AppDataSource } from "./config/data-source";
 import { errorHandler } from "./middlewares/error-handler";
-import productoRouter from "./routes/product.routes";
+import productoRouter from "./routes/producto.routes";
 import ventaRouter from "./routes/venta.routes";
 
 const app = express();
