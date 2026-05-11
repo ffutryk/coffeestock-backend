@@ -1,7 +1,7 @@
 import type { Request, Response, NextFunction } from "express";
 import { VentaService } from "../services/VentaService";
 import { VentaResponseDTO } from "../dtos/ventaResponse.dto";
-import { Paginacion } from "../models/Paginacion";
+import { Paginacion } from "../models/types/paginacion";
 
 export class VentaController {
   constructor(private readonly ventaService: VentaService) {}

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { TipoItemVenta } from "../models/TipoItemVenta";
+import { TipoItemVenta } from "../models/enums/tipo-item-venta";
 
 export const ActualizarProductoSchema = z
   .object({

@@ -1,6 +1,6 @@
-import { Paginacion } from "../models/Paginacion";
-import { ResultadoPaginado } from "../models/ResultadoPaginado";
-import { Venta } from "../models/Venta";
+import { Paginacion } from "../models/types/paginacion";
+import { ResultadoPaginado } from "../models/types/resultado-paginado";
+import { Venta } from "../models/entities/venta";
 
 export interface VentaDao {
   save(venta: Venta): Promise<Venta>;

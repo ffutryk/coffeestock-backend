@@ -1,4 +1,4 @@
-import { Venta } from "../models/Venta";
+import { Venta } from "../models/entities/venta";
 
 export class VentaResponseDTO {
   id: number;

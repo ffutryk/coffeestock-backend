@@ -5,7 +5,7 @@ import {
   UpdateDateColumn,
   DeleteDateColumn,
 } from "typeorm";
-import { TipoItemVenta } from "./TipoItemVenta";
+import { TipoItemVenta } from "../enums/tipo-item-venta";
 
 @Entity({ name: "productos" })
 export class Producto {

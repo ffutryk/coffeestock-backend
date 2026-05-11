@@ -1,7 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from "typeorm";
-import { Venta } from "./Venta";
-import type { TipoItemVenta } from "./TipoItemVenta";
-import { Producto } from "./Producto";
+import { Venta } from "./venta";
+import type { TipoItemVenta } from "../enums/tipo-item-venta";
+import { Producto } from "./producto";
 
 @Entity("item_venta")
 export class ItemVenta {

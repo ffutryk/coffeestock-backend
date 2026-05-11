@@ -1,4 +1,4 @@
-import { Producto } from "../models/Producto";
+import { Producto } from "../models/entities/producto";
 
 export interface ProductoDao {
   findById(id: number): Promise<Producto | null>;

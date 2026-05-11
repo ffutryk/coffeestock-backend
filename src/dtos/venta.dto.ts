@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { MedioDePago } from "../models/MedioDePago";
+import { MedioDePago } from "../models/enums/medio-de-pago";
 
 export const CrearItemVentaSchema = z.object({
   productoId: z.number().int().positive("ID de producto inválido"),

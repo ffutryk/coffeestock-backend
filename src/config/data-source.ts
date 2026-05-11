@@ -1,9 +1,9 @@
 import "reflect-metadata";
 import { DataSource } from "typeorm";
 import { DB_DATABASE, DB_HOSTNAME, DB_PASSWORD, DB_PORT, DB_USERNAME, DEBUG } from "./envs";
-import { Producto } from "../models/Producto";
-import { ItemVenta } from "../models/ItemVenta";
-import { Venta } from "../models/Venta";
+import { Producto } from "../models/entities/producto";
+import { ItemVenta } from "../models/entities/item-venta";
+import { Venta } from "../models/entities/venta";
 
 export const AppDataSource = new DataSource({
   type: "postgres",

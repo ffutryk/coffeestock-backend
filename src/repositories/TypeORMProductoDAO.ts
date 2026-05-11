@@ -1,5 +1,5 @@
 import { AppDataSource } from "../config/data-source";
-import { Producto } from "../models/Producto";
+import { Producto } from "../models/entities/producto";
 import type { ProductoDao } from "../daos/ProductoDao";
 import { In } from "typeorm";
 

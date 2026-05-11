@@ -7,8 +7,8 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
-import { ItemVenta } from "./ItemVenta";
-import { MedioDePago } from "./MedioDePago";
+import { ItemVenta } from "./item-venta";
+import { MedioDePago } from "../enums/medio-de-pago";
 
 @Entity("ventas")
 export class Venta {

@@ -1,4 +1,4 @@
-import { Producto } from "../models/Producto";
+import { Producto } from "../models/entities/producto";
 import type { ProductoDao } from "../daos/ProductoDao";
 import type { ActualizarProductoDTO } from "../dtos/product.dto";
 import type { CrearProductoDTO } from "../dtos/product.dto";

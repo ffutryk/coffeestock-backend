@@ -1,8 +1,8 @@
 import { AppDataSource } from "../config/data-source";
-import { Venta } from "../models/Venta";
+import { Venta } from "../models/entities/venta";
 import type { VentaDao } from "../daos/VentaDao";
-import { Paginacion } from "../models/Paginacion";
-import { ResultadoPaginado } from "../models/ResultadoPaginado";
+import { Paginacion } from "../models/types/paginacion";
+import { ResultadoPaginado } from "../models/types/resultado-paginado";
 
 export class TypeOrmVentaDao implements VentaDao {
   private repository = AppDataSource.getRepository(Venta);

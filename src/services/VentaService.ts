@@ -1,13 +1,13 @@
 import { AppDataSource } from "../config/data-source";
-import { Venta } from "../models/Venta";
-import { ItemVenta } from "../models/ItemVenta";
+import { Venta } from "../models/entities/venta";
+import { ItemVenta } from "../models/entities/item-venta";
 import { VentaDao } from "../daos/VentaDao";
 import { ProductoDao } from "../daos/ProductoDao";
 import { CrearVentaDTO } from "../dtos/venta.dto";
 import { BadRequestError, NotFoundError } from "../errors";
-import { Paginacion } from "../models/Paginacion";
-import { ResultadoPaginado } from "../models/ResultadoPaginado";
-import { Producto } from "../models/Producto";
+import { Paginacion } from "../models/types/paginacion";
+import { ResultadoPaginado } from "../models/types/resultado-paginado";
+import { Producto } from "../models/entities/producto";
 import { ActualizarVentaDTO } from "../dtos/venta.dto";
 
 export class VentaService {
