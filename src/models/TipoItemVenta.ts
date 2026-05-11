@@ -1,4 +1,4 @@
 export enum TipoItemVenta {
-    PRODUCTO = "PRODUCTO",
-    COMBO = "COMBO",
+  PRODUCTO = "PRODUCTO",
+  COMBO = "COMBO",
 }

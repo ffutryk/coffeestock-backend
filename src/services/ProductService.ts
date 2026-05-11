@@ -7,7 +7,7 @@ import { NotFoundError } from "../errors";
 export class ProductService {
   constructor(private readonly productoDao: ProductoDao) {}
 
-  async crearProducto(datos: CrearProductoDTO, createdBy: number,): Promise<Producto> {
+  async crearProducto(datos: CrearProductoDTO, createdBy: number): Promise<Producto> {
     const producto = new Producto();
     Object.assign(producto, datos);
     // if (datos.nombre !== undefined) producto.nombre = datos.nombre;
@@ -62,4 +62,3 @@ export class ProductService {
     return await this.productoDao.delete(id);
   }
 }
-

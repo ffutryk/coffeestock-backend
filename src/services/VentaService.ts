@@ -13,26 +13,29 @@ import { ActualizarVentaDTO } from "../dtos/venta.dto";
 export class VentaService {
   constructor(
     private readonly ventaDao: VentaDao,
-    private readonly productoDao: ProductoDao
+    private readonly productoDao: ProductoDao,
   ) {}
 
-  private async procesarYValidarItems(itemsDto: { productoId: number, cantidad: number }[], venta: Venta): Promise<ItemVenta[]> {
-    const ids = itemsDto.map(i => i.productoId);
+  private async procesarYValidarItems(
+    itemsDto: { productoId: number; cantidad: number }[],
+    venta: Venta,
+  ): Promise<ItemVenta[]> {
+    const ids = itemsDto.map((i) => i.productoId);
 
     const productosEnDB = await this.productoDao.findByIds(ids);
     if (productosEnDB.length !== ids.length) {
-        throw new NotFoundError("Uno o más productos no existen");
+      throw new NotFoundError("Uno o más productos no existen");
     }
 
-    const productosMap = new Map(productosEnDB.map(p => [p.id, p]));
+    const productosMap = new Map(productosEnDB.map((p) => [p.id, p]));
 
-    return itemsDto.map(itemDto => {
+    return itemsDto.map((itemDto) => {
       const producto = productosMap.get(itemDto.productoId)!;
-      
+
       if (producto.stock !== null && producto.stock < itemDto.cantidad) {
         throw new BadRequestError(`Stock insuficiente para: ${producto.nombre}`);
       }
-      
+
       if (producto.stock !== null) producto.stock -= itemDto.cantidad;
 
       return ItemVenta.create(producto, itemDto.cantidad, venta);
@@ -51,8 +54,8 @@ export class VentaService {
 
       nuevaVenta.items = await this.procesarYValidarItems(datos.items, nuevaVenta);
 
-      const productosAActualizar = nuevaVenta.items.map(i => i.producto);
-      
+      const productosAActualizar = nuevaVenta.items.map((i) => i.producto);
+
       await queryRunner.manager.save(productosAActualizar);
       const ventaGuardada = await queryRunner.manager.save(nuevaVenta);
 
@@ -74,7 +77,7 @@ export class VentaService {
     try {
       const ventaExistente = await queryRunner.manager.findOne(Venta, {
         where: { id },
-        relations: ["items", "items.producto"]
+        relations: ["items", "items.producto"],
       });
 
       if (!ventaExistente) throw new NotFoundError("Venta no encontrada");
@@ -93,17 +96,17 @@ export class VentaService {
 
       if (datos.items) {
         await queryRunner.manager.remove(ventaExistente.items);
-        
+
         const nuevosItems = await this.procesarYValidarItems(datos.items, ventaExistente);
         ventaExistente.items = nuevosItems;
 
-        nuevosItems.forEach(item => productosAfectados.add(item.producto));
+        nuevosItems.forEach((item) => productosAfectados.add(item.producto));
       }
 
       if (productosAfectados.size > 0) {
         await queryRunner.manager.save(Array.from(productosAfectados));
       }
-      
+
       const ventaActualizada = await queryRunner.manager.save(ventaExistente);
 
       await queryRunner.commitTransaction();

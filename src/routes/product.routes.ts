@@ -11,7 +11,7 @@ const productService = new ProductService(productoDao);
 const productController = new ProductController(productService);
 
 // ruta para crear
-router.post("/", validateBody(CrearProductoSchema), productController.crear,);
+router.post("/", validateBody(CrearProductoSchema), productController.crear);
 
 // ruta para ver listado de productos
 router.get("/", productController.listar);
@@ -20,7 +20,7 @@ router.get("/", productController.listar);
 router.get("/:id", productController.ver);
 
 // Ruta para actualizar
-router.put("/:id", validateBody(ActualizarProductoSchema), productController.actualizar,);
+router.put("/:id", validateBody(ActualizarProductoSchema), productController.actualizar);
 
 // ruta para eiminar
 router.delete("/:id", productController.eliminar);

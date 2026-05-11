@@ -1,5 +1,5 @@
-import { z } from 'zod';
-import { MedioDePago } from '../models/MedioDePago';
+import { z } from "zod";
+import { MedioDePago } from "../models/MedioDePago";
 
 export const CrearItemVentaSchema = z.object({
   productoId: z.number().int().positive("ID de producto inválido"),
@@ -13,10 +13,15 @@ export const CrearVentaSchema = z.object({
 
 export const ActualizarVentaSchema = z.object({
   medioDePago: z.enum(MedioDePago).optional(),
-  items: z.array(z.object({
-    productoId: z.number().int().positive(),
-    cantidad: z.number().int().positive(),
-  })).min(1).optional(),
+  items: z
+    .array(
+      z.object({
+        productoId: z.number().int().positive(),
+        cantidad: z.number().int().positive(),
+      }),
+    )
+    .min(1)
+    .optional(),
 });
 
 export type ActualizarVentaDTO = z.infer<typeof ActualizarVentaSchema>;
