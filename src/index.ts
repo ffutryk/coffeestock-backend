@@ -3,7 +3,7 @@ import cors from "cors";
 import morgan from "morgan";
 import { DEBUG, PORT } from "./config/envs";
 import { AppDataSource } from "./config/data-source";
-import { errorHandler } from "./middlewares/errorHandler";
+import { errorHandler } from "./middlewares/error-handler";
 import productoRouter from "./routes/product.routes";
 import ventaRouter from "./routes/venta.routes";
 
