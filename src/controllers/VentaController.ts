@@ -1,5 +1,5 @@
 import type { Request, Response, NextFunction } from "express";
-import { VentaService } from "../services/VentaService";
+import { VentaService } from "../services/venta.service";
 import { VentaResponseDTO } from "../dtos/ventaResponse.dto";
 import { Paginacion } from "../models/types/paginacion";
 

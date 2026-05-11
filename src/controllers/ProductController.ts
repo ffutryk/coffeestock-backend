@@ -1,5 +1,5 @@
 import type { NextFunction, Request, Response } from "express";
-import { ProductService } from "../services/ProductService";
+import { ProductService } from "../services/producto.service";
 import { BadRequestError } from "../errors";
 
 const MOCK_USER_ID = 1;

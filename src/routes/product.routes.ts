@@ -1,4 +1,4 @@
-import { ProductService } from "../services/ProductService";
+import { ProductService } from "../services/producto.service";
 import { ProductController } from "../controllers/ProductController";
 import { validateBody } from "../middlewares/validate";
 import { ActualizarProductoSchema, CrearProductoSchema } from "../dtos/product.dto";

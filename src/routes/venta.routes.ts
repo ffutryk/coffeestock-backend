@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { VentaController } from "../controllers/VentaController";
-import { VentaService } from "../services/VentaService";
+import { VentaService } from "../services/venta.service";
 import { TypeOrmVentaDao } from "../repositories/typeorm/venta.repository";
 import { validateBody, validateQuery } from "../middlewares/validate";
 import { CrearVentaSchema, ActualizarVentaSchema } from "../dtos/venta.dto";
