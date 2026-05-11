@@ -1,19 +1,19 @@
 import { AppDataSource } from "../config/data-source";
 import { Venta } from "../models/entities/venta";
 import { ItemVenta } from "../models/entities/item-venta";
-import { VentaDao } from "../daos/VentaDao";
-import { ProductoDao } from "../daos/ProductoDao";
 import { CrearVentaDTO } from "../dtos/venta.dto";
 import { BadRequestError, NotFoundError } from "../errors";
 import { Paginacion } from "../models/types/paginacion";
 import { ResultadoPaginado } from "../models/types/resultado-paginado";
 import { Producto } from "../models/entities/producto";
 import { ActualizarVentaDTO } from "../dtos/venta.dto";
+import { VentaRepository } from "../repositories/interfaces/venta.interface";
+import { ProductoRepository } from "../repositories/interfaces/producto.interface";
 
 export class VentaService {
   constructor(
-    private readonly ventaDao: VentaDao,
-    private readonly productoDao: ProductoDao,
+    private readonly ventaRepository: VentaRepository,
+    private readonly productoRepository: ProductoRepository,
   ) {}
 
   private async procesarYValidarItems(
@@ -22,7 +22,7 @@ export class VentaService {
   ): Promise<ItemVenta[]> {
     const ids = itemsDto.map((i) => i.productoId);
 
-    const productosEnDB = await this.productoDao.findByIds(ids);
+    const productosEnDB = await this.productoRepository.findByIds(ids);
     if (productosEnDB.length !== ids.length) {
       throw new NotFoundError("Uno o más productos no existen");
     }
@@ -120,19 +120,19 @@ export class VentaService {
   }
 
   async obtenerMuchas(paginacion: Paginacion): Promise<ResultadoPaginado<Venta>> {
-    return this.ventaDao.findManyWithItems(paginacion);
+    return this.ventaRepository.findManyWithItems(paginacion);
   }
 
   async eliminar(id: number, deletedBy: number): Promise<boolean> {
-    const venta = await this.ventaDao.findById(id);
+    const venta = await this.ventaRepository.findById(id);
 
     if (!venta) {
       throw new NotFoundError("No se pudo encontrar la venta");
     }
 
     venta.deletedBy = deletedBy;
-    await this.ventaDao.save(venta);
+    await this.ventaRepository.save(venta);
 
-    return await this.ventaDao.delete(id);
+    return await this.ventaRepository.delete(id);
   }
 }

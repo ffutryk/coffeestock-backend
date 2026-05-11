@@ -1,6 +1,6 @@
-import { Producto } from "../models/entities/producto";
+import { Producto } from "../../models/entities/producto";
 
-export interface ProductoDao {
+export interface ProductoRepository {
   findById(id: number): Promise<Producto | null>;
   findByIds(ids: number[]): Promise<Producto[]>;
   findAll(): Promise<Producto[]>;

@@ -1,9 +1,9 @@
-import { AppDataSource } from "../config/data-source";
-import { Producto } from "../models/entities/producto";
-import type { ProductoDao } from "../daos/ProductoDao";
+import { AppDataSource } from "../../config/data-source";
+import { Producto } from "../../models/entities/producto";
+import type { ProductoRepository } from "../interfaces/producto.interface";
 import { In } from "typeorm";
 
-export class TypeOrmProductoDao implements ProductoDao {
+export class TypeOrmProductoDao implements ProductoRepository {
   private repository = AppDataSource.getRepository(Producto);
 
   async findById(id: number): Promise<Producto | null> {

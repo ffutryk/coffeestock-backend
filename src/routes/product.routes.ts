@@ -2,7 +2,7 @@ import { ProductService } from "../services/ProductService";
 import { ProductController } from "../controllers/ProductController";
 import { validateBody } from "../middlewares/validate";
 import { ActualizarProductoSchema, CrearProductoSchema } from "../dtos/product.dto";
-import { TypeOrmProductoDao } from "../repositories/TypeORMProductoDAO";
+import { TypeOrmProductoDao } from "../repositories/typeorm/producto.repository";
 import { Router } from "express";
 
 const router = Router();

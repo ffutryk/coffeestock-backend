@@ -1,10 +1,10 @@
 import { Router } from "express";
 import { VentaController } from "../controllers/VentaController";
 import { VentaService } from "../services/VentaService";
-import { TypeOrmVentaDao } from "../repositories/TypeORMVentaDAO";
+import { TypeOrmVentaDao } from "../repositories/typeorm/venta.repository";
 import { validateBody, validateQuery } from "../middlewares/validate";
 import { CrearVentaSchema, ActualizarVentaSchema } from "../dtos/venta.dto";
-import { TypeOrmProductoDao } from "../repositories/TypeORMProductoDAO";
+import { TypeOrmProductoDao } from "../repositories/typeorm/producto.repository";
 import { PaginacionQuerySchema } from "../schemas/paginacion.schema";
 
 const router = Router();

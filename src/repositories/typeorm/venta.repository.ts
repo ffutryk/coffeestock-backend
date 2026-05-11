@@ -1,10 +1,10 @@
-import { AppDataSource } from "../config/data-source";
-import { Venta } from "../models/entities/venta";
-import type { VentaDao } from "../daos/VentaDao";
-import { Paginacion } from "../models/types/paginacion";
-import { ResultadoPaginado } from "../models/types/resultado-paginado";
+import { AppDataSource } from "../../config/data-source";
+import { Venta } from "../../models/entities/venta";
+import type { VentaRepository } from "../interfaces/venta.interface";
+import { Paginacion } from "../../models/types/paginacion";
+import { ResultadoPaginado } from "../../models/types/resultado-paginado";
 
-export class TypeOrmVentaDao implements VentaDao {
+export class TypeOrmVentaDao implements VentaRepository {
   private repository = AppDataSource.getRepository(Venta);
 
   async save(venta: Venta): Promise<Venta> {
