@@ -1,31 +1,17 @@
-import { AppDataSource } from "../../config/data-source";
 import { Producto } from "../../models/entities/producto";
-import type { ProductoRepository } from "../interfaces/producto.interface";
+import { ProductoRepository } from "../interfaces/producto.interface";
+import { TypeOrmBaseRepository } from "./base.repository";
 import { In } from "typeorm";
 
-export class TypeOrmProductoRepository implements ProductoRepository {
-  private repository = AppDataSource.getRepository(Producto);
-
-  async findById(id: number): Promise<Producto | null> {
-    return await this.repository.findOneBy({ id });
+export class TypeOrmProductoRepository
+  extends TypeOrmBaseRepository<Producto>
+  implements ProductoRepository
+{
+  constructor() {
+    super(Producto);
   }
 
   async findByIds(ids: number[]): Promise<Producto[]> {
-    return await this.repository.findBy({
-      id: In(ids),
-    });
-  }
-
-  async findAll(): Promise<Producto[]> {
-    return await this.repository.find();
-  }
-
-  async save(producto: Producto): Promise<Producto> {
-    return await this.repository.save(producto);
-  }
-
-  async delete(id: number): Promise<boolean> {
-    const resultado = await this.repository.softDelete(id);
-    return (resultado.affected ?? 0) > 0;
+    return await this.repository.findBy({ id: In(ids) });
   }
 }

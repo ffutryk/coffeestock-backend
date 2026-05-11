@@ -1,10 +1,6 @@
 import { Producto } from "../../models/entities/producto";
+import { BaseRepository } from "./base.interface";
 
-export interface ProductoRepository {
-  findById(id: number): Promise<Producto | null>;
+export interface ProductoRepository extends BaseRepository<Producto> {
   findByIds(ids: number[]): Promise<Producto[]>;
-  findAll(): Promise<Producto[]>;
-  save(producto: Producto): Promise<Producto>;
-  delete(id: number): Promise<boolean>;
-  // faltan otros metodos, no esta completo
 }

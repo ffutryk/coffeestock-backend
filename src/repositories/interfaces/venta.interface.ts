@@ -1,10 +1,8 @@
 import { Paginacion } from "../../models/types/paginacion";
 import { ResultadoPaginado } from "../../models/types/resultado-paginado";
 import { Venta } from "../../models/entities/venta";
+import { BaseRepository } from "./base.interface";
 
-export interface VentaRepository {
-  save(venta: Venta): Promise<Venta>;
-  findById(id: number): Promise<Venta | null>;
+export interface VentaRepository extends BaseRepository<Venta> {
   findManyWithItems(paginacion: Paginacion): Promise<ResultadoPaginado<Venta>>;
-  delete(id: number): Promise<boolean>;
 }

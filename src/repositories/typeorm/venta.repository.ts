@@ -1,14 +1,15 @@
-import { AppDataSource } from "../../config/data-source";
 import { Venta } from "../../models/entities/venta";
-import type { VentaRepository } from "../interfaces/venta.interface";
+import { VentaRepository } from "../interfaces/venta.interface";
+import { TypeOrmBaseRepository } from "./base.repository";
 import { Paginacion } from "../../models/types/paginacion";
 import { ResultadoPaginado } from "../../models/types/resultado-paginado";
 
-export class TypeOrmVentaRepository implements VentaRepository {
-  private repository = AppDataSource.getRepository(Venta);
-
-  async save(venta: Venta): Promise<Venta> {
-    return await this.repository.save(venta);
+export class TypeOrmVentaRepository
+  extends TypeOrmBaseRepository<Venta>
+  implements VentaRepository
+{
+  constructor() {
+    super(Venta);
   }
 
   async findById(id: number): Promise<Venta | null> {
@@ -25,13 +26,6 @@ export class TypeOrmVentaRepository implements VentaRepository {
       order: { createdAt: "DESC" },
       relations: ["items"],
     });
-
     return { data, total };
-  }
-
-  async delete(id: number): Promise<boolean> {
-    const result = await this.repository.softDelete(id);
-
-    return (result.affected ?? 0) > 0;
   }
 }
