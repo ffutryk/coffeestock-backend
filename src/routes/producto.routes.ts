@@ -3,11 +3,11 @@ import { ProductController } from "../controllers/producto.controller";
 import { validateBody } from "../middlewares/validate";
 import { ActualizarProductoSchema } from "../dtos/producto/actualizar.dto";
 import { CrearProductoSchema } from "../dtos/producto/crear.dto";
-import { TypeOrmProductoDao } from "../repositories/typeorm/producto.repository";
+import { TypeOrmProductoRepository } from "../repositories/typeorm/producto.repository";
 import { Router } from "express";
 
 const router = Router();
-const productoDao = new TypeOrmProductoDao();
+const productoDao = new TypeOrmProductoRepository();
 const productService = new ProductService(productoDao);
 const productController = new ProductController(productService);
 

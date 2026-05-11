@@ -4,7 +4,7 @@ import type { VentaRepository } from "../interfaces/venta.interface";
 import { Paginacion } from "../../models/types/paginacion";
 import { ResultadoPaginado } from "../../models/types/resultado-paginado";
 
-export class TypeOrmVentaDao implements VentaRepository {
+export class TypeOrmVentaRepository implements VentaRepository {
   private repository = AppDataSource.getRepository(Venta);
 
   async save(venta: Venta): Promise<Venta> {
