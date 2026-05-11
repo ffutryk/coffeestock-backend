@@ -13,7 +13,10 @@ const productController = new ProductController(productService);
 // ruta para crear
 router.post("/", validateBody(CrearProductoSchema), productController.crear,);
 
-// ruta para ver
+// ruta para ver listado de productos
+router.get("/", productController.listar);
+
+// ruta para ver un producto
 router.get("/:id", productController.ver);
 
 // Ruta para actualizar

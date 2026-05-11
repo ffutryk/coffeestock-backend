@@ -16,6 +16,10 @@ export class TypeOrmProductoDao implements ProductoDao {
     });
   }
 
+  async findAll(): Promise<Producto[]> {
+    return await this.repository.find();
+  }
+
   async save(producto: Producto): Promise<Producto> {
     return await this.repository.save(producto);
   }
