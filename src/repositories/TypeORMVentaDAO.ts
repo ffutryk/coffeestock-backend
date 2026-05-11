@@ -14,7 +14,7 @@ export class TypeOrmVentaDao implements VentaDao {
   async findById(id: number): Promise<Venta | null> {
     return await this.repository.findOne({
       where: { id },
-      relations: ["items"]
+      relations: ["items"],
     });
   }
 
@@ -27,5 +27,11 @@ export class TypeOrmVentaDao implements VentaDao {
     });
 
     return { data, total };
+  }
+
+  async delete(id: number): Promise<boolean> {
+    const result = await this.repository.softDelete(id);
+
+    return (result.affected ?? 0) > 0;
   }
 }

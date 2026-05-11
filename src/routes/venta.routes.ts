@@ -16,5 +16,6 @@ const ventaController = new VentaController(ventaService);
 router.post("/", validateBody(CrearVentaSchema), ventaController.crear);
 router.put("/:id", validateBody(ActualizarVentaSchema), ventaController.actualizar);
 router.get("/", validateQuery(PaginacionQuerySchema), ventaController.obtenerMuchas);
+router.delete("/:id", ventaController.eliminar);
 
 export default router;
