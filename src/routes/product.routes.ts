@@ -1,5 +1,5 @@
 import { ProductService } from "../services/producto.service";
-import { ProductController } from "../controllers/ProductController";
+import { ProductController } from "../controllers/producto.controller";
 import { validateBody } from "../middlewares/validate";
 import { ActualizarProductoSchema, CrearProductoSchema } from "../dtos/product.dto";
 import { TypeOrmProductoDao } from "../repositories/typeorm/producto.repository";
