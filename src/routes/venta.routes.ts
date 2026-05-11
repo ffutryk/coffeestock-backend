@@ -3,9 +3,10 @@ import { VentaController } from "../controllers/venta.controller";
 import { VentaService } from "../services/venta.service";
 import { TypeOrmVentaDao } from "../repositories/typeorm/venta.repository";
 import { validateBody, validateQuery } from "../middlewares/validate";
-import { CrearVentaSchema, ActualizarVentaSchema } from "../dtos/venta.dto";
+import { CrearVentaSchema } from "../dtos/venta/crear.dto";
+import { ActualizarVentaSchema } from "../dtos/venta/actualizar.dto";
 import { TypeOrmProductoDao } from "../repositories/typeorm/producto.repository";
-import { PaginacionQuerySchema } from "../schemas/paginacion.schema";
+import { PaginacionQuerySchema } from "../dtos/paginacion.dto";
 
 const router = Router();
 const ventaDao = new TypeOrmVentaDao();

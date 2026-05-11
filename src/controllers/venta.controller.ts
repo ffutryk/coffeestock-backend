@@ -1,7 +1,7 @@
 import type { Request, Response, NextFunction } from "express";
 import { VentaService } from "../services/venta.service";
-import { VentaResponseDTO } from "../dtos/ventaResponse.dto";
-import { Paginacion } from "../models/types/paginacion";
+import { VentaResponseDTO } from "../dtos/venta/response.dto";
+import { PaginacionDTO } from "../dtos/paginacion.dto";
 
 export class VentaController {
   constructor(private readonly ventaService: VentaService) {}
@@ -53,7 +53,7 @@ export class VentaController {
 
   obtenerMuchas = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const paginacion = req.validatedQuery as Paginacion;
+      const paginacion = req.validatedQuery as PaginacionDTO;
       const { data: ventas, total } = await this.ventaService.obtenerMuchas(paginacion);
 
       return res.status(200).json({

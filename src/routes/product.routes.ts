@@ -1,7 +1,8 @@
 import { ProductService } from "../services/producto.service";
 import { ProductController } from "../controllers/producto.controller";
 import { validateBody } from "../middlewares/validate";
-import { ActualizarProductoSchema, CrearProductoSchema } from "../dtos/product.dto";
+import { ActualizarProductoSchema } from "../dtos/producto/actualizar.dto";
+import { CrearProductoSchema } from "../dtos/producto/crear.dto";
 import { TypeOrmProductoDao } from "../repositories/typeorm/producto.repository";
 import { Router } from "express";
 

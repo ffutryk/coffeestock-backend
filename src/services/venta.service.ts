@@ -1,14 +1,15 @@
 import { AppDataSource } from "../config/data-source";
 import { Venta } from "../models/entities/venta";
 import { ItemVenta } from "../models/entities/item-venta";
-import { CrearVentaDTO } from "../dtos/venta.dto";
 import { BadRequestError, NotFoundError } from "../errors";
 import { Paginacion } from "../models/types/paginacion";
 import { ResultadoPaginado } from "../models/types/resultado-paginado";
 import { Producto } from "../models/entities/producto";
-import { ActualizarVentaDTO } from "../dtos/venta.dto";
 import { VentaRepository } from "../repositories/interfaces/venta.interface";
 import { ProductoRepository } from "../repositories/interfaces/producto.interface";
+import type { ActualizarVentaDTO } from "../dtos/venta/actualizar.dto";
+import type { CrearVentaDTO } from "../dtos/venta/crear.dto";
+import { PaginacionDTO } from "../dtos/paginacion.dto";
 
 export class VentaService {
   constructor(
@@ -119,7 +120,7 @@ export class VentaService {
     }
   }
 
-  async obtenerMuchas(paginacion: Paginacion): Promise<ResultadoPaginado<Venta>> {
+  async obtenerMuchas(paginacion: PaginacionDTO): Promise<ResultadoPaginado<Venta>> {
     return this.ventaRepository.findManyWithItems(paginacion);
   }
 

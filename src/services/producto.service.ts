@@ -1,7 +1,7 @@
 import { Producto } from "../models/entities/producto";
 import type { ProductoRepository } from "../repositories/interfaces/producto.interface";
-import type { ActualizarProductoDTO } from "../dtos/product.dto";
-import type { CrearProductoDTO } from "../dtos/product.dto";
+import type { ActualizarProductoDTO } from "../dtos/producto/actualizar.dto";
+import type { CrearProductoDTO } from "../dtos/producto/crear.dto";
 import { NotFoundError } from "../errors";
 
 export class ProductService {
