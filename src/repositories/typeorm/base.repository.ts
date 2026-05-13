@@ -1,4 +1,4 @@
-import { Repository, ObjectLiteral, FindOptionsWhere } from "typeorm";
+import { Repository, ObjectLiteral, FindOptionsWhere, EntityTarget } from "typeorm";
 import { BaseRepository } from "../interfaces/base.interface";
 import { AppDataSource } from "../../config/data-source";
 
@@ -6,12 +6,10 @@ interface WithId {
   id: number;
 }
 
-export abstract class TypeOrmBaseRepository<
-  T extends ObjectLiteral & WithId,
-> implements BaseRepository<T> {
+export abstract class TypeOrmBaseRepository<T extends ObjectLiteral & WithId> implements BaseRepository<T> {
   protected repository: Repository<T>;
 
-  constructor(entity: { new (): T }) {
+  constructor(entity: EntityTarget<T>) {
     this.repository = AppDataSource.getRepository(entity);
   }
 
