@@ -4,6 +4,9 @@ import { DB_DATABASE, DB_HOSTNAME, DB_PASSWORD, DB_PORT, DB_USERNAME, DEBUG } fr
 import { Producto } from "../models/entities/producto";
 import { ItemVenta } from "../models/entities/item-venta";
 import { Venta } from "../models/entities/venta";
+import { Usuario } from "../models/entities/usuario";
+import { Empleado } from "../models/entities/empleado";
+import { Gerente } from "../models/entities/gerente";
 
 export const AppDataSource = new DataSource({
   type: "postgres",
@@ -14,7 +17,7 @@ export const AppDataSource = new DataSource({
   database: DB_DATABASE,
   synchronize: DEBUG,
   logging: DEBUG,
-  entities: [Producto, Venta, ItemVenta],
+  entities: [Producto, Venta, ItemVenta, Usuario, Empleado, Gerente],
   subscribers: [],
   migrations: [],
 });
