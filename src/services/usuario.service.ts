@@ -1,11 +1,13 @@
 import { Usuario } from "../models/entities/usuario";
 import type { UsuarioRepository } from "../repositories/interfaces/usuario.interface";
 import type { CrearUsuarioDTO } from "../dtos/usuario/crear.dto";
-import { ConflictError } from "../errors";
+import type { ActualizarUsuarioDTO } from "../dtos/usuario/actualizar.dto";
+import { ConflictError, NotFoundError } from "../errors";
 import { RolUsuario } from "../models/enums/rolUsuario";
 
 export class UsuarioService {
     constructor(private readonly usuarioRepository:UsuarioRepository) {}
+
     async crearUsuario(datos: CrearUsuarioDTO): Promise<Usuario> {
         const usuarioExistente = await this.usuarioRepository.findByCuil(datos.cuil);
         if (usuarioExistente) {
@@ -18,6 +20,27 @@ export class UsuarioService {
         const usuario = new Usuario();
         Object.assign(usuario, datos);
         usuario.rol = RolUsuario.EMPLEADO;
+        return await this.usuarioRepository.save(usuario);
+    }
+    
+    async actualizarUsuario(id: number, datos: ActualizarUsuarioDTO): Promise<Usuario> {
+        const usuario = await this.usuarioRepository.findById(id);
+        if (!usuario) {
+            throw new NotFoundError("No se pudo encontrar el usuario");
+        }
+        if (datos.email) {
+            const existente = await this.usuarioRepository.findByEmail(datos.email);
+            if (existente && existente.id !== id) {
+                throw new ConflictError("El email ya está en uso");
+            }
+        }
+        if (datos.cuil) {
+            const existente = await this.usuarioRepository.findByCuil(datos.cuil);
+            if (existente && existente.id !== id) {
+                throw new ConflictError("El empleado ya está registrado");
+            }
+        }
+        Object.assign(usuario, datos);
         return await this.usuarioRepository.save(usuario);
     }
 }
