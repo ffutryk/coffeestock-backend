@@ -25,7 +25,7 @@ export class MateriaPrima {
   createdAt!: Date;
 
   @Column("varchar", { nullable: true })
-  createdBy?: string;
+  createdBy?: number;
 
   @UpdateDateColumn()
   updatedAt!: Date;
