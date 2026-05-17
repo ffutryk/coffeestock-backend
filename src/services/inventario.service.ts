@@ -4,6 +4,7 @@ import { InventarioDao } from "../repositories/interfaces/inventario.interface";
 import { MovimientoInventarioDao } from "../repositories/interfaces/movimiento.interface";
 import { AppDataSource } from "../config/data-source";
 import { MovimientoInventario } from "../models/entities/movimiento-inventario";
+import { BadRequestError, NotFoundError, UnauthorizedError } from "../errors";
 
 export class InventarioService {
   constructor(
@@ -13,25 +14,25 @@ export class InventarioService {
 
   async registrarMovimiento(datos: RegistrarMovimientoDTO, user: string) {
     // Hay que verificar tambien que el usuario este autenticado
-    if (!user) throw new Error("Usuario no autenticado");
+    if (!user) throw new UnauthorizedError("Usuario no autenticado");
 
     const inventario = await this.inventarioDao.findById(datos.idMateriaPrima);
     if (!inventario) {
-      throw new Error("No se encontró el inventario para la materia prima.");
+      throw new NotFoundError("No se encontró el inventario para la materia prima.");
     }
 
     let impactoStock = datos.cantidad;
 
     if(datos.motivo == "uso" || datos.motivo == "descarte") {
       if(inventario.stockActual < datos.cantidad){
-        throw new Error("Stock insuficiente para realizar el movimiento");
+        throw new BadRequestError("Stock insuficiente para realizar el movimiento");
       }
       impactoStock = - datos.cantidad;
     }
 
     if (datos.motivo == "correccion") {
       if (!datos.nota || datos.nota.trim() === "") {
-        throw new Error("Debe ingresar una nota justificando la corrección.");
+        throw new BadRequestError("Debe ingresar una nota justificando la corrección.");
       }
       impactoStock = datos.cantidad;
     }
