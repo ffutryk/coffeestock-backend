@@ -7,3 +7,7 @@ export class NotFoundError extends AppError {
 export class BadRequestError extends AppError {
   readonly statusCode = 400;
 }
+
+export class ConflictError extends AppError {
+  readonly statusCode = 409;
+}
