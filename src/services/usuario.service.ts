@@ -5,19 +5,19 @@ import { ConflictError } from "../errors";
 import { RolUsuario } from "../models/enums/rolUsuario";
 
 export class UsuarioService {
-    constructor(private readonly usuarioRepository:UsuarioRepository,) {}
-    async crearUsuario(datos: CrearUsuarioDTO,): Promise<Usuario> {
-        const usuarioExistente = await this.usuarioRepository.findByCuil(datos.cuil,);
+    constructor(private readonly usuarioRepository:UsuarioRepository) {}
+    async crearUsuario(datos: CrearUsuarioDTO): Promise<Usuario> {
+        const usuarioExistente = await this.usuarioRepository.findByCuil(datos.cuil);
         if (usuarioExistente) {
-            throw new ConflictError("El empleado ya está registrado",);
+            throw new ConflictError("El empleado ya está registrado");
         }
-        const emailExistente = await this.usuarioRepository.findByEmail(datos.email,);
+        const emailExistente = await this.usuarioRepository.findByEmail(datos.email);
         if (emailExistente) {
-            throw new ConflictError("El email ya está en uso",);
+            throw new ConflictError("El email ya está en uso");
         }
         const usuario = new Usuario();
         Object.assign(usuario, datos);
         usuario.rol = RolUsuario.EMPLEADO;
-        return await this.usuarioRepository.save(usuario,);
+        return await this.usuarioRepository.save(usuario);
     }
 }

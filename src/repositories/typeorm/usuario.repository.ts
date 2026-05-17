@@ -4,10 +4,10 @@ import { TypeOrmBaseRepository } from "./base.repository";
 
 export class TypeOrmUsuarioRepository extends TypeOrmBaseRepository<Usuario> implements UsuarioRepository {
     constructor() { super(Usuario);}
-    async findByCuil(cuil: string,): Promise<Usuario | null> {
+    async findByCuil(cuil: string): Promise<Usuario | null> {
         return await this.repository.findOneBy({ cuil });
     }
-    async findByEmail(email: string,): Promise<Usuario | null> {
+    async findByEmail(email: string): Promise<Usuario | null> {
         return await this.repository.findOneBy({ email });
     }
 }

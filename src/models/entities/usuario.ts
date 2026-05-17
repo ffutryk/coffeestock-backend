@@ -32,7 +32,7 @@ export class Usuario {
   @Column({
     type: "enum",
     enum: RolUsuario,
-    default: RolUsuario.EMPLEADO,
+    default: RolUsuario.EMPLEADO
   })
   rol!: RolUsuario;
 

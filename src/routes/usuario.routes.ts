@@ -14,6 +14,6 @@ const usuarioService = new UsuarioService(usuarioRepository);
 
 const usuarioController = new UsuarioController(usuarioService);
 
-router.post("/", validateBody(CrearUsuarioSchema), usuarioController.crear,);
+router.post("/", validateBody(CrearUsuarioSchema), usuarioController.crear);
 
 export default router;
