@@ -7,11 +7,10 @@ import { TypeOrmUsuarioRepository } from "../repositories/typeorm/usuario.reposi
 import UsuarioController from "../controllers/usuario.controller";
 import TokenService from "../services/token.service";
 import AuthService from "../services/auth.service";
+import { ActualizarUsuarioSchema } from "../dtos/usuario/actualizar.dto";
 
 const router = Router();
-
 const usuarioRepository = new TypeOrmUsuarioRepository();
-
 const usuarioService = new UsuarioService(usuarioRepository);
 const tokenService = new TokenService();
 const authService = new AuthService(tokenService, usuarioRepository);
@@ -20,5 +19,12 @@ const usuarioController = new UsuarioController(usuarioService, authService);
 
 router.post("/crear", validateBody(CrearUsuarioSchema), usuarioController.crear);
 router.post("/ingresar", validateBody(IngresarUsuarioSchema), usuarioController.ingresar);
+const usuarioController = new UsuarioController(usuarioService);
+
+router.post("/", validateBody(CrearUsuarioSchema), usuarioController.crear);
+// router.get("/", verificarRol(RolUsuario.GERENTE), usuarioController.listar); DESCOMENTAR CUANDO SE IMPLEMENTE LA AUTENTICACIÓN
+router.get("/", usuarioController.listar); // BORRAR CUANDO SE IMPLEMENTE LA AUTENTICACIÓN
+
+router.put("/:id", validateBody(ActualizarUsuarioSchema), usuarioController.actualizar);
 
 export default router;

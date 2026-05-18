@@ -8,6 +8,14 @@ export class BadRequestError extends AppError {
   readonly statusCode = 400;
 }
 
+export class UnauthorizedError extends AppError {
+  readonly statusCode = 401;
+}
+
+export class ForbiddenError extends AppError {
+  readonly statusCode = 403;
+}
+
 export class ConflictError extends AppError {
   readonly statusCode = 409;
 }
