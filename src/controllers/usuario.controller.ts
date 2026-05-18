@@ -14,7 +14,8 @@ export default class UsuarioController {
   
   crear = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const creado = await this.usuarioService.crearUsuario(req.body);
+      const createdBy = (req as any).user?.id;
+      const creado = await this.usuarioService.crearUsuario(req.body, createdBy);
       const respuesta = new UsuarioResponseDTO(creado);
       return res
         .status(201)
@@ -65,6 +66,39 @@ export default class UsuarioController {
       }
 
       return res.status(200).json(usuariosPaginados);
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  eliminar = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { id: idParam } = req.params;
+      const id = parseInt(idParam as string, 10);
+      if (Number.isNaN(id)) {
+        throw new BadRequestError("ID inválido");
+      }
+
+      const deletedBy = (req as any).user?.id || 1; // Default to 1 if no user info yet
+      await this.usuarioService.eliminarUsuario(id, deletedBy);
+      
+      return res.status(200).json({ success: true, message: "Usuario eliminado exitosamente" });
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  restaurar = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { id: idParam } = req.params;
+      const id = parseInt(idParam as string, 10);
+      if (Number.isNaN(id)) {
+        throw new BadRequestError("ID inválido");
+      }
+
+      await this.usuarioService.restaurarUsuario(id);
+      
+      return res.status(200).json({ success: true, message: "Usuario restaurado exitosamente" });
     } catch (err) {
       next(err);
     }

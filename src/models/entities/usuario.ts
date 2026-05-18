@@ -1,14 +1,9 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  UpdateDateColumn,
-  DeleteDateColumn,
-} from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
 import { RolUsuario } from "../enums/rol-usuario";
+import { Auditable } from "../base/auditable";
 
 @Entity({ name: "usuarios" })
-export class Usuario {
+export class Usuario extends Auditable {
   @PrimaryGeneratedColumn()
   id!: number;
 
@@ -29,10 +24,4 @@ export class Usuario {
 
   @Column({ type: "enum", enum: RolUsuario, default: RolUsuario.EMPLEADO })
   rol!: RolUsuario;
-
-  @UpdateDateColumn()
-  updatedAt?: Date;
-
-  @DeleteDateColumn()
-  deletedAt?: Date;
 }

@@ -21,6 +21,13 @@ export abstract class TypeOrmBaseRepository<
     return await this.repository.findOneBy({ id } as FindOptionsWhere<T>);
   }
 
+  async findByIdWithDeleted(id: number): Promise<T | null> {
+    return await this.repository.findOne({
+      where: { id } as FindOptionsWhere<T>,
+      withDeleted: true,
+    });
+  }
+
   async findAll(): Promise<T[]> {
     return await this.repository.find();
   }
@@ -41,6 +48,11 @@ export abstract class TypeOrmBaseRepository<
 
   async delete(id: number): Promise<boolean> {
     const result = await this.repository.softDelete(id);
+    return (result.affected ?? 0) > 0;
+  }
+
+  async restore(id: number): Promise<boolean> {
+    const result = await this.repository.restore(id);
     return (result.affected ?? 0) > 0;
   }
 }
