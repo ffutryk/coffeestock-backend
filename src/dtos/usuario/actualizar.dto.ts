@@ -1,5 +1,5 @@
 import z from "zod";
-import { RolUsuario } from "../../models/enums/rolUsuario";
+import { RolUsuario } from "../../models/enums/rol-usuario";
 
 export const ActualizarUsuarioSchema = z
   .object({

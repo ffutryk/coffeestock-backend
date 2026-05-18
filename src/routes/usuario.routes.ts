@@ -8,6 +8,8 @@ import UsuarioController from "../controllers/usuario.controller";
 import TokenService from "../services/token.service";
 import AuthService from "../services/auth.service";
 import { ActualizarUsuarioSchema } from "../dtos/usuario/actualizar.dto";
+import { verificarRol } from "../middlewares/auth";
+import { RolUsuario } from "../models/enums/rol-usuario";
 
 const router = Router();
 const usuarioRepository = new TypeOrmUsuarioRepository();
@@ -21,8 +23,7 @@ router.post("/crear", validateBody(CrearUsuarioSchema), usuarioController.crear)
 router.post("/ingresar", validateBody(IngresarUsuarioSchema), usuarioController.ingresar);
 
 router.post("/", validateBody(CrearUsuarioSchema), usuarioController.crear);
-// router.get("/", verificarRol(RolUsuario.GERENTE), usuarioController.listar); DESCOMENTAR CUANDO SE IMPLEMENTE LA AUTENTICACIÓN
-router.get("/", usuarioController.listar); // BORRAR CUANDO SE IMPLEMENTE LA AUTENTICACIÓN
+router.get("/", verificarRol(RolUsuario.GERENTE), usuarioController.listar);
 
 router.put("/:id", validateBody(ActualizarUsuarioSchema), usuarioController.actualizar);
 
