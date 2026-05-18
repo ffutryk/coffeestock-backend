@@ -19,12 +19,15 @@ const authService = new AuthService(tokenService, usuarioRepository);
 
 const usuarioController = new UsuarioController(usuarioService, authService);
 
-router.post("/crear", validateBody(CrearUsuarioSchema), usuarioController.crear);
+router.post("/crear", verificarRol(RolUsuario.GERENTE), validateBody(CrearUsuarioSchema), usuarioController.crear);
 router.post("/ingresar", validateBody(IngresarUsuarioSchema), usuarioController.ingresar);
 
-router.post("/", validateBody(CrearUsuarioSchema), usuarioController.crear);
+router.post("/", verificarRol(RolUsuario.GERENTE), validateBody(CrearUsuarioSchema), usuarioController.crear);
 router.get("/", verificarRol(RolUsuario.GERENTE), usuarioController.listar);
 
 router.put("/:id", validateBody(ActualizarUsuarioSchema), usuarioController.actualizar);
+
+router.delete("/:id", verificarRol(RolUsuario.GERENTE), usuarioController.eliminar);
+router.post("/:id/restaurar", verificarRol(RolUsuario.GERENTE), usuarioController.restaurar);
 
 export default router;
