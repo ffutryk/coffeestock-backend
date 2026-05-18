@@ -1,9 +1,11 @@
 import { Usuario } from "../models/entities/usuario";
 import type { UsuarioRepository } from "../repositories/interfaces/usuario.interface";
 import type { CrearUsuarioDTO } from "../dtos/usuario/crear.dto";
-import type { ActualizarUsuarioDTO } from "../dtos/usuario/actualizar.dto";
 import { ConflictError, NotFoundError } from "../errors";
 import { RolUsuario } from "../models/enums/rolUsuario";
+import { IngresarUsuarioDTO } from "../dtos/usuario/ingresar.dto";
+import { hashSHA256 } from "./utils/utils";
+import type { ActualizarUsuarioDTO } from "../dtos/usuario/actualizar.dto";
 import type { PaginacionDTO } from "../dtos/paginacion.dto";
 import type { ResultadoPaginado } from "../models/types/resultado-paginado";
 
@@ -21,11 +23,18 @@ export class UsuarioService {
       throw new ConflictError("El email ya está en uso");
     }
     const usuario = new Usuario();
+    datos.password = hashSHA256(datos.password); // Para guardar la contraseña hasheada...
     Object.assign(usuario, datos);
     usuario.rol = RolUsuario.EMPLEADO;
     return await this.usuarioRepository.save(usuario);
   }
 
+  async recuperarPorEmail(email: string): Promise<Usuario> {
+    const recuperado = await this.usuarioRepository.findByEmail(email);
+    if (recuperado == null) throw new NotFoundError("No se pudo encontrar al usuario");
+    return recuperado;
+  }
+  
   async listarUsuarios(paginacion: PaginacionDTO): Promise<ResultadoPaginado<UsuarioSinPassword>> {
     const resultado = await this.usuarioRepository.findAllPaginated(paginacion);
 

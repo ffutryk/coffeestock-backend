@@ -1,15 +1,24 @@
 import { Router } from "express";
 import { validateBody } from "../middlewares/validate";
 import { CrearUsuarioSchema } from "../dtos/usuario/crear.dto";
-import { ActualizarUsuarioSchema } from "../dtos/usuario/actualizar.dto";
+import { IngresarUsuarioSchema } from "../dtos/usuario/ingresar.dto";
 import { UsuarioService } from "../services/usuario.service";
 import { TypeOrmUsuarioRepository } from "../repositories/typeorm/usuario.repository";
-import { UsuarioController } from "../controllers/usuario.controller";
+import UsuarioController from "../controllers/usuario.controller";
+import TokenService from "../services/token.service";
+import AuthService from "../services/auth.service";
+import { ActualizarUsuarioSchema } from "../dtos/usuario/actualizar.dto";
 
 const router = Router();
 const usuarioRepository = new TypeOrmUsuarioRepository();
 const usuarioService = new UsuarioService(usuarioRepository);
-const usuarioController = new UsuarioController(usuarioService);
+const tokenService = new TokenService();
+const authService = new AuthService(tokenService, usuarioRepository);
+
+const usuarioController = new UsuarioController(usuarioService, authService);
+
+router.post("/crear", validateBody(CrearUsuarioSchema), usuarioController.crear);
+router.post("/ingresar", validateBody(IngresarUsuarioSchema), usuarioController.ingresar);
 
 router.post("/", validateBody(CrearUsuarioSchema), usuarioController.crear);
 // router.get("/", verificarRol(RolUsuario.GERENTE), usuarioController.listar); DESCOMENTAR CUANDO SE IMPLEMENTE LA AUTENTICACIÓN

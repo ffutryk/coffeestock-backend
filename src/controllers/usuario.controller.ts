@@ -1,12 +1,17 @@
 import type { NextFunction, Request, Response } from "express";
+import type { IUsuarioService } from "../services/interfaces/usuario.service";
+import type { IAuthService } from "../services/interfaces/auth.service";
 import type { UsuarioService } from "../services/usuario.service";
 import { PaginacionQuerySchema } from "../dtos/paginacion.dto";
 import { BadRequestError } from "../errors";
 import { UsuarioResponseDTO } from "../dtos/usuario/response.dto";
 
-export class UsuarioController {
-  constructor(private readonly usuarioService: UsuarioService) {}
-
+export default class UsuarioController {
+  constructor(
+    private readonly usuarioService: IUsuarioService,
+    private readonly authService: IAuthService,
+  ) {}
+  
   crear = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const creado = await this.usuarioService.crearUsuario(req.body);
@@ -19,6 +24,15 @@ export class UsuarioController {
     }
   };
 
+  ingresar = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const token = await this.authService.ingresarUsuario(req.body);
+      res.status(200).send(token);
+    } catch(err) {
+      next(err);
+    }
+  };
+  
   actualizar = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { id: idParam } = req.params;

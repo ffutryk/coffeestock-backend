@@ -19,3 +19,7 @@ export class ForbiddenError extends AppError {
 export class ConflictError extends AppError {
   readonly statusCode = 409;
 }
+
+export class InvalidCredentialsError extends AppError {
+  readonly statusCode = 401;
+}
