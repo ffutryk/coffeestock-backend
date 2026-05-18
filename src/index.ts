@@ -7,6 +7,8 @@ import { errorHandler } from "./middlewares/error-handler";
 import productoRouter from "./routes/producto.routes";
 import ventaRouter from "./routes/venta.routes";
 import usuarioRouter from "./routes/usuario.routes";
+import estadisticaRoutes from "./routes/estadistica.routes";
+import inventarioRouter from "./routes/inventario.routes";
 
 const app = express();
 
@@ -22,6 +24,8 @@ app.use("/productos", productoRouter);
 app.use("/ventas", ventaRouter);
 app.use("/usuarios", usuarioRouter);
 app.use("/materias-primas", materiasPrimasRouter);
+app.use("/api/estadisticas", estadisticaRoutes);
+app.use("/inventario", inventarioRouter);
 
 app.use(errorHandler);
 

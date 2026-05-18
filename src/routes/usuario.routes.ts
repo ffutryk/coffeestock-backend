@@ -21,11 +21,8 @@ const usuarioController = new UsuarioController(usuarioService, authService);
 
 router.post("/crear", validateBody(CrearUsuarioSchema), usuarioController.crear);
 router.post("/ingresar", validateBody(IngresarUsuarioSchema), usuarioController.ingresar);
-
 router.post("/", validateBody(CrearUsuarioSchema), usuarioController.crear);
 router.get("/", verificarRol([RolUsuario.GERENTE]), usuarioController.listar);
-router.get("/", usuarioController.listar); // BORRAR CUANDO SE IMPLEMENTE LA AUTENTICACIÓN
-
 router.put("/:id", validateBody(ActualizarUsuarioSchema), usuarioController.actualizar);
 
 export default router;
