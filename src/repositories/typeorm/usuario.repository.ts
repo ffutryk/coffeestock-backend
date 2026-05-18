@@ -10,4 +10,7 @@ export class TypeOrmUsuarioRepository extends TypeOrmBaseRepository<Usuario> imp
     async findByEmail(email: string): Promise<Usuario | null> {
         return await this.repository.findOneBy({ email });
     }
+    async findById(id: number): Promise<Usuario | null> {
+        return await this.repository.findOneBy({ id });
+    }
 }
