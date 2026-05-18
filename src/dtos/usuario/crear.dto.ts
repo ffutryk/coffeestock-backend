@@ -6,7 +6,7 @@ export const CrearUsuarioSchema = z
     nombre: z.string().min(1, "El nombre es obligatorio"),
     apellido: z.string().min(1, "El apellido es obligatorio"),
     email: z.string().email("El email ingresado no tiene un formato válido"),
-    password: z.string().min(8, "La contraseña debe tener al menos 8 caracteres")
+    password: z.string().min(8, "La contraseña debe tener al menos 8 caracteres"),
   })
   .strict();
 

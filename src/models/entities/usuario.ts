@@ -5,12 +5,10 @@ import {
   UpdateDateColumn,
   DeleteDateColumn,
 } from "typeorm";
-
-import { RolUsuario } from "../enums/rolUsuario";
+import { RolUsuario } from "../enums/rol-usuario";
 
 @Entity({ name: "usuarios" })
 export class Usuario {
-
   @PrimaryGeneratedColumn()
   id!: number;
 
@@ -29,11 +27,7 @@ export class Usuario {
   @Column()
   password!: string;
 
-  @Column({
-    type: "enum",
-    enum: RolUsuario,
-    default: RolUsuario.EMPLEADO
-  })
+  @Column({ type: "enum", enum: RolUsuario, default: RolUsuario.EMPLEADO })
   rol!: RolUsuario;
 
   @UpdateDateColumn()

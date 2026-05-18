@@ -17,5 +17,5 @@ export const AppDataSource = new DataSource({
   logging: DEBUG,
   entities: [Producto, Venta, ItemVenta, Usuario],
   subscribers: [],
-  migrations: []
+  migrations: [],
 });
