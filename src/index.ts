@@ -6,7 +6,7 @@ import { AppDataSource } from "./config/data-source";
 import { errorHandler } from "./middlewares/error-handler";
 import productoRouter from "./routes/producto.routes";
 import ventaRouter from "./routes/venta.routes";
-import usuarioRoutes from "./routes/usuario.routes";
+import usuarioRouter from "./routes/usuario.routes";
 
 const app = express();
 
@@ -20,7 +20,8 @@ app.get("/", (req: Request, res: Response) => {
 
 app.use("/productos", productoRouter);
 app.use("/ventas", ventaRouter);
-app.use("/usuarios", usuarioRoutes);
+app.use("/usuarios", usuarioRouter);
+app.use("/materias-primas", materiasPrimasRouter);
 
 app.use(errorHandler);
 

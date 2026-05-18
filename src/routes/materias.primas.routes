@@ -1,0 +1,14 @@
+import { Router } from "express";
+import { verificarRol } from "../middlewares/auth";
+import { RolUsuario } from "../models/enums/rol-usuario";
+const router = Router();
+
+const materiasPrimasRepository = new MateriasPrimasRepository();
+const materiasPrimasService = new MateriasPrimasService(materiasPrimasRepository);
+const materiasPrimasController = new MateriasPrimasController(materiasPrimasService);
+
+router.post(
+  "/",
+  verificarRol([RolUsuario.EMPLEADO, RolUsuario.GERENTE]),
+  materiasPrimasController.crearMateriaPrima,
+);
