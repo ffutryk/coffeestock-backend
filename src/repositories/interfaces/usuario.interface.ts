@@ -1,4 +1,7 @@
-import { BaseRepository } from "./base.interface";
 import { Usuario } from "../../models/entities/usuario";
+import { BaseRepository } from "./base.interface";
 
-export interface IUsuarioRepository extends BaseRepository<Usuario> {}
+export interface UsuarioRepository extends BaseRepository<Usuario> {
+    findByCuil(cuil: string): Promise<Usuario | null>;
+    findByEmail(email: string): Promise<Usuario | null>;
+}

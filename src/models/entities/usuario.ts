@@ -1,30 +1,33 @@
-import { Column, PrimaryGeneratedColumn, Entity, TableInheritance } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, UpdateDateColumn, DeleteDateColumn } from "typeorm";
 import { RolUsuario } from "../enums/rol-usuario";
 
-@Entity("usuarios")
-@TableInheritance({ column: { type: "varchar", name: "rol" } })
-export abstract class Usuario {
+@Entity({ name: "usuarios" })
+export class Usuario {
+
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Column()
-  cuil!: number;
-  
+  @Column({ unique: true })
+  cuil!: string;
+
   @Column()
   nombre!: string;
 
   @Column()
   apellido!: string;
 
-  @Column()
+  @Column({ unique: true })
   email!: string;
 
   @Column()
   password!: string;
 
-  @Column({
-    type: "enum",
-    enum: RolUsuario,
-  })
-  rol!: RolUsuario; 
+  @Column({ type: "enum", enum: RolUsuario, default: RolUsuario.EMPLEADO })
+  rol!: RolUsuario;
+
+  @UpdateDateColumn()
+  updatedAt?: Date;
+
+  @DeleteDateColumn()
+  deletedAt?: Date;
 }

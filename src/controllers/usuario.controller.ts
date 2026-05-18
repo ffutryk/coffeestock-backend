@@ -5,6 +5,15 @@ import { PaginacionQuerySchema } from "../dtos/paginacion.dto";
 export class UsuarioController {
   constructor(private readonly usuarioService: UsuarioService) {}
 
+  crear = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const creado = await this.usuarioService.crearUsuario(req.body);
+            return res.status(201).json({success: true, message: "Empleado registrado exitosamente", data: creado});
+        } catch (err) {
+            next(err);
+        }
+    };
+
   listar = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const paginacion = PaginacionQuerySchema.parse(req.query);
