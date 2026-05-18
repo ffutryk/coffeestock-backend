@@ -7,6 +7,8 @@ import { errorHandler } from "./middlewares/error-handler";
 import productoRouter from "./routes/producto.routes";
 import ventaRouter from "./routes/venta.routes";
 import estadisticaRoutes from "./routes/estadistica.routes";
+import inventarioRouter from "./routes/inventario.routes";
+import usuarioRoutes from "./routes/usuario.routes";
 
 const app = express();
 
@@ -21,6 +23,8 @@ app.get("/", (req: Request, res: Response) => {
 app.use("/productos", productoRouter);
 app.use("/ventas", ventaRouter);
 app.use("/api/estadisticas", estadisticaRoutes);
+app.use("/inventario", inventarioRouter);
+app.use("/usuarios", usuarioRoutes);
 
 app.use(errorHandler);
 

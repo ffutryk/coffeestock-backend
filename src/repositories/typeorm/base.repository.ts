@@ -1,6 +1,8 @@
-import { Repository, ObjectLiteral, FindOptionsWhere } from "typeorm";
+import { Repository, ObjectLiteral, FindOptionsWhere, EntityTarget } from "typeorm";
 import { BaseRepository } from "../interfaces/base.interface";
 import { AppDataSource } from "../../config/data-source";
+import { Paginacion } from "../../models/types/paginacion";
+import { ResultadoPaginado } from "../../models/types/resultado-paginado";
 
 interface WithId {
   id: number;
@@ -11,7 +13,7 @@ export abstract class TypeOrmBaseRepository<
 > implements BaseRepository<T> {
   protected repository: Repository<T>;
 
-  constructor(entity: { new (): T }) {
+  constructor(entity: EntityTarget<T>) {
     this.repository = AppDataSource.getRepository(entity);
   }
 
@@ -21,6 +23,16 @@ export abstract class TypeOrmBaseRepository<
 
   async findAll(): Promise<T[]> {
     return await this.repository.find();
+  }
+
+  async findAllPaginated(paginacion: Paginacion): Promise<ResultadoPaginado<T>> {
+    const { page, limit } = paginacion;
+    const skip = (page - 1) * limit;
+    const [data, total] = await this.repository.findAndCount({
+      skip,
+      take: limit,
+    });
+    return { data, total };
   }
 
   async save(entity: T): Promise<T> {
