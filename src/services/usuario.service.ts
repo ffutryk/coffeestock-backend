@@ -4,6 +4,7 @@ import type { CrearUsuarioDTO } from "../dtos/usuario/crear.dto";
 import { ConflictError, NotFoundError } from "../errors";
 import { RolUsuario } from "../models/enums/rolUsuario";
 import { IngresarUsuarioDTO } from "../dtos/usuario/ingresar.dto";
+import { hashSHA256 } from "./utils/utils";
 
 export class UsuarioService {
   constructor(private readonly usuarioRepository: UsuarioRepository) {}
@@ -17,6 +18,7 @@ export class UsuarioService {
       throw new ConflictError("El email ya está en uso");
     }
     const usuario = new Usuario();
+    datos.password = hashSHA256(datos.password); // Para guardar la contraseña hasheada...
     Object.assign(usuario, datos);
     usuario.rol = RolUsuario.EMPLEADO;
     return await this.usuarioRepository.save(usuario);

@@ -5,7 +5,7 @@ import { Usuario } from "../models/entities/usuario";
 import { UsuarioRepository } from "../repositories/interfaces/usuario.interface";
 import { IAuthService } from "./interfaces/auth.service";
 import { ITokenService } from "./interfaces/token.service";
-import crypto from "crypto";
+import { hashSHA256 } from "./utils/utils";
 
 class AuthService implements IAuthService {
   constructor(
@@ -20,13 +20,9 @@ class AuthService implements IAuthService {
   }
 
   private validarUsuarioYContraseña(usuarioAValidar: Usuario | null, passwordAValidar: string) {
-    const passwordHasheada = this.hashSHA256(passwordAValidar);
+    const passwordHasheada = hashSHA256(passwordAValidar);
     if (usuarioAValidar == null || usuarioAValidar.password != passwordHasheada)
       throw new InvalidCredentialsError("Usuario o contraseña incorrectos");
-  }
-
-  private hashSHA256(texto: string): string {
-    return crypto.createHash("sha256").update(texto).digest("hex");
   }
 }
 

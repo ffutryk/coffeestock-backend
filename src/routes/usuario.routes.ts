@@ -18,7 +18,7 @@ const authService = new AuthService(tokenService, usuarioRepository);
 
 const usuarioController = new UsuarioController(usuarioService, authService);
 
-router.post("/", validateBody(CrearUsuarioSchema), usuarioController.crear);
+router.post("/crear", validateBody(CrearUsuarioSchema), usuarioController.crear);
 router.post("/ingresar", validateBody(IngresarUsuarioSchema), usuarioController.ingresar);
 
 export default router;
