@@ -9,5 +9,17 @@ export class BadRequestError extends AppError {
 }
 
 export class UnauthorizedError extends AppError {
-    readonly statusCode = 401;
+  readonly statusCode = 401;
+}
+
+export class ForbiddenError extends AppError {
+  readonly statusCode = 403;
+}
+
+export class ConflictError extends AppError {
+  readonly statusCode = 409;
+}
+
+export class InvalidCredentialsError extends AppError {
+  readonly statusCode = 401;
 }
