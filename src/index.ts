@@ -9,6 +9,7 @@ import ventaRouter from "./routes/venta.routes";
 import usuarioRouter from "./routes/usuario.routes";
 import estadisticaRoutes from "./routes/estadistica.routes";
 import inventarioRouter from "./routes/inventario.routes";
+import materiasPrimasRouter from "./routes/materias.primas.routes";
 
 const app = express();
 

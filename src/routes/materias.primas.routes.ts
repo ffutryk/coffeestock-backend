@@ -18,3 +18,5 @@ router.post(
   verificarRol([RolUsuario.EMPLEADO, RolUsuario.GERENTE]),
   materiasPrimasController.crearMateriaPrima,
 );
+
+export default router;
