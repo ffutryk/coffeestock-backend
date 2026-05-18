@@ -2,7 +2,7 @@ import { Usuario } from "../models/entities/usuario";
 import type { UsuarioRepository } from "../repositories/interfaces/usuario.interface";
 import type { CrearUsuarioDTO } from "../dtos/usuario/crear.dto";
 import { ConflictError, NotFoundError } from "../errors";
-import { RolUsuario } from "../models/enums/rolUsuario";
+import { RolUsuario } from "../models/enums/rol-usuario";
 import { IngresarUsuarioDTO } from "../dtos/usuario/ingresar.dto";
 import { hashSHA256 } from "./utils/utils";
 import type { ActualizarUsuarioDTO } from "../dtos/usuario/actualizar.dto";
