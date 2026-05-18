@@ -5,14 +5,18 @@ import { IngresarUsuarioSchema } from "../dtos/usuario/ingresar.dto";
 import { UsuarioService } from "../services/usuario.service";
 import { TypeOrmUsuarioRepository } from "../repositories/typeorm/usuario.repository";
 import UsuarioController from "../controllers/usuario.controller";
+import TokenService from "../services/token.service";
+import AuthService from "../services/auth.service";
 
 const router = Router();
 
 const usuarioRepository = new TypeOrmUsuarioRepository();
 
 const usuarioService = new UsuarioService(usuarioRepository);
+const tokenService = new TokenService();
+const authService = new AuthService(tokenService, usuarioRepository);
 
-const usuarioController = new UsuarioController(usuarioService);
+const usuarioController = new UsuarioController(usuarioService, authService);
 
 router.post("/", validateBody(CrearUsuarioSchema), usuarioController.crear);
 router.post("/ingresar", validateBody(IngresarUsuarioSchema), usuarioController.ingresar);

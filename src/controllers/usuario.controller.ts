@@ -1,10 +1,11 @@
 import type { NextFunction, Request, Response } from "express";
-import { UsuarioService } from "../services/usuario.service";
+import type { IUsuarioService } from "../services/interfaces/usuario.service";
+import type { IAuthService } from "../services/interfaces/auth.service";
 
 export default class UsuarioController {
   constructor(
-    private readonly usuarioService: UsuarioService,
-    private readonly tokenService: TokenService,
+    private readonly usuarioService: IUsuarioService,
+    private readonly authService: IAuthService,
   ) {}
 
   crear = async (req: Request, res: Response, next: NextFunction) => {
@@ -20,10 +21,8 @@ export default class UsuarioController {
 
   ingresar = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { nombre, apellido, rol } = await this.usuarioService.recuperarPorEmail(req.body);
-      const token = await this.tokenService.generarToken({ nombre, apellido, rol });
-      res.set("Authorization", `Bearer ${token}`);
-      return res.send({ nombre, apellido, rol }); // En caso de que necesitemos los datos desde el front...
+      const token = await this.authService.ingresarUsuario(req.body);
+      res.status(200).send(token);
     } catch (err) {
       next(err);
     }

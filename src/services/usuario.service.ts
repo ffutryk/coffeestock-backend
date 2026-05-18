@@ -22,8 +22,8 @@ export class UsuarioService {
     return await this.usuarioRepository.save(usuario);
   }
 
-  async recuperarPorEmail(userDTO: IngresarUsuarioDTO): Promise<Usuario> {
-    const recuperado = await this.usuarioRepository.findByEmail(userDTO.email);
+  async recuperarPorEmail(email: string): Promise<Usuario> {
+    const recuperado = await this.usuarioRepository.findByEmail(email);
     if (recuperado == null) throw new NotFoundError("No se pudo encontrar al usuario");
     return recuperado;
   }
