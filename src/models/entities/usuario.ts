@@ -1,9 +1,14 @@
-import { Entity, PrimaryGeneratedColumn, Column, UpdateDateColumn, DeleteDateColumn } from "typeorm";
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  UpdateDateColumn,
+  DeleteDateColumn,
+} from "typeorm";
 import { RolUsuario } from "../enums/rol-usuario";
 
 @Entity({ name: "usuarios" })
 export class Usuario {
-
   @PrimaryGeneratedColumn()
   id!: number;
 

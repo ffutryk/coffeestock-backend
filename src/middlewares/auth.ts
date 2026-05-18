@@ -12,7 +12,7 @@ export const verificarRol = (rolEsperado: RolUsuario) => {
       }
 
       const token = authHeader.split(" ")[1];
-      
+
       // Reemplazar la conversión a número por jwt.verify cuando se implemente JWT.
       const userId = Number(token);
 

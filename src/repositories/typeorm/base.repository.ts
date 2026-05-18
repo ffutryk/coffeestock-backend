@@ -8,7 +8,9 @@ interface WithId {
   id: number;
 }
 
-export abstract class TypeOrmBaseRepository<T extends ObjectLiteral & WithId> implements BaseRepository<T> {
+export abstract class TypeOrmBaseRepository<
+  T extends ObjectLiteral & WithId,
+> implements BaseRepository<T> {
   protected repository: Repository<T>;
 
   constructor(entity: EntityTarget<T>) {
