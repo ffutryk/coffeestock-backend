@@ -19,7 +19,6 @@ const usuarioController = new UsuarioController(usuarioService, authService);
 
 router.post("/crear", validateBody(CrearUsuarioSchema), usuarioController.crear);
 router.post("/ingresar", validateBody(IngresarUsuarioSchema), usuarioController.ingresar);
-const usuarioController = new UsuarioController(usuarioService);
 
 router.post("/", validateBody(CrearUsuarioSchema), usuarioController.crear);
 // router.get("/", verificarRol(RolUsuario.GERENTE), usuarioController.listar); DESCOMENTAR CUANDO SE IMPLEMENTE LA AUTENTICACIÓN
