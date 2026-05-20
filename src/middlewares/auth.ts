@@ -5,7 +5,7 @@ import type { RolUsuario } from "../models/enums/rol-usuario";
 import { UnauthorizedError, ForbiddenError } from "../errors";
 import { TypeOrmUsuarioRepository } from "../repositories/typeorm/usuario.repository";
 
-export const verificarRol = (rolEsperado: RolUsuario) => {
+export const verificarRol = (rolEsperado: RolUsuario[]) => {
   return async (req: Request, _res: Response, next: NextFunction) => {
     try {
       const authHeader = req.headers.authorization;
@@ -36,7 +36,7 @@ export const verificarRol = (rolEsperado: RolUsuario) => {
         throw new UnauthorizedError("Usuario no encontrado");
       }
 
-      if (usuario.rol !== rolEsperado) {
+      if (!rolEsperado.includes(usuario.rol)) {
         throw new ForbiddenError("No tienes permisos para realizar esta acción");
       }
 
