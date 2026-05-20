@@ -1,19 +1,20 @@
 import { Usuario } from "../models/entities/usuario";
 import type { UsuarioRepository } from "../repositories/interfaces/usuario.interface";
 import type { CrearUsuarioDTO } from "../dtos/usuario/crear.dto";
-import { ConflictError, NotFoundError } from "../errors";
+import { ConflictError, NotFoundError, BadRequestError } from "../errors";
 import { RolUsuario } from "../models/enums/rol-usuario";
 import { IngresarUsuarioDTO } from "../dtos/usuario/ingresar.dto";
 import { hashSHA256 } from "./utils/utils";
 import type { ActualizarUsuarioDTO } from "../dtos/usuario/actualizar.dto";
 import type { PaginacionDTO } from "../dtos/paginacion.dto";
 import type { ResultadoPaginado } from "../models/types/resultado-paginado";
+import type { IUsuarioService } from "./interfaces/usuario.service";
 
 export type UsuarioSinPassword = Omit<Usuario, "password">;
 
-export class UsuarioService {
+export class UsuarioService implements IUsuarioService {
   constructor(private readonly usuarioRepository: UsuarioRepository) {}
-  async crearUsuario(datos: CrearUsuarioDTO): Promise<Usuario> {
+  async crearUsuario(datos: CrearUsuarioDTO, createdBy?: number): Promise<Usuario> {
     const usuarioExistente = await this.usuarioRepository.findByCuil(datos.cuil);
     if (usuarioExistente) {
       throw new ConflictError("El empleado ya está registrado");
@@ -26,6 +27,11 @@ export class UsuarioService {
     datos.password = hashSHA256(datos.password); // Para guardar la contraseña hasheada...
     Object.assign(usuario, datos);
     usuario.rol = RolUsuario.EMPLEADO;
+    
+    if (createdBy) {
+      usuario.createdBy = createdBy;
+    }
+    
     return await this.usuarioRepository.save(usuario);
   }
 
@@ -68,5 +74,44 @@ export class UsuarioService {
     }
     Object.assign(usuario, datos);
     return await this.usuarioRepository.save(usuario);
+  }
+
+  async eliminarUsuario(id: number, deletedBy: number): Promise<void> {
+    const usuario = await this.usuarioRepository.findById(id);
+    
+    if (!usuario) {
+      throw new NotFoundError("Usuario no encontrado");
+    }
+
+    usuario.deletedBy = deletedBy;
+    await this.usuarioRepository.save(usuario);
+
+    const deleted = await this.usuarioRepository.delete(id);
+    if (!deleted) {
+      throw new BadRequestError("Error al eliminar el usuario");
+    }
+  }
+
+  async restaurarUsuario(id: number): Promise<void> {
+    const usuario = await this.usuarioRepository.findByIdWithDeleted(id);
+    
+    if (!usuario) {
+      throw new NotFoundError("Usuario no encontrado");
+    }
+
+    if (!usuario.deletedAt) {
+      throw new BadRequestError("El usuario no está eliminado");
+    }
+
+    const restored = await this.usuarioRepository.restore(id);
+    if (!restored) {
+      throw new BadRequestError("Error al restaurar el usuario");
+    }
+
+    const usuarioRestaurado = await this.usuarioRepository.findById(id);
+    if (usuarioRestaurado) {
+      usuarioRestaurado.deletedBy = null;
+      await this.usuarioRepository.save(usuarioRestaurado);
+    }
   }
 }

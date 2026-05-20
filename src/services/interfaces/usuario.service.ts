@@ -6,8 +6,10 @@ import { UsuarioSinPassword } from "../usuario.service";
 import { PaginacionDTO } from "../../dtos/paginacion.dto";
 
 export interface IUsuarioService {
-  crearUsuario(userToCreate: CrearUsuarioDTO): Promise<Usuario>;
+  crearUsuario(userToCreate: CrearUsuarioDTO, createdBy?: number): Promise<Usuario>;
   recuperarPorEmail(email: string): Promise<Usuario>;
   actualizarUsuario(id: number, datos: ActualizarUsuarioDTO): Promise<Usuario>;
   listarUsuarios(paginacion: PaginacionDTO): Promise<ResultadoPaginado<UsuarioSinPassword>>;
+  eliminarUsuario(id: number, deletedBy: number): Promise<void>;
+  restaurarUsuario(id: number): Promise<void>;
 }

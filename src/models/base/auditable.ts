@@ -5,18 +5,18 @@ export abstract class Auditable {
   @CreateDateColumn({ name: "created_at" })
   createdAt!: Date;
 
-  @Column({ name: "created_by" })
-  createdBy!: number;
+  @Column({ type: "int", name: "created_by", nullable: true })
+  createdBy?: number | null;
 
   @UpdateDateColumn({ name: "updated_at", nullable: true })
-  updatedAt?: Date;
+  updatedAt?: Date | null;
 
-  @Column({ name: "updated_by", nullable: true })
-  updatedBy?: number;
+  @Column({ type: "int", name: "updated_by", nullable: true })
+  updatedBy?: number | null;
 
   @DeleteDateColumn({ name: "deleted_at", nullable: true })
-  deletedAt?: Date;
+  deletedAt?: Date | null;
 
-  @Column({ name: "deleted_by", nullable: true })
-  deletedBy?: number;
+  @Column({ type: "int", name: "deleted_by", nullable: true })
+  deletedBy?: number | null;
 }

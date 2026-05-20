@@ -1,4 +1,6 @@
 import type { Request, Response, NextFunction } from "express";
+import jwt from "jsonwebtoken";
+import { JWT_SECRET } from "../config/envs";
 import type { RolUsuario } from "../models/enums/rol-usuario";
 import { UnauthorizedError, ForbiddenError } from "../errors";
 import { TypeOrmUsuarioRepository } from "../repositories/typeorm/usuario.repository";
@@ -13,10 +15,17 @@ export const verificarRol = (rolEsperado: RolUsuario[]) => {
 
       const token = authHeader.split(" ")[1];
 
-      // Reemplazar la conversión a número por jwt.verify cuando se implemente JWT.
-      const userId = Number(token);
+      let payload: any;
+      try {
+        const secret: string = JWT_SECRET ?? "default_secret";
+        payload = jwt.verify(token!, secret);
+      } catch (err) {
+        throw new UnauthorizedError("Token inválido");
+      }
 
-      if (isNaN(userId)) {
+      const userId = payload.userId;
+
+      if (!userId) {
         throw new UnauthorizedError("Token inválido");
       }
 
