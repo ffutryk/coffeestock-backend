@@ -1,10 +1,39 @@
 import { AppDataSource } from "../../config/data-source";
 import { ItemVenta } from "../../models/entities/item-venta";
 import { Venta } from "../../models/entities/venta";
-import { EstadisticaDao } from "../interfaces/estadistica.interface";
+import { EstadisticaDao, EstadisticasVentasDTO } from "../interfaces/estadistica.interface";
 import { ReporteEstadisticasDTO } from "../../models/types/estadisticas";
 
 export class TypeORMEstadisticaRepository implements EstadisticaDao {
+  async obtenerEstadisticasVentas(fechaInicio?: Date, fechaFin?: Date): Promise<EstadisticasVentasDTO> {
+    const ventaRepo = AppDataSource.getRepository(Venta);
+
+    const query = ventaRepo.createQueryBuilder("venta")
+      .leftJoin("venta.items", "item")
+      .select("COUNT(DISTINCT venta.id)", "cantidadVentas")
+      .addSelect("SUM(item.cantidad * item.precio)", "totalFacturado");
+
+    if (fechaInicio) {
+      query.andWhere("venta.createdAt >= :fechaInicio", { fechaInicio });
+    }
+
+    if (fechaFin) {
+      query.andWhere("venta.createdAt <= :fechaFin", { fechaFin });
+    }
+
+    const rawResult = await query.getRawOne();
+
+    const cantidadVentas = Number(rawResult?.cantidadVentas || 0);
+    const totalFacturado = Number(rawResult?.totalFacturado || 0);
+    const ticketPromedio = cantidadVentas > 0 ? Number((totalFacturado / cantidadVentas).toFixed(2)) : 0;
+
+    return {
+      totalFacturado,
+      cantidadVentas,
+      ticketPromedio
+    };
+  }
+
   async obtenerMetricasGenerales(): Promise<ReporteEstadisticasDTO | null> {
     const itemVentaRepo = AppDataSource.getRepository(ItemVenta);
     const ventaRepo = AppDataSource.getRepository(Venta);
