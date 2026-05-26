@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { login } from "../services/auth";
 import { parseApiError } from "../utils/parseApiError";
+import logo from "../assets/logo.png";
 
 export default function Login({ onLogin }) {
   const [email, setEmail] = useState("");
@@ -28,20 +29,36 @@ export default function Login({ onLogin }) {
   };
 
   return (
-    <div className="form-container">
-      <form onSubmit={handleSubmit}>
-        <h2>Iniciar sesión</h2>
-        {error && <div className="error">{error}</div>}
-        <div className="form-row">
-          <label>Email</label>
-          <input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" autoComplete="username" />
-        </div>
-        <div className="form-row">
-          <label>Contraseña</label>
-          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Contraseña" autoComplete="current-password" />
-        </div>
-        <button type="submit" disabled={loading}>{loading ? "Entrando..." : "Entrar"}</button>
-      </form>
+    <div className="centered-page">
+      <img src={logo} alt="logo" id="logo" />
+      <div className="form-container">
+        <form onSubmit={handleSubmit}>
+          <h2>Iniciar sesión</h2>
+          {error && <div className="error">{error}</div>}
+          <div className="form-row">
+            <label>Email</label>
+            <input
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Email"
+              autoComplete="username"
+            />
+          </div>
+          <div className="form-row">
+            <label>Contraseña</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Contraseña"
+              autoComplete="current-password"
+            />
+          </div>
+          <button type="submit" disabled={loading}>
+            {loading ? "Entrando..." : "Entrar"}
+          </button>
+        </form>
+      </div>
     </div>
   );
 }
