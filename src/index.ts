@@ -26,7 +26,7 @@ app.use("/productos", productoRouter);
 app.use("/ventas", ventaRouter);
 app.use("/usuarios", usuarioRouter);
 app.use("/materias-primas", materiasPrimasRouter);
-app.use("/api/estadisticas", estadisticaRoutes);
+app.use("/estadisticas", estadisticaRoutes);
 app.use("/inventario", inventarioRouter);
 app.use("/recetas", recetaRoutes);
 

@@ -12,6 +12,10 @@ export class InventarioService {
     private readonly movimientoDao: MovimientoInventarioDao,
   ) {}
 
+  async obtenerInventario() {
+    return await this.inventarioDao.findAllWithDetails();
+  }
+
   async registrarMovimiento(datos: RegistrarMovimientoDTO, user: string) {
     // Hay que verificar tambien que el usuario este autenticado
     if (!user) throw new UnauthorizedError("Usuario no autenticado");
