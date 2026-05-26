@@ -5,6 +5,7 @@ import { Producto } from "../models/entities/producto";
 import { ItemVenta } from "../models/entities/item-venta";
 import { Venta } from "../models/entities/venta";
 import { Usuario } from "../models/entities/usuario";
+import { Receta } from "../models/entities/receta";
 import { MateriaPrima } from "../models/entities/materiaPrima";
 import { Inventario } from "../models/entities/inventario";
 import { MovimientoInventario } from "../models/entities/movimiento-inventario";
@@ -20,5 +21,5 @@ export const AppDataSource = new DataSource({
   logging: DEBUG,
   entities: [Producto, Venta, ItemVenta, Usuario, MateriaPrima, Inventario, MovimientoInventario],
   subscribers: [],
-  migrations: [],
+  migrations: []
 });

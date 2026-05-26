@@ -10,6 +10,7 @@ import usuarioRouter from "./routes/usuario.routes";
 import estadisticaRoutes from "./routes/estadistica.routes";
 import inventarioRouter from "./routes/inventario.routes";
 import materiasPrimasRouter from "./routes/materias.primas.routes";
+import recetaRoutes from "./routes/receta.routes";
 
 const app = express();
 
@@ -27,6 +28,7 @@ app.use("/usuarios", usuarioRouter);
 app.use("/materias-primas", materiasPrimasRouter);
 app.use("/estadisticas", estadisticaRoutes);
 app.use("/inventario", inventarioRouter);
+app.use("/recetas", recetaRoutes);
 
 app.use(errorHandler);
 
