@@ -5,6 +5,8 @@ import { Producto } from "../models/entities/producto";
 import { ItemVenta } from "../models/entities/item-venta";
 import { Venta } from "../models/entities/venta";
 import { Usuario } from "../models/entities/usuario";
+import { Receta } from "../models/entities/receta";
+import { MateriaPrima } from "../models/entities/materiaPrima";
 
 export const AppDataSource = new DataSource({
   type: "postgres",
@@ -15,7 +17,7 @@ export const AppDataSource = new DataSource({
   database: DB_DATABASE,
   synchronize: DEBUG,
   logging: DEBUG,
-  entities: [Producto, Venta, ItemVenta, Usuario],
+  entities: [Producto, Venta, ItemVenta, Usuario, MateriaPrima, Receta],
   subscribers: [],
   migrations: [],
 });

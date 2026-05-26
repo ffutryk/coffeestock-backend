@@ -5,8 +5,8 @@ export const CrearMateriaPrimaSchema = z
   .object({
     nombre: z.string(),
     marca: z.string(),
-    unidadMedida: z.enum(UnidadDeMedida),
-    cantidadPorUnidad: z.int().positive(),
+    unidad: z.enum(UnidadDeMedida),
+    cantidad_unidad: z.int().positive(),
     stock: z.int().positive(),
   })
   .strict();
