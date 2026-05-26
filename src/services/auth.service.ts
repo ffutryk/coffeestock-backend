@@ -15,7 +15,11 @@ class AuthService implements IAuthService {
   async ingresarUsuario(usuarioAIngresar: IngresarUsuarioDTO): Promise<string> {
     const usuarioRecuperado = await this.userRepository.findByEmail(usuarioAIngresar.email);
     this.validarUsuarioYContraseña(usuarioRecuperado, usuarioAIngresar.password);
-    const token = this.tokenService.generarToken({ userId: usuarioRecuperado!.id });
+    const token = this.tokenService.generarToken({
+      userId: usuarioRecuperado!.id,
+      role: usuarioRecuperado!.rol,
+      nombre: usuarioRecuperado!.nombre,
+    });
     return token;
   }
 
