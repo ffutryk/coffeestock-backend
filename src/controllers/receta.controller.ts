@@ -9,7 +9,8 @@ export class RecetaController {
 
     crear = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const creada = await this.recetaService.crearReceta(req.body, MOCK_USER_ID);
+            const createdBy = (req as any).user?.id;
+            const creada = await this.recetaService.crearReceta(req.body, createdBy);
             return res.status(201).json({success: true, data: creada});
         } catch (err) {
             next(err);

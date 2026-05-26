@@ -6,6 +6,8 @@ import { RecetaService } from "../services/receta.service";
 import { TypeOrmRecetaRepository } from "../repositories/typeorm/receta.repository"
 import { TypeOrmProductoRepository } from "../repositories/typeorm/producto.repository";
 import { TypeOrmMateriasPrimasRepository } from "../repositories/typeorm/materias.primas.repository";
+import { verificarRol } from "../middlewares/auth";
+import { RolUsuario } from "../models/enums/rol-usuario";
 
 const router = Router();
 
@@ -19,6 +21,9 @@ const recetaService = new RecetaService(recetaRepository, productoRepository, ma
 
 const recetaController = new RecetaController(recetaService);
 
-router.post("/", validateBody(CrearRecetaSchema), recetaController.crear);
+router.post("/", validateBody(CrearRecetaSchema), 
+    verificarRol([RolUsuario.EMPLEADO, RolUsuario.GERENTE]),
+    recetaController.crear
+);
 
 export default router;
