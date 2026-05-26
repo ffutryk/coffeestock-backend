@@ -1,5 +1,5 @@
 import "./App.css";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Routes, Route, useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import Login from "./pages/Login";
@@ -17,26 +17,22 @@ function decodeToken(token) {
 
 function App() {
   const [token, setToken] = useState(() => localStorage.getItem("token"));
-  const [usuario, setUsuario] = useState(() => {
-    const t = localStorage.getItem("token");
-    return t ? decodeToken(t) : null;
-  });
+
+  const usuario = token ? decodeToken(token) : null;
+
   const navigate = useNavigate();
 
+  // El efecto solo sincroniza con localStorage
   useEffect(() => {
     if (token) {
       localStorage.setItem("token", token);
-      setUsuario(decodeToken(token));
     } else {
       localStorage.removeItem("token");
-      setUsuario(null);
     }
   }, [token]);
 
   const handleLogin = (t) => {
-    const payload = decodeToken(t);
     setToken(t);
-    setUsuario(payload);
     navigate("/dashboard");
   };
 

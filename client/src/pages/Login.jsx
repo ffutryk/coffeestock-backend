@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { login } from "../services/auth";
 import { parseApiError } from "../utils/parseApiError";
 import logo from "../assets/logo.png";

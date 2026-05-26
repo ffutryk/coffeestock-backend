@@ -1,5 +1,3 @@
-import React from "react";
-
 export default function Dashboard({ usuario, onLogout }) {
   return (
     <div className="dashboard">
