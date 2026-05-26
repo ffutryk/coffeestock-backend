@@ -3,7 +3,6 @@ import type { UsuarioRepository } from "../repositories/interfaces/usuario.inter
 import type { CrearUsuarioDTO } from "../dtos/usuario/crear.dto";
 import { ConflictError, NotFoundError, BadRequestError } from "../errors";
 import { RolUsuario } from "../models/enums/rol-usuario";
-import { IngresarUsuarioDTO } from "../dtos/usuario/ingresar.dto";
 import { hashSHA256 } from "./utils/utils";
 import type { ActualizarUsuarioDTO } from "../dtos/usuario/actualizar.dto";
 import type { PaginacionDTO } from "../dtos/paginacion.dto";
@@ -27,11 +26,11 @@ export class UsuarioService implements IUsuarioService {
     datos.password = hashSHA256(datos.password); // Para guardar la contraseña hasheada...
     Object.assign(usuario, datos);
     usuario.rol = RolUsuario.EMPLEADO;
-    
+
     if (createdBy) {
       usuario.createdBy = createdBy;
     }
-    
+
     return await this.usuarioRepository.save(usuario);
   }
 
@@ -40,7 +39,7 @@ export class UsuarioService implements IUsuarioService {
     if (recuperado == null) throw new NotFoundError("No se pudo encontrar al usuario");
     return recuperado;
   }
-  
+
   async listarUsuarios(paginacion: PaginacionDTO): Promise<ResultadoPaginado<UsuarioSinPassword>> {
     const resultado = await this.usuarioRepository.findAllPaginated(paginacion);
 
@@ -78,7 +77,7 @@ export class UsuarioService implements IUsuarioService {
 
   async eliminarUsuario(id: number, deletedBy: number): Promise<void> {
     const usuario = await this.usuarioRepository.findById(id);
-    
+
     if (!usuario) {
       throw new NotFoundError("Usuario no encontrado");
     }
@@ -94,7 +93,7 @@ export class UsuarioService implements IUsuarioService {
 
   async restaurarUsuario(id: number): Promise<void> {
     const usuario = await this.usuarioRepository.findByIdWithDeleted(id);
-    
+
     if (!usuario) {
       throw new NotFoundError("Usuario no encontrado");
     }
