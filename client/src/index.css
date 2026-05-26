@@ -1,0 +1,85 @@
+:root {
+  --bg: #25221f;
+  --card: #ffffff;
+  --accent: #4f46e5;
+  --danger: #ef4444;
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  min-height: 100vh;
+  margin: 0;
+  background: var(--bg);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+#logo {
+  width: 500px;
+}
+
+.centered-page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+.form-container {
+  width: 30%;
+  background: var(--card);
+  padding: 24px;
+  border-radius: 8px;
+  box-shadow: 0 6px 18px rgba(16, 24, 40, 0.08);
+}
+
+input {
+  display: block;
+  padding: 10px 12px;
+  margin: 8px 0 12px 0;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+}
+
+label {
+  font-size: 13px;
+  color: #374151;
+  margin-top: 8px;
+  display: block;
+}
+
+.form-row {
+  margin-bottom: 8px;
+  width: 100%;
+  border-bottom: 1px solid #d1d5db;
+}
+
+button {
+  background: var(--accent);
+  color: white;
+  padding: 10px 14px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.error {
+  color: var(--danger);
+  margin-bottom: 12px;
+}
+
+.success {
+  color: green;
+  margin-bottom: 12px;
+}
+
+.dashboard {
+  max-width: 720px;
+  margin: 72px auto;
+  background: var(--card);
+  padding: 24px;
+  border-radius: 8px;
+}
