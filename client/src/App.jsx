@@ -34,7 +34,9 @@ function App() {
   }, [token])
 
   const handleLogin = (t) => {
+    const payload = decodeToken(t)
     setToken(t)
+    setUsuario(payload)
     navigate('/dashboard')
   }
 
