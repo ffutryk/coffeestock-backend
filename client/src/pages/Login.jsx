@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { login } from "../services/auth";
+import { parseApiError } from "../utils/parseApiError";
 
 export default function Login({ onLogin }) {
   const [email, setEmail] = useState("");
@@ -19,7 +20,8 @@ export default function Login({ onLogin }) {
       const token = await login({ email, password });
       onLogin(token);
     } catch (err) {
-      setError(err.response?.data?.message || "Error al iniciar sesión");
+      const parsed = parseApiError(err);
+      setError(parsed.fieldErrors?.email || parsed.message || "Error al iniciar sesión");
     } finally {
       setLoading(false);
     }
@@ -30,8 +32,8 @@ export default function Login({ onLogin }) {
       <form onSubmit={handleSubmit}>
         <h2>Iniciar sesión</h2>
         {error && <div className="error">{error}</div>}
-        <input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" />
-        <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Contraseña" />
+        <input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" autoComplete="username" />
+        <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Contraseña" autoComplete="current-password" />
         <button type="submit" disabled={loading}>{loading ? "Entrando..." : "Entrar"}</button>
       </form>
     </div>

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { registerUsuario } from "../services/auth";
+import { parseApiError } from "../utils/parseApiError";
 
 export default function Register() {
   const [form, setForm] = useState({ cuil: "", nombre: "", apellido: "", email: "", password: "" });
@@ -25,7 +26,8 @@ export default function Register() {
       setMessage(res.message || "Empleado registrado exitosamente");
       setForm({ cuil: "", nombre: "", apellido: "", email: "", password: "" });
     } catch (err) {
-      setError(err.response?.data?.message || "Error al registrar empleado");
+      const parsed = parseApiError(err);
+      setError(parsed.message || parsed.fieldErrors || "Error al registrar empleado");
     } finally {
       setLoading(false);
     }
