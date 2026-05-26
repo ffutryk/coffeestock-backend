@@ -38,12 +38,27 @@ export default function Register() {
       <form onSubmit={handleSubmit}>
         <h2>Registrar empleado</h2>
         {message && <div className="success">{message}</div>}
-        {error && <div className="error">{error}</div>}
-        <input name="cuil" value={form.cuil} onChange={handleChange} placeholder="CUIL (ej. 20-12345678-3)" />
-        <input name="nombre" value={form.nombre} onChange={handleChange} placeholder="Nombre" />
-        <input name="apellido" value={form.apellido} onChange={handleChange} placeholder="Apellido" />
-        <input name="email" value={form.email} onChange={handleChange} placeholder="Email" />
-        <input name="password" type="password" value={form.password} onChange={handleChange} placeholder="Contraseña" />
+        {error && <div className="error">{typeof error === 'string' ? error : JSON.stringify(error)}</div>}
+        <div className="form-row">
+          <label>CUIL</label>
+          <input name="cuil" value={form.cuil} onChange={handleChange} placeholder="20-12345678-3" />
+        </div>
+        <div className="form-row">
+          <label>Nombre</label>
+          <input name="nombre" value={form.nombre} onChange={handleChange} placeholder="Nombre" />
+        </div>
+        <div className="form-row">
+          <label>Apellido</label>
+          <input name="apellido" value={form.apellido} onChange={handleChange} placeholder="Apellido" />
+        </div>
+        <div className="form-row">
+          <label>Email</label>
+          <input name="email" value={form.email} onChange={handleChange} placeholder="Email" />
+        </div>
+        <div className="form-row">
+          <label>Contraseña</label>
+          <input name="password" type="password" value={form.password} onChange={handleChange} placeholder="Contraseña" />
+        </div>
         <button type="submit" disabled={loading}>{loading ? "Registrando..." : "Registrar"}</button>
       </form>
     </div>

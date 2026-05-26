@@ -29,6 +29,17 @@ input {
   border-radius: 6px;
 }
 
+label {
+  font-size: 13px;
+  color: #374151;
+  margin-top: 8px;
+  display: block;
+}
+
+.form-row {
+  margin-bottom: 8px;
+}
+
 button {
   background: var(--accent);
   color: white;
