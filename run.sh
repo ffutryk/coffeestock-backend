@@ -31,7 +31,7 @@ echo "Press Ctrl+C to stop everything"
 cleanup() {
   echo ""
   echo "Stopping services..."
-  docker compose down
+  docker compose stop
 }
 
 trap cleanup INT TERM EXIT
