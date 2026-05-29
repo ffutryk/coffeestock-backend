@@ -6,6 +6,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
+import HistorialVentas from "./pages/HistorialVentas";
 
 function decodeToken(token) {
   try {
@@ -53,6 +54,7 @@ function App() {
         }
       />
       <Route path="/dashboard" element={<Dashboard usuario={usuario} onLogout={handleLogout} />} />
+      <Route path="/historial-ventas" element={<HistorialVentas usuario={usuario} />} />
       <Route path="*" element={<Login onLogin={handleLogin} />} />
     </Routes>
   );
