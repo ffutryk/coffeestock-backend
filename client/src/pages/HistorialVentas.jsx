@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import api from "../services/api";
 import "./HistorialVentas.css";
 import * as venta from "zod/locales";
@@ -21,7 +21,28 @@ function formatearFecha(iso) {
 }
 
 export default function HistorialVentas({ usuario }) {
-  const [ventas, setVentas] = useState([]);
+  const [ventas, setVentas] = useState([
+    {
+      id: "1",
+      createdAt: "2026-05-29T18:30:00.000Z",
+      total: 3500,
+      medioDePago: "EFECTIVO",
+      items: [
+        { id: "i1", nombre: "Café Latte", cantidad: 2, precio: 1200 },
+        { id: "i2", nombre: "Medialuna de grasa", cantidad: 2, precio: 550 },
+      ],
+    },
+    {
+      id: "2",
+      createdAt: "2026-05-29T19:15:00.000Z",
+      total: 2100,
+      medioDePago: "TRANSFERENCIA",
+      items: [
+        { id: "i3", nombre: "Espresso Doble", cantidad: 1, precio: 1500 },
+        { id: "i4", nombre: "Alfajor de Nutella", cantidad: 1, precio: 600 },
+      ],
+    },
+  ]);
   const [pagina, setPagina] = useState(1);
   const [totalPaginas, setTotalPaginas] = useState(1);
   const [loading, setLoading] = useState(true);
@@ -43,8 +64,9 @@ export default function HistorialVentas({ usuario }) {
   };
 
   useEffect(() => {
-    cargarVentas(pagina);
-  }, [pagina]);
+    //cargarVentas(pagina); Comento esto asi se carga los datos, no le estoy pegando a la base y se queda cargando sino.
+    setLoading(false);
+  }, []);
 
   const toggleExpandir = (id) => {
     setVentaExpandida(ventaExpandida === id ? null : id);

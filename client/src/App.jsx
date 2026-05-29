@@ -44,6 +44,7 @@ function App() {
 
   return (
     <Routes>
+      <Route path="/" element={<Login onLogin={handleLogin} />} />
       <Route path="/login" element={<Login onLogin={handleLogin} />} />
       <Route
         path="/register"
