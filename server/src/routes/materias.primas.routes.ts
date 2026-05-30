@@ -1,10 +1,11 @@
 import { Router } from "express";
-import { verificarRol } from "../middlewares/auth";
+import { auth } from "../middlewares/auth";
+import { roles } from "../middlewares/role";
 import { RolUsuario } from "../models/enums/rol-usuario";
 import MateriasPrimasController from "../controllers/materias.primas.controller";
 import MateriasPrimasService from "../services/materias.primas.service";
 import MateriasPrimasRepository from "../repositories/typeorm/materias.primas.repository";
-import { validateBody, validateQuery } from "../middlewares/validate";
+import { validateBody } from "../middlewares/validate";
 import { CrearMateriaPrimaSchema } from "../dtos/materiasPrimas/crear.dto";
 const router = Router();
 
@@ -14,8 +15,9 @@ const materiasPrimasController = new MateriasPrimasController(materiasPrimasServ
 
 router.post(
   "/",
+  auth,
+  roles([RolUsuario.EMPLEADO, RolUsuario.GERENTE]),
   validateBody(CrearMateriaPrimaSchema),
-  verificarRol([RolUsuario.EMPLEADO, RolUsuario.GERENTE]),
   materiasPrimasController.crearMateriaPrima,
 );
 

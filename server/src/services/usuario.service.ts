@@ -113,4 +113,8 @@ export class UsuarioService implements IUsuarioService {
       await this.usuarioRepository.save(usuarioRestaurado);
     }
   }
+
+  async recuperarPorId(id: number): Promise<Usuario | null> {
+    return this.usuarioRepository.findById(id);
+  }
 }

@@ -1,49 +1,39 @@
 import type { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import { JWT_SECRET } from "../config/envs";
-import type { RolUsuario } from "../models/enums/rol-usuario";
 import { UnauthorizedError, ForbiddenError } from "../errors";
 import { TypeOrmUsuarioRepository } from "../repositories/typeorm/usuario.repository";
+import { TokenPayload } from "../models/types/token-payload";
+import { UsuarioService } from "../services/usuario.service";
 
-export const verificarRol = (rolEsperado: RolUsuario[]) => {
-  return async (req: Request, _res: Response, next: NextFunction) => {
-    try {
-      const authHeader = req.headers.authorization;
-      if (!authHeader || !authHeader.startsWith("Bearer ")) {
-        throw new UnauthorizedError("Token no proporcionado");
-      }
+const usuarioRepository = new TypeOrmUsuarioRepository();
+const usuarioService = new UsuarioService(usuarioRepository);
+// A futuro deberiamos crear containers para no repetir la creacion e inyección de servicios, así de paso se utiliza la misma instancia y configuración
 
-      const token = authHeader.split(" ")[1];
+export const auth = async (req: Request, _res: Response, next: NextFunction) => {
+  try {
+    const authHeader = req.headers.authorization;
 
-      let payload: any;
-      try {
-        const secret: string = JWT_SECRET ?? "default_secret";
-        payload = jwt.verify(token!, secret);
-      } catch (err) {
-        throw new UnauthorizedError("Token inválido");
-      }
+    if (!authHeader) throw new UnauthorizedError("Token no proporcionado");
 
-      const userId = payload.userId;
+    if (!authHeader.startsWith("Bearer ")) throw new UnauthorizedError("Token inválido");
 
-      if (!userId) {
-        throw new UnauthorizedError("Token inválido");
-      }
+    const token = authHeader.split(" ")[1];
 
-      const usuarioRepo = new TypeOrmUsuarioRepository();
-      const usuario = await usuarioRepo.findById(userId);
+    if (!token) throw new UnauthorizedError("Token no proporcionado");
 
-      if (!usuario) {
-        throw new UnauthorizedError("Usuario no encontrado");
-      }
+    const { userId } = jwt.verify(token, JWT_SECRET) as TokenPayload;
 
-      if (!rolEsperado.includes(usuario.rol)) {
-        throw new ForbiddenError("No tienes permisos para realizar esta acción");
-      }
+    const usuario = await usuarioService.recuperarPorId(userId);
 
-      req.user = { id: usuario.id, rol: usuario.rol };
-      next();
-    } catch (err) {
-      next(err);
+    if (!usuario) {
+      throw new UnauthorizedError("No estás autorizado a realizar esta acción");
     }
-  };
+
+    req.user = { id: usuario.id, rol: usuario.rol };
+
+    next();
+  } catch (err) {
+    next(err);
+  }
 };
