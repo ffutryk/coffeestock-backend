@@ -27,7 +27,7 @@ router.post(
   validateBody(CrearUsuarioSchema),
   usuarioController.crear,
 );
-router.post("/ingresar", auth, validateBody(IngresarUsuarioSchema), usuarioController.ingresar);
+router.post("/ingresar", validateBody(IngresarUsuarioSchema), usuarioController.ingresar);
 
 router.post(
   "/",
