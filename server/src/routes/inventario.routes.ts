@@ -7,17 +7,25 @@ import { validateBody } from "../middlewares/validate";
 import { RegistrarMovimientoInventario } from "../dtos/inventario/registrar-movimiento.dto";
 import { TypeORMMovimientoRepository } from "../repositories/typeorm/movimiento.repository";
 import { RolUsuario } from "../models/enums/rol-usuario";
-import { verificarRol } from "../middlewares/auth";
+import { roles } from "../middlewares/role";
 
 const router = Router();
 
-const inventarioDAO = new TypeORMInventarioRepository()
+const inventarioDAO = new TypeORMInventarioRepository();
 const movimientoDAO = new TypeORMMovimientoRepository();
 const inventarioService = new InventarioService(inventarioDAO, movimientoDAO);
 const inventarioController = new InventarioController(inventarioService);
 
-router.get("/", verificarRol([RolUsuario.GERENTE, RolUsuario.EMPLEADO]), inventarioController.obtenerInventario);
+router.get(
+  "/",
+  roles([RolUsuario.GERENTE, RolUsuario.EMPLEADO]),
+  inventarioController.obtenerInventario,
+);
 
-router.post("/movimientos", validateBody(RegistrarMovimientoInventario), inventarioController.registrarMovimiento);
+router.post(
+  "/movimientos",
+  validateBody(RegistrarMovimientoInventario),
+  inventarioController.registrarMovimiento,
+);
 
 export default router;
