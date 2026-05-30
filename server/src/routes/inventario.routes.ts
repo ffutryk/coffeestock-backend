@@ -8,6 +8,7 @@ import { RegistrarMovimientoInventario } from "../dtos/inventario/registrar-movi
 import { TypeORMMovimientoRepository } from "../repositories/typeorm/movimiento.repository";
 import { RolUsuario } from "../models/enums/rol-usuario";
 import { roles } from "../middlewares/role";
+import { auth } from "../middlewares/auth";
 
 const router = Router();
 
@@ -18,12 +19,14 @@ const inventarioController = new InventarioController(inventarioService);
 
 router.get(
   "/",
+  auth,
   roles([RolUsuario.GERENTE, RolUsuario.EMPLEADO]),
   inventarioController.obtenerInventario,
 );
 
 router.post(
   "/movimientos",
+  auth,
   validateBody(RegistrarMovimientoInventario),
   inventarioController.registrarMovimiento,
 );

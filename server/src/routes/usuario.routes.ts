@@ -10,6 +10,7 @@ import AuthService from "../services/auth.service";
 import { ActualizarUsuarioSchema } from "../dtos/usuario/actualizar.dto";
 import { RolUsuario } from "../models/enums/rol-usuario";
 import { roles } from "../middlewares/role";
+import { auth } from "../middlewares/auth";
 
 const router = Router();
 const usuarioRepository = new TypeOrmUsuarioRepository();
@@ -21,23 +22,25 @@ const usuarioController = new UsuarioController(usuarioService, authService);
 
 router.post(
   "/crear",
+  auth,
   roles([RolUsuario.GERENTE]),
   validateBody(CrearUsuarioSchema),
   usuarioController.crear,
 );
-router.post("/ingresar", validateBody(IngresarUsuarioSchema), usuarioController.ingresar);
+router.post("/ingresar", auth, validateBody(IngresarUsuarioSchema), usuarioController.ingresar);
 
 router.post(
   "/",
+  auth,
   roles([RolUsuario.GERENTE]),
   validateBody(CrearUsuarioSchema),
   usuarioController.crear,
 );
-router.get("/", roles([RolUsuario.GERENTE]), usuarioController.listar);
-router.get("/", roles([RolUsuario.GERENTE]), usuarioController.listar);
-router.put("/:id", validateBody(ActualizarUsuarioSchema), usuarioController.actualizar);
+router.get("/", auth, roles([RolUsuario.GERENTE]), usuarioController.listar);
+router.get("/", auth, roles([RolUsuario.GERENTE]), usuarioController.listar);
+router.put("/:id", auth, validateBody(ActualizarUsuarioSchema), usuarioController.actualizar);
 
-router.delete("/:id", roles([RolUsuario.GERENTE]), usuarioController.eliminar);
-router.post("/:id/restaurar", roles([RolUsuario.GERENTE]), usuarioController.restaurar);
+router.delete("/:id", auth, roles([RolUsuario.GERENTE]), usuarioController.eliminar);
+router.post("/:id/restaurar", auth, roles([RolUsuario.GERENTE]), usuarioController.restaurar);
 
 export default router;
