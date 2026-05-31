@@ -7,6 +7,7 @@ export default defineConfig(({ mode }) => {
 
   return {
     plugins: [react()],
+    base: "/",
     server: {
       port: Number(env.FRONTEND_PORT) || 5173,
       strictPort: true,
