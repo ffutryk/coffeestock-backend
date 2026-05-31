@@ -23,3 +23,11 @@ export class ConflictError extends AppError {
 export class InvalidCredentialsError extends AppError {
   readonly statusCode = 401;
 }
+
+export class StockInsuficienteError extends AppError {
+  readonly statusCode = 400;
+
+  constructor(nombre: string) {
+    super(`Stock insuficiente de ${nombre}`);
+  }
+}

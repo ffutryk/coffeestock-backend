@@ -24,7 +24,7 @@ export class MateriaPrima extends Auditable {
   @Column("boolean", { default: false })
   esSinTacc!: boolean;
 
-  @OneToOne(() => Inventario, (inventario) => inventario.materiaPrima)
+  @OneToOne(() => Inventario, (inventario) => inventario.materiaPrima, { eager: true })
   inventario!: Inventario;
 
   @OneToMany(() => MovimientoInventario, (mov) => mov.materiaPrima)
