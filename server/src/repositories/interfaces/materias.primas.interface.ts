@@ -1,6 +1,7 @@
-import { MateriaPrima } from "../../models/entities/materiaPrima";
+import { MateriaPrima } from "../../models/entities/materia-prima";
 import { BaseRepository } from "./base.interface";
 
 export interface MateriasPrimasRepository extends BaseRepository<MateriaPrima> {
   findByNameAndBrand(nameAndBrand: { nombre: string; marca: string }): Promise<MateriaPrima | null>;
+  findByIds(ids: number[]): Promise<MateriaPrima[]>;
 }

@@ -1,0 +1,9 @@
+POST http://localhost:3000/ventas
+Content-Type: application/json
+
+{
+  "total": 3500,
+  "productos": [
+    { "id": 1, "cantidad": 2 }
+  ]
+}

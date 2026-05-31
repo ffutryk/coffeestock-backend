@@ -6,24 +6,22 @@ import { ResultadoPaginado } from "../../models/types/resultado-paginado";
 import { Auditable } from "../../models/base/auditable";
 import { AuthContext } from "../../context/auth.context";
 
-interface WithId {
-  id: number;
-}
-
-export abstract class TypeOrmBaseRepository<
-  T extends ObjectLiteral & WithId & Auditable,
-> implements BaseRepository<T> {
+export abstract class TypeOrmBaseRepository<T extends ObjectLiteral> implements BaseRepository<T> {
   protected repository: Repository<T>;
 
   constructor(entity: EntityTarget<T>) {
     this.repository = AppDataSource.getRepository(entity);
   }
 
-  async findById(id: number): Promise<T | null> {
-    return await this.repository.findOneBy({ id } as FindOptionsWhere<T>);
+  // eslint-disable-next-line
+  async findById(id: any): Promise<T | null> {
+    return await this.repository.findOne({
+      where: { id } as FindOptionsWhere<T>,
+    });
   }
 
-  async findByIdWithDeleted(id: number): Promise<T | null> {
+  // eslint-disable-next-line
+  async findByIdWithDeleted(id: any): Promise<T | null> {
     return await this.repository.findOne({
       where: { id } as FindOptionsWhere<T>,
       withDeleted: true,
@@ -47,7 +45,6 @@ export abstract class TypeOrmBaseRepository<
   async save(entity: T): Promise<T> {
     if (entity instanceof Auditable) {
       const modifiedBy = AuthContext.getUserId();
-
       entity.createdBy = modifiedBy;
       entity.updatedBy = modifiedBy;
     }
@@ -55,15 +52,18 @@ export abstract class TypeOrmBaseRepository<
     return await this.repository.save(entity);
   }
 
-  async delete(id: number): Promise<boolean> {
-    const entity = await this.findById(id);
+  // eslint-disable-next-line
+  async delete(id: any): Promise<boolean> {
+    const entity = await this.repository.findOne({ where: { id } as FindOptionsWhere<T> });
 
     if (!entity) return false;
 
-    entity.deletedBy = AuthContext.getUserId();
+    if (entity instanceof Auditable) {
+      entity.deletedBy = AuthContext.getUserId();
+      await this.repository.save(entity);
+    }
 
     await this.repository.softRemove(entity);
-
     return true;
   }
 

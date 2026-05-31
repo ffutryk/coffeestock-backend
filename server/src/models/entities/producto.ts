@@ -1,6 +1,12 @@
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm";
 import { TipoItemVenta } from "../enums/tipo-item-venta";
 import { Auditable } from "../base/auditable";
+import { Receta } from "./receta";
+import { MovimientoInventario } from "./movimiento-inventario";
+import { Inventario } from "./inventario";
+import { ResultadoVenta } from "../types/resultado-venta";
+import { IngredientesDuplicadosError, StockInsuficienteError } from "../../errors";
+import { MateriaPrima } from "./materia-prima";
 
 @Entity({ name: "productos" })
 export class Producto extends Auditable {
@@ -16,7 +22,7 @@ export class Producto extends Auditable {
   @Column("int", { default: 0 })
   stock!: number;
 
-  @Column()
+  @Column("decimal")
   precio!: number;
 
   @Column({ type: "enum", enum: TipoItemVenta })
@@ -24,4 +30,90 @@ export class Producto extends Auditable {
 
   @Column({ default: false })
   sinTacc!: boolean;
+
+  @OneToMany(() => Receta, (receta) => receta.producto)
+  recetas!: Receta[];
+
+  decrementarStock(cantidad: number): void {
+    if (!this.tieneReceta() && this.stock < cantidad) {
+      throw new StockInsuficienteError(this.nombre);
+    }
+
+    this.stock -= cantidad;
+  }
+
+  tieneReceta(): boolean {
+    return this.recetas?.length > 0;
+  }
+
+  insumosPara(cantidad: number): { id: number; cantidad: number }[] {
+    return this.recetas.map((receta) => ({
+      id: receta.materiaPrima.id,
+      cantidad: receta.cantidad * cantidad,
+    }));
+  }
+
+  serVendido(cantidad: number): ResultadoVenta {
+    if (this.tieneReceta()) {
+      return this.aplicarOperacionSobreReceta(cantidad, (inv, cant, mp) => inv.consumir(cant, mp));
+    }
+
+    this.decrementarStock(cantidad);
+    return {
+      inventariosModificados: [],
+      movimientosGenerados: [],
+    };
+  }
+
+  revertirVenta(cantidad: number, nota?: string): ResultadoVenta {
+    if (this.tieneReceta()) {
+      return this.aplicarOperacionSobreReceta(cantidad, (inv, cant, mp) =>
+        inv.devolverStock(cant, mp, nota),
+      );
+    }
+
+    this.stock += cantidad;
+    return {
+      inventariosModificados: [],
+      movimientosGenerados: [],
+    };
+  }
+
+  private aplicarOperacionSobreReceta(
+    cantidad: number,
+    operacion: (
+      inventario: Inventario,
+      cantidad: number,
+      materiaPrima: MateriaPrima,
+    ) => MovimientoInventario,
+  ): ResultadoVenta {
+    const materiasPrimas = new Map(this.recetas.map((r) => [r.materiaPrima.id, r.materiaPrima]));
+
+    const inventarios: Inventario[] = [];
+    const movimientos: MovimientoInventario[] = [];
+
+    for (const insumo of this.insumosPara(cantidad)) {
+      const materiaPrima = materiasPrimas.get(insumo.id)!;
+      const inventario = materiaPrima.inventario;
+
+      movimientos.push(operacion(inventario, insumo.cantidad, materiaPrima));
+
+      inventarios.push(inventario);
+    }
+
+    return {
+      inventariosModificados: inventarios,
+      movimientosGenerados: movimientos,
+    };
+  }
+
+  construirReceta(ingredientes: { materiaPrima: MateriaPrima; cantidad: number }[]): Receta[] {
+    const ids = ingredientes.map((i) => i.materiaPrima.id);
+
+    if (new Set(ids).size !== ids.length) throw new IngredientesDuplicadosError();
+
+    return ingredientes.map(({ materiaPrima, cantidad }) =>
+      Receta.crear(this, materiaPrima, cantidad),
+    );
+  }
 }
