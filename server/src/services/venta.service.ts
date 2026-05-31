@@ -1,62 +1,50 @@
 import { AppDataSource } from "../config/data-source";
 import { Venta } from "../models/entities/venta";
-import { ItemVenta } from "../models/entities/item-venta";
-import { BadRequestError, NotFoundError } from "../errors";
+import { NotFoundError } from "../errors";
 import { ResultadoPaginado } from "../models/types/resultado-paginado";
-import { Producto } from "../models/entities/producto";
 import { VentaRepository } from "../repositories/interfaces/venta.interface";
 import { ProductoRepository } from "../repositories/interfaces/producto.interface";
 import type { ActualizarVentaDTO } from "../dtos/venta/actualizar.dto";
 import type { CrearVentaDTO } from "../dtos/venta/crear.dto";
 import { PaginacionDTO } from "../dtos/paginacion.dto";
+import { Inventario } from "../models/entities/inventario";
+import { MovimientoInventario } from "../models/entities/movimiento-inventario";
 
 export class VentaService {
   constructor(
     private readonly ventaRepository: VentaRepository,
     private readonly productoRepository: ProductoRepository,
   ) {}
-
-  private async procesarYValidarItems(
-    itemsDto: { productoId: number; cantidad: number }[],
-    venta: Venta,
-  ): Promise<ItemVenta[]> {
-    const ids = itemsDto.map((i) => i.productoId);
-
-    const productosEnDB = await this.productoRepository.findByIds(ids);
-    if (productosEnDB.length !== ids.length) {
-      throw new NotFoundError("Uno o más productos no existen");
-    }
-
-    const productosMap = new Map(productosEnDB.map((p) => [p.id, p]));
-
-    return itemsDto.map((itemDto) => {
-      const producto = productosMap.get(itemDto.productoId)!;
-
-      if (producto.stock !== null && producto.stock < itemDto.cantidad) {
-        throw new BadRequestError(`Stock insuficiente para: ${producto.nombre}`);
-      }
-
-      if (producto.stock !== null) producto.stock -= itemDto.cantidad;
-
-      return ItemVenta.create(producto, itemDto.cantidad, venta);
-    });
-  }
-
   async crearVenta(datos: CrearVentaDTO): Promise<Venta> {
     const queryRunner = AppDataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
     try {
-      const nuevaVenta = new Venta();
-      nuevaVenta.medioDePago = datos.medioDePago;
+      const manager = queryRunner.manager;
+      const ids = datos.items.map((i) => i.productoId);
+      const productos = await this.productoRepository.findWithInventarios(ids);
 
-      nuevaVenta.items = await this.procesarYValidarItems(datos.items, nuevaVenta);
+      if (productos.length !== ids.length)
+        throw new NotFoundError("Uno o más productos no existen");
 
-      const productosAActualizar = nuevaVenta.items.map((i) => i.producto);
+      const productosMap = new Map(productos.map((p) => [p.id, p]));
 
-      await queryRunner.manager.save(productosAActualizar);
-      const ventaGuardada = await queryRunner.manager.save(nuevaVenta);
+      const venta = Venta.crear(datos.medioDePago);
+
+      const inventarios: Inventario[] = [];
+      const movimientos: MovimientoInventario[] = [];
+
+      for (const { productoId, cantidad } of datos.items) {
+        const efectos = venta.agregarItem(productosMap.get(productoId)!, cantidad);
+
+        inventarios.push(...efectos.inventariosModificados);
+        movimientos.push(...efectos.movimientosGenerados);
+      }
+
+      const ventaGuardada = await manager.save(venta);
+      await manager.save(inventarios);
+      await manager.save(movimientos);
 
       await queryRunner.commitTransaction();
       return ventaGuardada;
@@ -74,38 +62,53 @@ export class VentaService {
     await queryRunner.startTransaction();
 
     try {
-      const ventaExistente = await queryRunner.manager.findOne(Venta, {
-        where: { id },
-        relations: ["items", "items.producto"],
-      });
+      const manager = queryRunner.manager;
+      const ventaExistente = await this.ventaRepository.findByIdWithInventories(id);
 
       if (!ventaExistente) throw new NotFoundError("Venta no encontrada");
 
-      const productosAfectados = new Set<Producto>();
+      const inventarios: Inventario[] = [];
+      const movimientos: MovimientoInventario[] = [];
 
-      for (const item of ventaExistente.items) {
-        if (item.producto && item.producto.stock !== null) {
-          item.producto.stock += item.cantidad;
-          productosAfectados.add(item.producto);
+      const itemsAEliminar = [...ventaExistente.items];
+
+      for (const item of itemsAEliminar) {
+        if (item.producto) {
+          const efectos = ventaExistente.revertirItem(item);
+
+          inventarios.push(...efectos.inventariosModificados);
+          movimientos.push(...efectos.movimientosGenerados);
         }
       }
 
-      if (datos.medioDePago) ventaExistente.medioDePago = datos.medioDePago;
-
-      if (datos.items) {
-        await queryRunner.manager.remove(ventaExistente.items);
-
-        const nuevosItems = await this.procesarYValidarItems(datos.items, ventaExistente);
-        ventaExistente.items = nuevosItems;
-
-        nuevosItems.forEach((item) => productosAfectados.add(item.producto));
+      if (itemsAEliminar.length > 0) {
+        await manager.remove(itemsAEliminar);
       }
 
-      if (productosAfectados.size > 0) {
-        await queryRunner.manager.save(Array.from(productosAfectados));
+      if (datos.medioDePago) {
+        ventaExistente.medioDePago = datos.medioDePago;
       }
 
-      const ventaActualizada = await queryRunner.manager.save(ventaExistente);
+      if (datos.items && datos.items.length > 0) {
+        const ids = datos.items.map((i) => i.productoId);
+        const productos = await this.productoRepository.findWithInventarios(ids);
+
+        if (productos.length !== ids.length) {
+          throw new NotFoundError("Uno o más productos no existen");
+        }
+
+        const productosMap = new Map(productos.map((p) => [p.id, p]));
+
+        for (const { productoId, cantidad } of datos.items) {
+          const efectos = ventaExistente.agregarItem(productosMap.get(productoId)!, cantidad);
+          inventarios.push(...efectos.inventariosModificados);
+          movimientos.push(...efectos.movimientosGenerados);
+        }
+      }
+
+      const ventaActualizada = await manager.save(ventaExistente);
+      await manager.save(inventarios);
+      await manager.save(movimientos);
 
       await queryRunner.commitTransaction();
       return ventaActualizada;

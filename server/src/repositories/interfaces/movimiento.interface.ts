@@ -1,5 +1,6 @@
 import { MovimientoInventario } from "../../models/entities/movimiento-inventario";
+import { BaseRepository } from "./base.interface";
 
-export interface MovimientoInventarioDao {
+export interface MovimientoInventarioRepository extends BaseRepository<MovimientoInventario> {
   save(movimiento: MovimientoInventario): Promise<MovimientoInventario>;
 }

@@ -1,11 +1,16 @@
 import { CrearMateriaPrimaDTO } from "../dtos/materiasPrimas/crear.dto";
 import { BadRequestError } from "../errors";
-import { MateriaPrima } from "../models/entities/materiaPrima";
+import { Inventario } from "../models/entities/inventario";
+import { MateriaPrima } from "../models/entities/materia-prima";
+import { InventarioDao } from "../repositories/interfaces/inventario.interface";
 import { MateriasPrimasRepository } from "../repositories/interfaces/materias.primas.interface";
 import { IMateriasPrimasService } from "./interfaces/materias.primas.service";
 
 class MateriasPrimasService implements IMateriasPrimasService {
-  constructor(private readonly materiasPrimasRepository: MateriasPrimasRepository) {}
+  constructor(
+    private readonly materiasPrimasRepository: MateriasPrimasRepository,
+    private readonly inventarioRepository: InventarioDao,
+  ) {}
   async crearMateriaPrima(materiaPrimaACrear: CrearMateriaPrimaDTO): Promise<MateriaPrima> {
     const { nombre, marca } = materiaPrimaACrear;
     let materiaPrimaRecuperada = await this.materiasPrimasRepository.findByNameAndBrand({
@@ -17,7 +22,13 @@ class MateriasPrimasService implements IMateriasPrimasService {
     }
     materiaPrimaRecuperada = new MateriaPrima();
     Object.assign(materiaPrimaRecuperada, materiaPrimaACrear);
-    return await this.materiasPrimasRepository.save(materiaPrimaRecuperada);
+    const materiaPrima = await this.materiasPrimasRepository.save(materiaPrimaRecuperada);
+    const inventario = new Inventario();
+    inventario.materiaPrima = materiaPrima;
+
+    await this.inventarioRepository.save(inventario);
+
+    return materiaPrima;
   }
 }
 

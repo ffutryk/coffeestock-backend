@@ -1,41 +1,32 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  CreateDateColumn,
-  UpdateDateColumn,
-  DeleteDateColumn,
-} from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, OneToOne, OneToMany } from "typeorm";
+import { UnidadDeMedida } from "../enums/unidad-de-medida";
+import { Auditable } from "../base/auditable";
+import { Inventario } from "./inventario";
+import { MovimientoInventario } from "./movimiento-inventario";
 
-@Entity({ name: "materias_primas" })
-export class MateriaPrima {
+@Entity()
+export class MateriaPrima extends Auditable {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Column("varchar", { length: 100 })
+  @Column({ nullable: false })
   nombre!: string;
 
-  @Column("text", { nullable: true })
-  descripcion?: string;
+  @Column({ nullable: false })
+  marca!: string;
+
+  @Column({ type: "enum", enum: UnidadDeMedida })
+  unidad!: UnidadDeMedida;
+
+  @Column("int")
+  cantidad_unidad!: number;
 
   @Column("boolean", { default: false })
   esSinTacc!: boolean;
 
-  @CreateDateColumn()
-  createdAt!: Date;
+  @OneToOne(() => Inventario, (inventario) => inventario.materiaPrima, { eager: true })
+  inventario!: Inventario;
 
-  @Column("varchar", { nullable: true })
-  createdBy?: number;
-
-  @UpdateDateColumn()
-  updatedAt!: Date;
-
-  @Column("varchar", { nullable: true })
-  updatedBy?: string;
-
-  @DeleteDateColumn()
-  deletedAt?: Date;
-
-  @Column("varchar", { nullable: true })
-  deletedBy?: string;
+  @OneToMany(() => MovimientoInventario, (mov) => mov.materiaPrima)
+  movimientos!: MovimientoInventario[];
 }
