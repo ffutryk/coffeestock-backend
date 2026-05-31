@@ -19,7 +19,16 @@ export const AppDataSource = new DataSource({
   database: DB_DATABASE,
   synchronize: DEBUG,
   logging: DEBUG,
-  entities: [Producto, Venta, ItemVenta, Usuario, MateriaPrima, Inventario, MovimientoInventario],
+  entities: [
+    Producto,
+    Venta,
+    ItemVenta,
+    Usuario,
+    MateriaPrima,
+    Inventario,
+    MovimientoInventario,
+    Receta,
+  ],
   subscribers: [],
   migrations: [],
 });

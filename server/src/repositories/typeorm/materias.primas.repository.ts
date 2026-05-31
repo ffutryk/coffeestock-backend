@@ -1,3 +1,4 @@
+import { In } from "typeorm";
 import { MateriaPrima } from "../../models/entities/materia-prima";
 import { MateriasPrimasRepository } from "../interfaces/materias.primas.interface";
 import { TypeOrmBaseRepository } from "./base.repository";
@@ -15,6 +16,8 @@ export class TypeOrmMateriasPrimasRepository
   }): Promise<MateriaPrima | null> {
     return await this.repository.findOneBy(nameAndBrand);
   }
-}
 
-export default TypeOrmMateriasPrimasRepository;
+  async findByIds(ids: number[]): Promise<MateriaPrima[]> {
+    return this.repository.findBy({ id: In(ids) });
+  }
+}

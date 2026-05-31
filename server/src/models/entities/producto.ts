@@ -5,7 +5,7 @@ import { Receta } from "./receta";
 import { MovimientoInventario } from "./movimiento-inventario";
 import { Inventario } from "./inventario";
 import { ResultadoVenta } from "../types/resultado-venta";
-import { StockInsuficienteError } from "../../errors";
+import { IngredientesDuplicadosError, StockInsuficienteError } from "../../errors";
 import { MateriaPrima } from "./materia-prima";
 
 @Entity({ name: "productos" })
@@ -105,5 +105,15 @@ export class Producto extends Auditable {
       inventariosModificados: inventarios,
       movimientosGenerados: movimientos,
     };
+  }
+
+  construirReceta(ingredientes: { materiaPrima: MateriaPrima; cantidad: number }[]): Receta[] {
+    const ids = ingredientes.map((i) => i.materiaPrima.id);
+
+    if (new Set(ids).size !== ids.length) throw new IngredientesDuplicadosError();
+
+    return ingredientes.map(({ materiaPrima, cantidad }) =>
+      Receta.crear(this, materiaPrima, cantidad),
+    );
   }
 }

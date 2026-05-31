@@ -31,3 +31,11 @@ export class StockInsuficienteError extends AppError {
     super(`Stock insuficiente de ${nombre}`);
   }
 }
+
+export class IngredientesDuplicadosError extends AppError {
+  readonly statusCode = 400;
+
+  constructor() {
+    super(`Hay ingredientes duplicados en la receta.`);
+  }
+}
