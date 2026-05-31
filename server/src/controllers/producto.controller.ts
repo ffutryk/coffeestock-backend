@@ -2,14 +2,12 @@ import type { NextFunction, Request, Response } from "express";
 import { ProductoService } from "../services/producto.service";
 import { BadRequestError } from "../errors";
 
-const MOCK_USER_ID = 1;
-
 export class ProductoController {
   constructor(private readonly productoService: ProductoService) {}
 
   crear = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const creado = await this.productoService.crearProducto(req.body, MOCK_USER_ID);
+      const creado = await this.productoService.crearProducto(req.body, req.user!.id);
       return res.status(201).json(creado);
     } catch (err) {
       next(err);
@@ -54,7 +52,7 @@ export class ProductoController {
       const actualizado = await this.productoService.actualizarProducto(
         id,
         req.body,
-        1 /*Id de prueba*/,
+        req.user!.id,
       );
 
       return res.status(200).send(actualizado);
@@ -73,7 +71,7 @@ export class ProductoController {
       }
 
       const id = parseInt(idParam);
-      await this.productoService.eliminarProducto(id, 2 /*Id de prueba*/);
+      await this.productoService.eliminarProducto(id, req.user!.id);
 
       return res.status(200).json({
         success: true,

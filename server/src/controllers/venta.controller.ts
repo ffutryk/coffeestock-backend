@@ -8,14 +8,7 @@ export class VentaController {
 
   crear = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      /* AGREGAR CUANDO SE IMPLEMENTE AUTENTICACIÓN
-      const userId = req.user?.id;
-
-      if (!userId) {
-          return res.status(401).json({ message: "Usuario no autenticado" });
-      }
-      */
-      const userId = 1;
+      const userId = req.user!.id;
       const nuevaVenta = await this.ventaService.crearVenta(req.body, userId);
       const respuesta = new VentaResponseDTO(nuevaVenta);
 
@@ -32,13 +25,7 @@ export class VentaController {
     try {
       const id = parseInt(req.params.id as string);
 
-      /* AGREGAR CUANDO SE IMPLEMENTE AUTENTICACIÓN
-      const userId = req.user?.id;
-      if (!userId) {
-          return res.status(401).json({ message: "Usuario no autenticado" });
-      }
-      */
-      const userId = 1;
+      const userId = req.user!.id;
       const ventaActualizada = await this.ventaService.actualizarVenta(id, req.body, userId);
       const respuesta = new VentaResponseDTO(ventaActualizada);
 
@@ -72,7 +59,7 @@ export class VentaController {
   eliminar = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const id = parseInt(req.params.id as string);
-      const deletedBy = 1; // Cambiar a userId cuando se implemente autenticación
+      const deletedBy = req.user!.id;
       const resultado = await this.ventaService.eliminar(id, deletedBy);
 
       return res.status(200).json({

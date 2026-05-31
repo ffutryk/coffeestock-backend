@@ -17,10 +17,10 @@ export class EstadisticaController {
 
   obtenerEstadisticasProductos = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const user = (req as any).user?.username || "usuarioDePrueba"; // uso el any para que no me tiro error en el req.user
+      const userId = req.user!.id.toString();
 
       const estadisticas: ReporteEstadisticasDTO =
-        await this.estadisticaService.obtenerEstadisticasProductos(user);
+        await this.estadisticaService.obtenerEstadisticasProductos(userId);
 
       return res.status(200).json(estadisticas);
     } catch (err) {
