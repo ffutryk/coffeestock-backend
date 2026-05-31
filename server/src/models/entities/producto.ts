@@ -16,7 +16,7 @@ export class Producto extends Auditable {
   @Column("int", { default: 0 })
   stock!: number;
 
-  @Column()
+  @Column("decimal")
   precio!: number;
 
   @Column({ type: "enum", enum: TipoItemVenta })

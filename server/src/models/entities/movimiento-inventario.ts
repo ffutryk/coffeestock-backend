@@ -1,19 +1,14 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  CreateDateColumn,
-  UpdateDateColumn,
-  DeleteDateColumn,
-} from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from "typeorm";
+import { Auditable } from "../base/auditable";
+import { MateriaPrima } from "./materia-prima";
 
 @Entity({ name: "movimientos_inventario" })
-export class MovimientoInventario {
+export class MovimientoInventario extends Auditable {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Column("int")
-  idMateriaPrima!: number;
+  @ManyToOne(() => MateriaPrima, { nullable: false, onDelete: "CASCADE" })
+  materiaPrima!: MateriaPrima;
 
   @Column("decimal", { precision: 10, scale: 2 })
   cantidad!: number; // (+ para ingresos, - para egresos)
@@ -23,22 +18,4 @@ export class MovimientoInventario {
 
   @Column("text", { nullable: true })
   nota?: string;
-  
-  @CreateDateColumn()
-  createdAt!: Date;
-
-  @Column("varchar", { nullable: true })
-  createdBy?: string;
-
-  @UpdateDateColumn()
-  updatedAt!: Date;
-
-  @Column("varchar", { nullable: true })
-  updatedBy?: string;
-
-  @DeleteDateColumn()
-  deletedAt?: Date;
-
-  @Column("varchar", { nullable: true })
-  deletedBy?: string;
 }

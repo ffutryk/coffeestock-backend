@@ -1,4 +1,4 @@
-import { MateriaPrima } from "../../models/entities/materiaPrima";
+import { MateriaPrima } from "../../models/entities/materia-prima";
 import { MateriasPrimasRepository } from "../interfaces/materias.primas.interface";
 import { TypeOrmBaseRepository } from "./base.repository";
 

@@ -1,6 +1,6 @@
 import { CrearMateriaPrimaDTO } from "../dtos/materiasPrimas/crear.dto";
 import { BadRequestError } from "../errors";
-import { MateriaPrima } from "../models/entities/materiaPrima";
+import { MateriaPrima } from "../models/entities/materia-prima";
 import { MateriasPrimasRepository } from "../repositories/interfaces/materias.primas.interface";
 import { IMateriasPrimasService } from "./interfaces/materias.primas.service";
 
