@@ -3,13 +3,15 @@ import { BaseRepository } from "../interfaces/base.interface";
 import { AppDataSource } from "../../config/data-source";
 import { Paginacion } from "../../models/types/paginacion";
 import { ResultadoPaginado } from "../../models/types/resultado-paginado";
+import { Auditable } from "../../models/base/auditable";
+import { AuthContext } from "../../context/auth.context";
 
 interface WithId {
   id: number;
 }
 
 export abstract class TypeOrmBaseRepository<
-  T extends ObjectLiteral & WithId,
+  T extends ObjectLiteral & WithId & Auditable,
 > implements BaseRepository<T> {
   protected repository: Repository<T>;
 
@@ -43,12 +45,26 @@ export abstract class TypeOrmBaseRepository<
   }
 
   async save(entity: T): Promise<T> {
+    if (entity instanceof Auditable) {
+      const modifiedBy = AuthContext.getUserId();
+
+      entity.createdBy = modifiedBy;
+      entity.updatedBy = modifiedBy;
+    }
+
     return await this.repository.save(entity);
   }
 
   async delete(id: number): Promise<boolean> {
-    const result = await this.repository.softDelete(id);
-    return (result.affected ?? 0) > 0;
+    const entity = await this.findById(id);
+
+    if (!entity) return false;
+
+    entity.deletedBy = AuthContext.getUserId();
+
+    await this.repository.softRemove(entity);
+
+    return true;
   }
 
   async restore(id: number): Promise<boolean> {

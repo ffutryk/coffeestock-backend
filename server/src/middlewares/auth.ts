@@ -5,6 +5,7 @@ import { UnauthorizedError, ForbiddenError } from "../errors";
 import { TypeOrmUsuarioRepository } from "../repositories/typeorm/usuario.repository";
 import { TokenPayload } from "../models/types/token-payload";
 import { UsuarioService } from "../services/usuario.service";
+import { AuthContext } from "../context/auth.context";
 
 const usuarioRepository = new TypeOrmUsuarioRepository();
 const usuarioService = new UsuarioService(usuarioRepository);
@@ -26,13 +27,11 @@ export const auth = async (req: Request, _res: Response, next: NextFunction) => 
 
     const usuario = await usuarioService.recuperarPorId(userId);
 
-    if (!usuario) {
-      throw new UnauthorizedError("No estás autorizado a realizar esta acción");
-    }
+    if (!usuario) throw new UnauthorizedError("No estás autorizado a realizar esta acción");
 
     req.user = { id: usuario.id, rol: usuario.rol };
 
-    next();
+    return AuthContext.run(usuario.id, next);
   } catch (err) {
     next(err);
   }
