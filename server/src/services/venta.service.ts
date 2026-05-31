@@ -9,6 +9,8 @@ import { ProductoRepository } from "../repositories/interfaces/producto.interfac
 import type { ActualizarVentaDTO } from "../dtos/venta/actualizar.dto";
 import type { CrearVentaDTO } from "../dtos/venta/crear.dto";
 import { PaginacionDTO } from "../dtos/paginacion.dto";
+import { Inventario } from "../models/entities/inventario";
+import { MovimientoInventario } from "../models/entities/movimiento-inventario";
 
 export class VentaService {
   constructor(
@@ -21,15 +23,30 @@ export class VentaService {
     await queryRunner.startTransaction();
 
     try {
-      const nuevaVenta = new Venta();
-      nuevaVenta.medioDePago = datos.medioDePago;
+      const manager = queryRunner.manager;
+      const ids = datos.items.map((i) => i.productoId);
+      const productos = await this.productoRepository.findWithInventarios(ids);
 
-      nuevaVenta.items = await this.procesarYValidarItems(datos.items, nuevaVenta);
+      if (productos.length !== ids.length)
+        throw new NotFoundError("Uno o más productos no existen");
 
-      const productosAActualizar = nuevaVenta.items.map((i) => i.producto);
+      const productosMap = new Map(productos.map((p) => [p.id, p]));
 
-      await queryRunner.manager.save(productosAActualizar);
-      const ventaGuardada = await queryRunner.manager.save(nuevaVenta);
+      const venta = Venta.crear(datos.medioDePago);
+
+      const inventarios: Inventario[] = [];
+      const movimientos: MovimientoInventario[] = [];
+
+      for (const { productoId, cantidad } of datos.items) {
+        const efectos = venta.agregarItem(productosMap.get(productoId)!, cantidad);
+
+        inventarios.push(...efectos.inventariosModificados);
+        movimientos.push(...efectos.movimientosGenerados);
+      }
+
+      await manager.save(inventarios);
+      await manager.save(movimientos);
+      const ventaGuardada = await manager.save(venta);
 
       await queryRunner.commitTransaction();
       return ventaGuardada;

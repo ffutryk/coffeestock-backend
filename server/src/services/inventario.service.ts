@@ -1,7 +1,7 @@
 import { Inventario } from "../models/entities/inventario";
 import { RegistrarMovimientoDTO } from "../dtos/inventario/registrar-movimiento.dto";
 import { InventarioDao } from "../repositories/interfaces/inventario.interface";
-import { MovimientoInventarioDao } from "../repositories/interfaces/movimiento.interface";
+import { MovimientoInventarioRepository } from "../repositories/interfaces/movimiento.interface";
 import { AppDataSource } from "../config/data-source";
 import { MovimientoInventario } from "../models/entities/movimiento-inventario";
 import { BadRequestError, NotFoundError } from "../errors";
@@ -10,7 +10,7 @@ import { MotivoMovimiento } from "../models/enums/motivo-movimiento";
 export class InventarioService {
   constructor(
     private readonly inventarioDao: InventarioDao,
-    private readonly movimientoDao: MovimientoInventarioDao,
+    private readonly movimientoDao: MovimientoInventarioRepository,
   ) {}
 
   async obtenerInventario() {

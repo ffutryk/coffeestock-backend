@@ -1,14 +1,14 @@
 import { Repository } from "typeorm";
 import { AppDataSource } from "../../config/data-source";
 import { Inventario } from "../../models/entities/inventario";
-import { MateriaPrima } from "../../models/entities/materiaPrima";
+import { MateriaPrima } from "../../models/entities/materia-prima";
 import { InventarioDao } from "../interfaces/inventario.interface";
 
 export class TypeORMInventarioRepository implements InventarioDao {
   private repository: Repository<Inventario> = AppDataSource.getRepository(Inventario);
 
   async findById(idMateriaPrima: number): Promise<Inventario | null> {
-    return await this.repository.findOneBy({ idMateriaPrima });
+    return await this.repository.findOneBy({ materiaPrima: { id: idMateriaPrima } });
   }
 
   async save(inventario: Inventario): Promise<Inventario> {
