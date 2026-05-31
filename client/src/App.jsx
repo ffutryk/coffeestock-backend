@@ -6,6 +6,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import Vender from "./pages/Vender";
+import Inventario from "./pages/Inventario";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Layout from "./components/Layout";
 
@@ -51,7 +52,7 @@ function App() {
         <Route path="/dashboard" element={<Dashboard usuario={usuario} onLogout={handleLogout} />} />
         <Route path="/vender" element={<Vender />} />
         {/* Placeholder para otras rutas */}
-        <Route path="/inventario" element={<div className="placeholder-page"><h2>Inventario (Próximamente)</h2></div>} />
+        <Route path="/inventario" element={<Inventario/>} />
         <Route path="/reportes" element={<div className="placeholder-page"><h2>Reportes (Próximamente)</h2></div>} />
         <Route path="/auditoria" element={<div className="placeholder-page"><h2>Auditoría (Próximamente)</h2></div>} />
         <Route path="/empleados" element={<div className="placeholder-page"><h2>Empleados (Próximamente)</h2></div>} />
