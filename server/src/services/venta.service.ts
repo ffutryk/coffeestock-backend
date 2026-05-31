@@ -42,7 +42,7 @@ export class VentaService {
     });
   }
 
-  async crearVenta(datos: CrearVentaDTO, createdBy_id: number): Promise<Venta> {
+  async crearVenta(datos: CrearVentaDTO): Promise<Venta> {
     const queryRunner = AppDataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
@@ -50,7 +50,6 @@ export class VentaService {
     try {
       const nuevaVenta = new Venta();
       nuevaVenta.medioDePago = datos.medioDePago;
-      nuevaVenta.createdBy = createdBy_id;
 
       nuevaVenta.items = await this.procesarYValidarItems(datos.items, nuevaVenta);
 
@@ -69,7 +68,7 @@ export class VentaService {
     }
   }
 
-  async actualizarVenta(id: number, datos: ActualizarVentaDTO, updatedBy: number): Promise<Venta> {
+  async actualizarVenta(id: number, datos: ActualizarVentaDTO): Promise<Venta> {
     const queryRunner = AppDataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
@@ -92,7 +91,6 @@ export class VentaService {
       }
 
       if (datos.medioDePago) ventaExistente.medioDePago = datos.medioDePago;
-      ventaExistente.updatedBy = updatedBy;
 
       if (datos.items) {
         await queryRunner.manager.remove(ventaExistente.items);
@@ -123,15 +121,12 @@ export class VentaService {
     return this.ventaRepository.findManyWithItems(paginacion);
   }
 
-  async eliminar(id: number, deletedBy: number): Promise<boolean> {
+  async eliminar(id: number): Promise<boolean> {
     const venta = await this.ventaRepository.findById(id);
 
     if (!venta) {
       throw new NotFoundError("No se pudo encontrar la venta");
     }
-
-    venta.deletedBy = deletedBy;
-    await this.ventaRepository.save(venta);
 
     return await this.ventaRepository.delete(id);
   }

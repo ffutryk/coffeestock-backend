@@ -14,7 +14,7 @@ export class RecetaService {
         private readonly materiaPrimaRepository: MateriasPrimasRepository,
     ) {}
 
-    async crearReceta(datos: CrearRecetaDTO, createdBy: number): Promise<RecetaResponseDTO> {
+    async crearReceta(datos: CrearRecetaDTO): Promise<RecetaResponseDTO> {
         const producto = await this.productoRepository.findById(datos.idProducto);
         if (!producto) {
             throw new NotFoundError("No se encontró el producto");
@@ -35,7 +35,6 @@ export class RecetaService {
             receta.producto = producto;
             receta.materiaPrima = materiaPrima;
             receta.cantidad = ingrediente.cantidad;
-            receta.createdBy = createdBy;
             const guardada = await this.recetaRepository.save(receta);
             recetasGuardadas.push(guardada);
         }
