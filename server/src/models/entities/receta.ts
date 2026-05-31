@@ -1,6 +1,6 @@
 import {Entity, Column, ManyToOne, PrimaryGeneratedColumn} from "typeorm";
 import { Producto } from "./producto";
-import { MateriaPrima } from "./materiaPrima";
+import { MateriaPrima } from "./materia-prima";
 import { Auditable } from "../base/auditable";
 
 @Entity({ name: "recetas" })
@@ -22,6 +22,7 @@ export class Receta extends Auditable {
 
   @Column("decimal", {
     precision: 10,
-    scale: 2})
-  cantidad!: number;
+      scale: 2
+  })
+  cantidad!: number;        
 }

@@ -15,33 +15,6 @@ export class VentaService {
     private readonly ventaRepository: VentaRepository,
     private readonly productoRepository: ProductoRepository,
   ) {}
-
-  private async procesarYValidarItems(
-    itemsDto: { productoId: number; cantidad: number }[],
-    venta: Venta,
-  ): Promise<ItemVenta[]> {
-    const ids = itemsDto.map((i) => i.productoId);
-
-    const productosEnDB = await this.productoRepository.findByIds(ids);
-    if (productosEnDB.length !== ids.length) {
-      throw new NotFoundError("Uno o más productos no existen");
-    }
-
-    const productosMap = new Map(productosEnDB.map((p) => [p.id, p]));
-
-    return itemsDto.map((itemDto) => {
-      const producto = productosMap.get(itemDto.productoId)!;
-
-      if (producto.stock !== null && producto.stock < itemDto.cantidad) {
-        throw new BadRequestError(`Stock insuficiente para: ${producto.nombre}`);
-      }
-
-      if (producto.stock !== null) producto.stock -= itemDto.cantidad;
-
-      return ItemVenta.create(producto, itemDto.cantidad, venta);
-    });
-  }
-
   async crearVenta(datos: CrearVentaDTO): Promise<Venta> {
     const queryRunner = AppDataSource.createQueryRunner();
     await queryRunner.connect();
@@ -74,38 +47,47 @@ export class VentaService {
     await queryRunner.startTransaction();
 
     try {
-      const ventaExistente = await queryRunner.manager.findOne(Venta, {
-        where: { id },
-        relations: ["items", "items.producto"],
-      });
+      const manager = queryRunner.manager;
+      const ventaExistente = await this.ventaRepository.findByIdWithInventories(id);
 
       if (!ventaExistente) throw new NotFoundError("Venta no encontrada");
 
-      const productosAfectados = new Set<Producto>();
+      const inventarios: Inventario[] = [];
+      const movimientos: MovimientoInventario[] = [];
 
       for (const item of ventaExistente.items) {
-        if (item.producto && item.producto.stock !== null) {
-          item.producto.stock += item.cantidad;
-          productosAfectados.add(item.producto);
+        if (item.producto) {
+          const efectos = ventaExistente.revertirItem(item);
+
+          inventarios.push(...efectos.inventariosModificados);
+          movimientos.push(...efectos.movimientosGenerados);
         }
       }
 
-      if (datos.medioDePago) ventaExistente.medioDePago = datos.medioDePago;
-
-      if (datos.items) {
-        await queryRunner.manager.remove(ventaExistente.items);
-
-        const nuevosItems = await this.procesarYValidarItems(datos.items, ventaExistente);
-        ventaExistente.items = nuevosItems;
-
-        nuevosItems.forEach((item) => productosAfectados.add(item.producto));
+      if (datos.medioDePago) {
+        ventaExistente.medioDePago = datos.medioDePago;
       }
 
-      if (productosAfectados.size > 0) {
-        await queryRunner.manager.save(Array.from(productosAfectados));
+      if (datos.items && datos.items.length > 0) {
+        const ids = datos.items.map((i) => i.productoId);
+        const productos = await this.productoRepository.findWithInventarios(ids);
+
+        if (productos.length !== ids.length) {
+          throw new NotFoundError("Uno o más productos no existen");
+        }
+
+        const productosMap = new Map(productos.map((p) => [p.id, p]));
+
+        for (const { productoId, cantidad } of datos.items) {
+          const efectos = ventaExistente.agregarItem(productosMap.get(productoId)!, cantidad);
+          inventarios.push(...efectos.inventariosModificados);
+          movimientos.push(...efectos.movimientosGenerados);
+        }
       }
 
-      const ventaActualizada = await queryRunner.manager.save(ventaExistente);
+      await manager.save(inventarios);
+      await manager.save(movimientos);
+      const ventaActualizada = await manager.save(ventaExistente);
 
       await queryRunner.commitTransaction();
       return ventaActualizada;

@@ -28,4 +28,9 @@ export class Inventario extends Auditable {
 
     return MovimientoInventario.generarVenta(materiaPrima, cantidad);
   }
+
+  devolverStock(cantidad: number, materiaPrima: MateriaPrima, nota?: string): MovimientoInventario {
+    this.stockActual += cantidad;
+    return MovimientoInventario.generarCorreccion(materiaPrima, cantidad, nota);
+  }
 }
