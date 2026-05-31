@@ -5,6 +5,7 @@ import { MovimientoInventarioDao } from "../repositories/interfaces/movimiento.i
 import { AppDataSource } from "../config/data-source";
 import { MovimientoInventario } from "../models/entities/movimiento-inventario";
 import { BadRequestError, NotFoundError } from "../errors";
+import { EntityManager } from "typeorm";
 
 export class InventarioService {
   constructor(
@@ -38,7 +39,7 @@ export class InventarioService {
       impactoStock = datos.cantidad;
     }
 
-    return await AppDataSource.transaction(async (transactionalEntityManager) => {
+    return await AppDataSource.transaction(async (transactionalEntityManager: EntityManager) => {
       const movimiento = {
         idMateriaPrima: datos.idMateriaPrima,
         cantidad: impactoStock,
