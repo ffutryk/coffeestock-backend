@@ -23,3 +23,19 @@ export class ConflictError extends AppError {
 export class InvalidCredentialsError extends AppError {
   readonly statusCode = 401;
 }
+
+export class StockInsuficienteError extends AppError {
+  readonly statusCode = 400;
+
+  constructor(nombre: string) {
+    super(`Stock insuficiente de ${nombre}`);
+  }
+}
+
+export class IngredientesDuplicadosError extends AppError {
+  readonly statusCode = 400;
+
+  constructor() {
+    super(`Hay ingredientes duplicados en la receta.`);
+  }
+}

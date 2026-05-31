@@ -28,4 +28,17 @@ export class TypeOrmVentaRepository
     });
     return { data, total };
   }
+
+  async findByIdWithInventories(id: number): Promise<Venta | null> {
+    return await this.repository.findOne({
+      where: { id },
+      relations: [
+        "items",
+        "items.producto",
+        "items.producto.recetas",
+        "items.producto.recetas.materiaPrima",
+        "items.producto.recetas.materiaPrima.inventario",
+      ],
+    });
+  }
 }

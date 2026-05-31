@@ -5,4 +5,5 @@ import { BaseRepository } from "./base.interface";
 
 export interface VentaRepository extends BaseRepository<Venta> {
   findManyWithItems(paginacion: Paginacion): Promise<ResultadoPaginado<Venta>>;
+  findByIdWithInventories(id: number): Promise<Venta | null>;
 }

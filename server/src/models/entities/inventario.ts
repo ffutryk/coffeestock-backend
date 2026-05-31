@@ -1,17 +1,13 @@
-import {
-  Entity,
-  PrimaryColumn,
-  Column,
-  CreateDateColumn,
-  UpdateDateColumn,
-  DeleteDateColumn,
-} from "typeorm";
+import { Entity, Column, OneToOne, JoinColumn, PrimaryColumn } from "typeorm";
+import { Auditable } from "../base/auditable";
+import { MateriaPrima } from "./materia-prima";
+import { MovimientoInventario } from "./movimiento-inventario";
+import { StockInsuficienteError } from "../../errors";
 
 @Entity({ name: "inventario" })
-export class Inventario {
-  // Clave primaria que referencia a la materia prima
-  @PrimaryColumn("int")
-  idMateriaPrima!: number;
+export class Inventario extends Auditable {
+  @PrimaryColumn()
+  id!: number;
 
   @Column("decimal", { precision: 10, scale: 2, default: 0 }) // el decimal cubre el caso de 0.5 kg de cafe por ejemplo
   stockActual!: number;
@@ -19,21 +15,22 @@ export class Inventario {
   @Column("decimal", { precision: 10, scale: 2, default: 0 })
   stockMinimo!: number;
 
-  @CreateDateColumn()
-  createdAt!: Date;
+  @OneToOne(() => MateriaPrima, (mp) => mp.inventario)
+  @JoinColumn({ name: "id" })
+  materiaPrima!: MateriaPrima;
 
-  @Column("varchar", { nullable: true })
-  createdBy?: string;
+  consumir(cantidad: number, materiaPrima: MateriaPrima): MovimientoInventario {
+    if (this.stockActual < cantidad) {
+      throw new StockInsuficienteError(`${materiaPrima.nombre} marca ${materiaPrima.marca}`);
+    }
 
-  @UpdateDateColumn()
-  updatedAt!: Date;
+    this.stockActual -= cantidad;
 
-  @Column("varchar", { nullable: true })
-  updatedBy?: string;
+    return MovimientoInventario.generarVenta(materiaPrima, cantidad);
+  }
 
-  @DeleteDateColumn()
-  deletedAt?: Date;
-
-  @Column("varchar", { nullable: true })
-  deletedBy?: string;
+  devolverStock(cantidad: number, materiaPrima: MateriaPrima, nota?: string): MovimientoInventario {
+    this.stockActual += cantidad;
+    return MovimientoInventario.generarCorreccion(materiaPrima, cantidad, nota);
+  }
 }
