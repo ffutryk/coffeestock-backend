@@ -1,12 +1,15 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from "typeorm";
+import { Entity, Column, ManyToOne, JoinColumn, PrimaryColumn } from "typeorm";
 import { Venta } from "./venta";
 import type { TipoItemVenta } from "../enums/tipo-item-venta";
 import { Producto } from "./producto";
 
 @Entity("item_venta")
 export class ItemVenta {
-  @PrimaryGeneratedColumn()
-  id!: number;
+  @PrimaryColumn()
+  productoId!: number;
+
+  @PrimaryColumn()
+  ventaId!: number;
 
   @Column()
   nombre!: string;
@@ -21,11 +24,11 @@ export class ItemVenta {
   tipo!: TipoItemVenta;
 
   @ManyToOne(() => Venta, (venta) => venta.items)
-  @JoinColumn({ name: "venta_id" })
+  @JoinColumn({ name: "ventaId" })
   venta!: Venta;
 
   @ManyToOne(() => Producto, { nullable: true, onDelete: "SET NULL" })
-  @JoinColumn({ name: "producto_id" })
+  @JoinColumn({ name: "productoId" })
   producto!: Producto;
 
   static create(producto: Producto, cantidad: number, venta: Venta): ItemVenta {

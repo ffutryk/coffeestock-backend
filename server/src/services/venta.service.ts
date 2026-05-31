@@ -44,9 +44,9 @@ export class VentaService {
         movimientos.push(...efectos.movimientosGenerados);
       }
 
+      const ventaGuardada = await manager.save(venta);
       await manager.save(inventarios);
       await manager.save(movimientos);
-      const ventaGuardada = await manager.save(venta);
 
       await queryRunner.commitTransaction();
       return ventaGuardada;
@@ -72,13 +72,19 @@ export class VentaService {
       const inventarios: Inventario[] = [];
       const movimientos: MovimientoInventario[] = [];
 
-      for (const item of ventaExistente.items) {
+      const itemsAEliminar = [...ventaExistente.items];
+
+      for (const item of itemsAEliminar) {
         if (item.producto) {
           const efectos = ventaExistente.revertirItem(item);
 
           inventarios.push(...efectos.inventariosModificados);
           movimientos.push(...efectos.movimientosGenerados);
         }
+      }
+
+      if (itemsAEliminar.length > 0) {
+        await manager.remove(itemsAEliminar);
       }
 
       if (datos.medioDePago) {
@@ -102,9 +108,9 @@ export class VentaService {
         }
       }
 
+      const ventaActualizada = await manager.save(ventaExistente);
       await manager.save(inventarios);
       await manager.save(movimientos);
-      const ventaActualizada = await manager.save(ventaExistente);
 
       await queryRunner.commitTransaction();
       return ventaActualizada;
