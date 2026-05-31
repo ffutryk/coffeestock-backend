@@ -1,7 +1,6 @@
 import type { NextFunction, Request, Response } from "express";
 import type { IUsuarioService } from "../services/interfaces/usuario.service";
 import type { IAuthService } from "../services/interfaces/auth.service";
-import type { UsuarioService } from "../services/usuario.service";
 import { PaginacionQuerySchema } from "../dtos/paginacion.dto";
 import { BadRequestError } from "../errors";
 import { UsuarioResponseDTO } from "../dtos/usuario/response.dto";
@@ -11,11 +10,10 @@ export default class UsuarioController {
     private readonly usuarioService: IUsuarioService,
     private readonly authService: IAuthService,
   ) {}
-  
+
   crear = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const createdBy = (req as any).user?.id;
-      const creado = await this.usuarioService.crearUsuario(req.body, createdBy);
+      const creado = await this.usuarioService.crearUsuario(req.body);
       const respuesta = new UsuarioResponseDTO(creado);
       return res
         .status(201)
@@ -29,11 +27,11 @@ export default class UsuarioController {
     try {
       const token = await this.authService.ingresarUsuario(req.body);
       res.status(200).send(token);
-    } catch(err) {
+    } catch (err) {
       next(err);
     }
   };
-  
+
   actualizar = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { id: idParam } = req.params;
@@ -79,9 +77,8 @@ export default class UsuarioController {
         throw new BadRequestError("ID inválido");
       }
 
-      const deletedBy = (req as any).user?.id || 1; // Default to 1 if no user info yet
-      await this.usuarioService.eliminarUsuario(id, deletedBy);
-      
+      await this.usuarioService.eliminarUsuario(id);
+
       return res.status(200).json({ success: true, message: "Usuario eliminado exitosamente" });
     } catch (err) {
       next(err);
@@ -97,7 +94,7 @@ export default class UsuarioController {
       }
 
       await this.usuarioService.restaurarUsuario(id);
-      
+
       return res.status(200).json({ success: true, message: "Usuario restaurado exitosamente" });
     } catch (err) {
       next(err);

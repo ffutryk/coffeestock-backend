@@ -1,8 +1,9 @@
 import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
 import { UnidadDeMedida } from "../enums/unidad-de-medida";
+import { Auditable } from "../base/auditable";
 
 @Entity()
-export class MateriaPrima {
+export class MateriaPrima extends Auditable {
   @PrimaryGeneratedColumn()
   id!: number;
 

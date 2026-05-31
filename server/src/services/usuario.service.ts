@@ -13,7 +13,7 @@ export type UsuarioSinPassword = Omit<Usuario, "password">;
 
 export class UsuarioService implements IUsuarioService {
   constructor(private readonly usuarioRepository: UsuarioRepository) {}
-  async crearUsuario(datos: CrearUsuarioDTO, createdBy?: number): Promise<Usuario> {
+  async crearUsuario(datos: CrearUsuarioDTO): Promise<Usuario> {
     const usuarioExistente = await this.usuarioRepository.findByCuil(datos.cuil);
     if (usuarioExistente) {
       throw new ConflictError("El empleado ya está registrado");
@@ -26,10 +26,6 @@ export class UsuarioService implements IUsuarioService {
     datos.password = hashSHA256(datos.password); // Para guardar la contraseña hasheada...
     Object.assign(usuario, datos);
     usuario.rol = RolUsuario.EMPLEADO;
-
-    if (createdBy) {
-      usuario.createdBy = createdBy;
-    }
 
     return await this.usuarioRepository.save(usuario);
   }
@@ -75,17 +71,15 @@ export class UsuarioService implements IUsuarioService {
     return await this.usuarioRepository.save(usuario);
   }
 
-  async eliminarUsuario(id: number, deletedBy: number): Promise<void> {
+  async eliminarUsuario(id: number): Promise<void> {
     const usuario = await this.usuarioRepository.findById(id);
 
     if (!usuario) {
       throw new NotFoundError("Usuario no encontrado");
     }
 
-    usuario.deletedBy = deletedBy;
-    await this.usuarioRepository.save(usuario);
-
     const deleted = await this.usuarioRepository.delete(id);
+
     if (!deleted) {
       throw new BadRequestError("Error al eliminar el usuario");
     }

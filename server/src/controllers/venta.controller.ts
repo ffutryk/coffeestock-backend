@@ -8,8 +8,7 @@ export class VentaController {
 
   crear = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const userId = req.user!.id;
-      const nuevaVenta = await this.ventaService.crearVenta(req.body, userId);
+      const nuevaVenta = await this.ventaService.crearVenta(req.body);
       const respuesta = new VentaResponseDTO(nuevaVenta);
 
       return res.status(201).json({
@@ -24,9 +23,7 @@ export class VentaController {
   actualizar = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const id = parseInt(req.params.id as string);
-
-      const userId = req.user!.id;
-      const ventaActualizada = await this.ventaService.actualizarVenta(id, req.body, userId);
+      const ventaActualizada = await this.ventaService.actualizarVenta(id, req.body);
       const respuesta = new VentaResponseDTO(ventaActualizada);
 
       return res.status(200).json({
@@ -59,8 +56,7 @@ export class VentaController {
   eliminar = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const id = parseInt(req.params.id as string);
-      const deletedBy = req.user!.id;
-      const resultado = await this.ventaService.eliminar(id, deletedBy);
+      const resultado = await this.ventaService.eliminar(id);
 
       return res.status(200).json({
         message: "Venta eliminada exitosamente",

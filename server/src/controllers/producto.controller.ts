@@ -7,7 +7,7 @@ export class ProductoController {
 
   crear = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const creado = await this.productoService.crearProducto(req.body, req.user!.id);
+      const creado = await this.productoService.crearProducto(req.body);
       return res.status(201).json(creado);
     } catch (err) {
       next(err);
@@ -49,11 +49,7 @@ export class ProductoController {
       }
 
       const id = parseInt(idParam);
-      const actualizado = await this.productoService.actualizarProducto(
-        id,
-        req.body,
-        req.user!.id,
-      );
+      const actualizado = await this.productoService.actualizarProducto(id, req.body);
 
       return res.status(200).send(actualizado);
     } catch (err) {
@@ -71,7 +67,7 @@ export class ProductoController {
       }
 
       const id = parseInt(idParam);
-      await this.productoService.eliminarProducto(id, req.user!.id);
+      await this.productoService.eliminarProducto(id);
 
       return res.status(200).json({
         success: true,
