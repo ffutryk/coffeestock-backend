@@ -5,6 +5,7 @@ import { UnauthorizedError, ForbiddenError } from "../errors";
 import { TypeOrmUsuarioRepository } from "../repositories/typeorm/usuario.repository";
 import { TokenPayload } from "../models/types/token-payload";
 import { UsuarioService } from "../services/usuario.service";
+import { AuthContext } from "../context/auth.context";
 
 const usuarioRepository = new TypeOrmUsuarioRepository();
 const usuarioService = new UsuarioService(usuarioRepository);
