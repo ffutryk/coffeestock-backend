@@ -1,11 +1,13 @@
 import "./App.css";
 import { useEffect, useState } from "react";
-import { Routes, Route, useNavigate } from "react-router-dom";
+import { Routes, Route, useNavigate, Navigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
+import Vender from "./pages/Vender";
 import ProtectedRoute from "./components/ProtectedRoute";
+import Layout from "./components/Layout";
 
 function decodeToken(token) {
   try {
@@ -22,7 +24,6 @@ function App() {
 
   const navigate = useNavigate();
 
-  // El efecto solo sincroniza con localStorage
   useEffect(() => {
     if (token) {
       localStorage.setItem("token", token);
@@ -33,7 +34,7 @@ function App() {
 
   const handleLogin = (t) => {
     setToken(t);
-    navigate("/dashboard");
+    navigate("/vender");
   };
 
   const handleLogout = () => {
@@ -44,6 +45,18 @@ function App() {
   return (
     <Routes>
       <Route path="/login" element={<Login onLogin={handleLogin} />} />
+      
+      {/* Rutas Protegidas dentro del Layout */}
+      <Route element={<ProtectedRoute usuario={usuario}><Layout usuario={usuario} onLogout={handleLogout} /></ProtectedRoute>}>
+        <Route path="/dashboard" element={<Dashboard usuario={usuario} onLogout={handleLogout} />} />
+        <Route path="/vender" element={<Vender />} />
+        {/* Placeholder para otras rutas */}
+        <Route path="/inventario" element={<div className="placeholder-page"><h2>Inventario (Próximamente)</h2></div>} />
+        <Route path="/reportes" element={<div className="placeholder-page"><h2>Reportes (Próximamente)</h2></div>} />
+        <Route path="/auditoria" element={<div className="placeholder-page"><h2>Auditoría (Próximamente)</h2></div>} />
+        <Route path="/empleados" element={<div className="placeholder-page"><h2>Empleados (Próximamente)</h2></div>} />
+      </Route>
+
       <Route
         path="/register"
         element={
@@ -52,8 +65,9 @@ function App() {
           </ProtectedRoute>
         }
       />
-      <Route path="/dashboard" element={<Dashboard usuario={usuario} onLogout={handleLogout} />} />
-      <Route path="*" element={<Login onLogin={handleLogin} />} />
+      
+      <Route path="/" element={<Navigate to={token ? "/vender" : "/login"} replace />} />
+      <Route path="*" element={<Navigate to={token ? "/vender" : "/login"} replace />} />
     </Routes>
   );
 }
