@@ -1,11 +1,13 @@
+import { Transactional } from "../decorators/transactional.decorator";
 import { CrearMateriaPrimaDTO } from "../dtos/materiasPrimas/crear.dto";
 import { BadRequestError } from "../errors";
 import { Inventario } from "../models/entities/inventario";
 import { MateriaPrima } from "../models/entities/materia-prima";
-import { InventarioRepository } from "../repositories/interfaces/inventario.interface";
-import { MateriasPrimasRepository } from "../repositories/interfaces/materias.primas.interface";
-import { IMateriasPrimasService } from "./interfaces/materias.primas.service";
+import type { InventarioRepository } from "../repositories/interfaces/inventario.interface";
+import type { MateriasPrimasRepository } from "../repositories/interfaces/materias.primas.interface";
+import type { IMateriasPrimasService } from "./interfaces/materias.primas.service";
 
+@Transactional()
 class MateriasPrimasService implements IMateriasPrimasService {
   constructor(
     private readonly materiasPrimasRepository: MateriasPrimasRepository,

@@ -8,9 +8,11 @@ import type { ActualizarUsuarioDTO } from "../dtos/usuario/actualizar.dto";
 import type { PaginacionDTO } from "../dtos/paginacion.dto";
 import type { ResultadoPaginado } from "../models/types/resultado-paginado";
 import type { IUsuarioService } from "./interfaces/usuario.service";
+import { Transactional } from "../decorators/transactional.decorator";
 
 export type UsuarioSinPassword = Omit<Usuario, "password">;
 
+@Transactional()
 export class UsuarioService implements IUsuarioService {
   constructor(private readonly usuarioRepository: UsuarioRepository) {}
   async crearUsuario(datos: CrearUsuarioDTO): Promise<Usuario> {
