@@ -3,14 +3,19 @@ import { auth } from "../middlewares/auth";
 import { roles } from "../middlewares/role";
 import { RolUsuario } from "../models/enums/rol-usuario";
 import MateriasPrimasController from "../controllers/materias.primas.controller";
-import MateriasPrimasService from "../services/materias.primas.service";
-import MateriasPrimasRepository from "../repositories/typeorm/materias.primas.repository";
+import { TypeOrmMateriasPrimasRepository } from "../repositories/typeorm/materias.primas.repository";
 import { validateBody } from "../middlewares/validate";
 import { CrearMateriaPrimaSchema } from "../dtos/materiasPrimas/crear.dto";
+import MateriasPrimasService from "../services/materias.primas.service";
+import { TypeORMInventarioRepository } from "../repositories/typeorm/inventario.repository";
 const router = Router();
 
-const materiasPrimasRepository = new MateriasPrimasRepository();
-const materiasPrimasService = new MateriasPrimasService(materiasPrimasRepository);
+const materiasPrimasRepository = new TypeOrmMateriasPrimasRepository();
+const inventarioRepository = new TypeORMInventarioRepository();
+const materiasPrimasService = new MateriasPrimasService(
+  materiasPrimasRepository,
+  inventarioRepository,
+);
 const materiasPrimasController = new MateriasPrimasController(materiasPrimasService);
 
 router.post(

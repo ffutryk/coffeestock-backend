@@ -14,4 +14,11 @@ export class TypeOrmProductoRepository
   async findByIds(ids: number[]): Promise<Producto[]> {
     return await this.repository.findBy({ id: In(ids) });
   }
+
+  async findWithInventarios(ids: number[]): Promise<Producto[]> {
+    return await this.repository.find({
+      where: { id: In(ids) },
+      relations: ["recetas", "recetas.materiaPrima", "recetas.materiaPrima.inventario"],
+    });
+  }
 }

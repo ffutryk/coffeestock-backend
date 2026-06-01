@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import api from "../services/api";
 import "./HistorialVentas.css";
-import * as venta from "zod/locales";
+
 
 const MEDIOS_PAGO = {
   EFECTIVO: "Efectivo",
