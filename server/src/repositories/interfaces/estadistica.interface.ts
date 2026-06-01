@@ -6,7 +6,7 @@ export interface EstadisticasVentasDTO {
   ticketPromedio: number;
 }
 
-export interface EstadisticaDao {
+export interface EstadisticaRepository {
   obtenerMetricasGenerales(): Promise<ReporteEstadisticasDTO | null>;
   obtenerEstadisticasVentas(fechaInicio?: Date, fechaFin?: Date): Promise<EstadisticasVentasDTO>;
 }

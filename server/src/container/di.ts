@@ -1,6 +1,6 @@
 import { TypeOrmVentaRepository } from "../repositories/typeorm/venta.repository";
 import { TypeOrmProductoRepository } from "../repositories/typeorm/producto.repository";
-import { TypeORMInventarioRepository } from "../repositories/typeorm/inventario.repository";
+import { TypeOrmInventarioRepository } from "../repositories/typeorm/inventario.repository";
 import { TypeORMMovimientoRepository } from "../repositories/typeorm/movimiento.repository";
 import { VentaService } from "../services/venta.service";
 import { TypeORMEstadisticaRepository } from "../repositories/typeorm/estadistica.repository";
@@ -17,7 +17,7 @@ import { RecetaService } from "../services/receta.service";
 import { UsuarioService } from "../services/usuario.service";
 
 const estadisticasRepository = new TypeORMEstadisticaRepository();
-const inventariosRepository = new TypeORMInventarioRepository();
+const inventariosRepository = new TypeOrmInventarioRepository();
 const materiasPrimasRepository = new TypeOrmMateriasPrimasRepository();
 const movimientosRepository = new TypeORMMovimientoRepository();
 const productosRepository = new TypeOrmProductoRepository();
