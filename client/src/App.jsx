@@ -54,9 +54,23 @@ function App() {
         <Route path="/vender" element={<Vender />} />
         {/* Placeholder para otras rutas */}
         <Route path="/inventario" element={<div className="placeholder-page"><h2>Inventario (Próximamente)</h2></div>} />
-        <Route path="/reportes" element={<div className="placeholder-page"><h2>Reportes (Próximamente)</h2></div>} />
+        <Route 
+          path="/reportes" 
+          element={
+            <ProtectedRoute usuario={usuario} allowedRoles={["GERENTE"]}>
+              <div className="placeholder-page"><h2>Reportes (Próximamente)</h2></div>
+            </ProtectedRoute>
+          } 
+        />
         <Route path="/historial-ventas" element={<HistorialVentas usuario={usuario} />} />
-        <Route path="/empleados" element={<div className="placeholder-page"><h2>Empleados (Próximamente)</h2></div>} />
+        <Route 
+          path="/empleados" 
+          element={
+            <ProtectedRoute usuario={usuario} allowedRoles={["GERENTE"]}>
+              <div className="placeholder-page"><h2>Empleados (Próximamente)</h2></div>
+            </ProtectedRoute>
+          } 
+        />
       </Route>
 
       <Route

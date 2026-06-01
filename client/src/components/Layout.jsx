@@ -30,6 +30,7 @@ export default function Layout({ usuario, onLogout }) {
     { 
       name: "Reportes", 
       path: "/reportes", 
+      allowedRoles: ["GERENTE"],
       icon: (
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <line x1="18" y1="20" x2="18" y2="10"></line>
@@ -51,6 +52,7 @@ export default function Layout({ usuario, onLogout }) {
     { 
       name: "Empleados", 
       path: "/empleados", 
+      allowedRoles: ["GERENTE"],
       icon: (
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
@@ -62,6 +64,10 @@ export default function Layout({ usuario, onLogout }) {
     },
   ];
 
+  const filteredNavItems = navItems.filter(item => 
+    !item.allowedRoles || item.allowedRoles.includes(usuario?.role)
+  );
+
   return (
     <div className="layout-container">
       <header className="main-header">
@@ -70,7 +76,7 @@ export default function Layout({ usuario, onLogout }) {
             <img src={logoCoffeeStock} alt="CoffeeStock Logo" className="logo-image" />
           </div>
           <nav className="main-nav">
-            {navItems.map((item) => (
+            {filteredNavItems.map((item) => (
               <Link
                 key={item.name}
                 to={item.path}
