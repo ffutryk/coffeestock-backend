@@ -1,6 +1,8 @@
 import { AppDataSource } from "../config/data-source";
 import { TypeOrmTransactionContext } from "../context/typeorm-transaction.context";
 
+type Constructor = abstract new (...args: never[]) => unknown;
+
 const wrapMethod = (descriptor: PropertyDescriptor) => {
   const fn = descriptor.value;
   descriptor.value = async function (...args: unknown[]) {
@@ -11,18 +13,22 @@ const wrapMethod = (descriptor: PropertyDescriptor) => {
   };
 };
 
-export const Transactional = (): ClassDecorator => (target) => {
-  const prototype = (target as Function).prototype;
-  Object.getOwnPropertyNames(prototype)
-    .filter((key) => key !== "constructor")
-    .forEach((key) => {
-      const desc = Object.getOwnPropertyDescriptor(prototype, key);
-      if (desc && typeof desc.value === "function") {
-        wrapMethod(desc);
-        Object.defineProperty(prototype, key, desc);
-      }
-    });
-};
+export const Transactional =
+  () =>
+  <T extends Constructor>(target: T): void => {
+    const prototype = target.prototype;
+
+    Object.getOwnPropertyNames(prototype)
+      .filter((key) => key !== "constructor")
+      .forEach((key) => {
+        const desc = Object.getOwnPropertyDescriptor(prototype, key);
+
+        if (desc && typeof desc.value === "function") {
+          wrapMethod(desc);
+          Object.defineProperty(prototype, key, desc);
+        }
+      });
+  };
 
 export const TransactionalMethod =
   (): MethodDecorator => (_, __, descriptor: PropertyDescriptor) => {
