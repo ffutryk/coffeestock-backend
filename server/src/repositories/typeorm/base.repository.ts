@@ -5,12 +5,14 @@ import { Paginacion } from "../../models/types/paginacion";
 import { ResultadoPaginado } from "../../models/types/resultado-paginado";
 import { Auditable } from "../../models/base/auditable";
 import { AuthContext } from "../../context/auth.context";
+import { TypeOrmTransactionContext } from "../../context/typeorm-transaction.context";
 
 export abstract class TypeOrmBaseRepository<T extends ObjectLiteral> implements BaseRepository<T> {
-  protected repository: Repository<T>;
+  constructor(private readonly entity: EntityTarget<T>) {}
 
-  constructor(entity: EntityTarget<T>) {
-    this.repository = AppDataSource.getRepository(entity);
+  protected get repository(): Repository<T> {
+    const manager = TypeOrmTransactionContext.getManager();
+    return manager ? manager.getRepository(this.entity) : AppDataSource.getRepository(this.entity);
   }
 
   // eslint-disable-next-line
