@@ -5,12 +5,14 @@ import { Paginacion } from "../../models/types/paginacion";
 import { ResultadoPaginado } from "../../models/types/resultado-paginado";
 import { Auditable } from "../../models/base/auditable";
 import { AuthContext } from "../../context/auth.context";
+import { TypeOrmTransactionContext } from "../../context/typeorm-transaction.context";
 
 export abstract class TypeOrmBaseRepository<T extends ObjectLiteral> implements BaseRepository<T> {
-  protected repository: Repository<T>;
+  constructor(private readonly entity: EntityTarget<T>) {}
 
-  constructor(entity: EntityTarget<T>) {
-    this.repository = AppDataSource.getRepository(entity);
+  protected get repository(): Repository<T> {
+    const manager = TypeOrmTransactionContext.getManager();
+    return manager ? manager.getRepository(this.entity) : AppDataSource.getRepository(this.entity);
   }
 
   // eslint-disable-next-line
@@ -42,14 +44,24 @@ export abstract class TypeOrmBaseRepository<T extends ObjectLiteral> implements 
     return { data, total };
   }
 
-  async save(entity: T): Promise<T> {
+  private audit(entity: T) {
     if (entity instanceof Auditable) {
       const modifiedBy = AuthContext.getUserId();
       entity.createdBy = modifiedBy;
       entity.updatedBy = modifiedBy;
     }
+  }
 
-    return await this.repository.save(entity);
+  async save(entity: T): Promise<T>;
+  async save(entities: T[]): Promise<T[]>;
+  async save(entityOrEntities: T | T[]): Promise<T | T[]> {
+    if (Array.isArray(entityOrEntities)) {
+      entityOrEntities.forEach((e) => this.audit(e));
+      return this.repository.save(entityOrEntities);
+    }
+
+    this.audit(entityOrEntities);
+    return this.repository.save(entityOrEntities);
   }
 
   // eslint-disable-next-line
