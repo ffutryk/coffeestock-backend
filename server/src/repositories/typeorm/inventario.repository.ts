@@ -7,8 +7,8 @@ import { InventarioDao } from "../interfaces/inventario.interface";
 export class TypeORMInventarioRepository implements InventarioDao {
   private repository: Repository<Inventario> = AppDataSource.getRepository(Inventario);
 
-  async findById(idMateriaPrima: number): Promise<Inventario | null> {
-    return await this.repository.findOneBy({ idMateriaPrima });
+  async findById(id: number): Promise<Inventario | null> {
+    return await this.repository.findOneBy({ id });
   }
 
   async save(inventario: Inventario): Promise<Inventario> {

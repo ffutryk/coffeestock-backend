@@ -1,3 +1,7 @@
+body {
+    background: #ffffff !important;
+}
+
 .historial-container {
     max-width: 960px;
     margin: 72px auto;
