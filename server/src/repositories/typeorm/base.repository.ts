@@ -42,14 +42,24 @@ export abstract class TypeOrmBaseRepository<T extends ObjectLiteral> implements 
     return { data, total };
   }
 
-  async save(entity: T): Promise<T> {
+  private audit(entity: T) {
     if (entity instanceof Auditable) {
       const modifiedBy = AuthContext.getUserId();
       entity.createdBy = modifiedBy;
       entity.updatedBy = modifiedBy;
     }
+  }
 
-    return await this.repository.save(entity);
+  async save(entity: T): Promise<T>;
+  async save(entities: T[]): Promise<T[]>;
+  async save(entityOrEntities: T | T[]): Promise<T | T[]> {
+    if (Array.isArray(entityOrEntities)) {
+      entityOrEntities.forEach((e) => this.audit(e));
+      return this.repository.save(entityOrEntities);
+    }
+
+    this.audit(entityOrEntities);
+    return this.repository.save(entityOrEntities);
   }
 
   // eslint-disable-next-line
