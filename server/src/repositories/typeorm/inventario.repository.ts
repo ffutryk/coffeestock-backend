@@ -26,7 +26,7 @@ export class TypeOrmInventarioRepository
         'mp.unidad AS "unidadDeMedida"',
       ])
       .from(MateriaPrima, "mp")
-      .leftJoin(Inventario, "i", "mp.id = i.idMateriaPrima");
+      .leftJoin(Inventario, "i", "mp.id = i.id");
 
     return await query.getRawMany();
   }

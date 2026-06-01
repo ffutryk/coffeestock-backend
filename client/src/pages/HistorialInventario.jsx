@@ -3,10 +3,11 @@ import api from "../services/api";
 import "./HistorialInventario.css";
 
 const MOTIVOS = {
-  compra: "Updated Stock",
-  uso: "AutoStock Update",
-  descarte: "Stock Disposal",
-  correccion: "Stock Correction",
+  COMPRA: "Updated Stock",
+  VENTA: "AutoStock Update",
+  USO: "AutoStock Update",
+  DESCARTE: "Stock Disposal",
+  CORRECCION: "Stock Correction",
 };
 
 function formatearFecha(iso) {
@@ -27,66 +28,26 @@ function formatearHora(iso) {
 export default function HistorialInventario({ usuario }) {
   const [movimientos, setMovimientos] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [pagina, setPagina] = useState(1);
   const itemsPorPagina = 5;
-  const movimientosMock = [
-    {
-      id: 1,
-      motivo: "compra",
-      cantidad: 500,
-      materiaPrima: { id: 1, nombre: "Café en grano", unidad: "KG" },
-      ventaId: null,
-      createdAt: "2026-05-30T14:30:00.000Z",
-    },
-    {
-      id: 2,
-      motivo: "uso",
-      cantidad: -200,
-      materiaPrima: { id: 1, nombre: "Café en grano", unidad: "MG" },
-      ventaId: 42,
-      createdAt: "2026-05-30T15:10:00.000Z",
-    },
-    {
-      id: 3,
-      motivo: "compra",
-      cantidad: 2,
-      materiaPrima: { id: 3, nombre: "Leche entera", unidad: "L" },
-      ventaId: null,
-      createdAt: "2026-05-29T09:00:00.000Z",
-    },
-    {
-      id: 4,
-      motivo: "uso",
-      cantidad: -500,
-      materiaPrima: { id: 3, nombre: "Leche entera", unidad: "ML" },
-      ventaId: 41,
-      createdAt: "2026-05-29T10:45:00.000Z",
-    },
-    {
-      id: 5,
-      motivo: "descarte",
-      cantidad: -100,
-      materiaPrima: { id: 2, nombre: "Azúcar", unidad: "KG" },
-      ventaId: null,
-      createdAt: "2026-05-28T17:20:00.000Z",
-    },
-    {
-      id: 6,
-      motivo: "correccion",
-      cantidad: 50,
-      materiaPrima: { id: 2, nombre: "Azúcar", unidad: "KG" },
-      nota: "Error de conteo en inventario anterior",
-      ventaId: null,
-      createdAt: "2026-05-28T12:00:00.000Z",
-    },
-  ];
+
+  const cargarHistorial = async () => {
+    setLoading(true);
+    setError("");
+    try {
+      const res = await api.get("/inventario/movimientos");
+      setMovimientos(res.data);
+    } catch (err) {
+      setError("Error al cargar el historial de movimientos");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    setLoading(true);
-    setTimeout(() => {
-      setMovimientos(movimientosMock);
-      setLoading(false);
-    }, 500);
+    cargarHistorial();
   }, []);
 
   const totalPaginas = Math.ceil(movimientos.length / itemsPorPagina);
@@ -99,6 +60,8 @@ export default function HistorialInventario({ usuario }) {
     <div className="historial-container">
       <h2>Historial de Inventario</h2>
 
+      {error && <div className="error-message">{error}</div>}
+
       {loading ? (
         <p>Cargando...</p>
       ) : movimientos.length === 0 ? (
@@ -109,7 +72,7 @@ export default function HistorialInventario({ usuario }) {
             {movimientosPagina.map((mov) => (
               <div
                 key={mov.id}
-                className={`movimiento-card movimiento-${mov.motivo}`}
+                className={`movimiento-card movimiento-${mov.motivo?.toLowerCase()}`}
               >
                 <div className="movimiento-time">
                   <span className="movimiento-hora">{formatearHora(mov.createdAt)}</span>
@@ -117,12 +80,12 @@ export default function HistorialInventario({ usuario }) {
                 </div>
 
                 <div className="movimiento-body">
-                  <h3 className="movimiento-titulo">{MOTIVOS[mov.motivo]}</h3>
+                  <h3 className="movimiento-titulo">{MOTIVOS[mov.motivo] || mov.motivo}</h3>
 
                   <p className="movimiento-detalle">
-                    {mov.cantidad > 0 ? "+" : "-"}
-                    {Math.abs(mov.cantidad)} {mov.materiaPrima.unidad} de{" "}
-                    <strong>{mov.materiaPrima.nombre}</strong>
+                    {mov.cantidad > 0 ? "+" : ""}
+                    {mov.cantidad} {mov.materiaPrima?.unidad || ""} de{" "}
+                    <strong>{mov.materiaPrima?.nombre || "Materia Prima"}</strong>
                   </p>
 
                   {mov.ventaId && (

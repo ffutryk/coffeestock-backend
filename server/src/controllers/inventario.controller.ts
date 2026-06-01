@@ -27,4 +27,14 @@ export class InventarioController {
       next(err);
     }
   };
+
+  obtenerHistorial = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const historial = await this.inventarioService.obtenerHistorialMovimientos();
+      return res.status(200).json(historial);
+    } catch (err) {
+      next(err);
+    }
+  };
+
 }
