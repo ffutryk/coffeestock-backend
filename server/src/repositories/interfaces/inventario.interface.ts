@@ -1,7 +1,7 @@
 import { Inventario } from "../../models/entities/inventario";
+import { BaseRepository } from "./base.interface";
 
-export interface InventarioDao {
+export interface InventarioRepository extends BaseRepository<Inventario> {
   findById(idMateriaPrima: number): Promise<Inventario | null>;
-  save(inventario: Inventario): Promise<Inventario>;
   findAllWithDetails(): Promise<any[]>;
 }

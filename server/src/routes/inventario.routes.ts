@@ -1,20 +1,14 @@
 import { Router } from "express";
 import { InventarioController } from "../controllers/inventario.controller";
-import { InventarioService } from "../services/inventario.service";
-import { TypeORMInventarioRepository } from "../repositories/typeorm/inventario.repository";
-
 import { validateBody } from "../middlewares/validate";
 import { RegistrarMovimientoInventario } from "../dtos/inventario/registrar-movimiento.dto";
-import { TypeORMMovimientoRepository } from "../repositories/typeorm/movimiento.repository";
 import { RolUsuario } from "../models/enums/rol-usuario";
 import { roles } from "../middlewares/role";
 import { auth } from "../middlewares/auth";
+import { inventarioService } from "../container/di";
 
 const router = Router();
 
-const inventarioDAO = new TypeORMInventarioRepository();
-const movimientoDAO = new TypeORMMovimientoRepository();
-const inventarioService = new InventarioService(inventarioDAO, movimientoDAO);
 const inventarioController = new InventarioController(inventarioService);
 
 router.get(

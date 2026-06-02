@@ -7,6 +7,7 @@ export interface BaseRepository<T> {
   findAll(): Promise<T[]>;
   findAllPaginated(paginacion: Paginacion): Promise<ResultadoPaginado<T>>;
   save(entity: T): Promise<T>;
+  save(entities: T[]): Promise<T[]>;
   delete(id: number): Promise<boolean>;
   restore(id: number): Promise<boolean>;
 }
