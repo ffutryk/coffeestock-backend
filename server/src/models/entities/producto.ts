@@ -2,8 +2,6 @@ import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm";
 import { TipoItemVenta } from "../enums/tipo-item-venta";
 import { Auditable } from "../base/auditable";
 import { Receta } from "./receta";
-import { MovimientoInventario } from "./movimiento-inventario";
-import { Inventario } from "./inventario";
 import {
   IngredientesDuplicadosError,
   RecetaFaltanteError,
@@ -34,7 +32,7 @@ export class Producto extends Auditable {
   @Column({ default: false })
   sinTacc!: boolean;
 
-  @OneToMany(() => Receta, (receta) => receta.producto)
+  @OneToMany(() => Receta, (receta) => receta.producto, { cascade: true })
   recetas!: Receta[];
 
   decrementarStock(cantidad: number): void {
@@ -49,53 +47,25 @@ export class Producto extends Auditable {
     return this.recetas?.length > 0;
   }
 
-  insumosPara(cantidad: number): { id: number; cantidad: number }[] {
-    return this.recetas.map((receta) => ({
-      id: receta.materiaPrima.id,
-      cantidad: receta.cantidad * cantidad,
-    }));
-  }
-
   serVendido(cantidad: number): void {
     if (!this.tieneReceta() && !this.stock) throw new RecetaFaltanteError(this.nombre);
 
     if (this.tieneReceta()) {
-      return this.aplicarOperacionSobreReceta(cantidad, (inv, cant, mp) => inv.consumir(cant, mp));
+      for (const receta of this.recetas) {
+        receta.materiaPrima.consumir(receta.cantidad * cantidad);
+      }
+    } else {
+      this.decrementarStock(cantidad);
     }
-
-    this.decrementarStock(cantidad);
   }
 
   revertirVenta(cantidad: number, nota?: string): void {
     if (this.tieneReceta()) {
-      return this.aplicarOperacionSobreReceta(cantidad, (inv, cant, mp) =>
-        inv.devolverStock(cant, mp, nota),
-      );
-    }
-
-    this.stock += cantidad;
-  }
-
-  private aplicarOperacionSobreReceta(
-    cantidad: number,
-    operacion: (
-      inventario: Inventario,
-      cantidad: number,
-      materiaPrima: MateriaPrima,
-    ) => MovimientoInventario,
-  ): void {
-    const materiasPrimas = new Map(this.recetas.map((r) => [r.materiaPrima.id, r.materiaPrima]));
-
-    const inventarios: Inventario[] = [];
-    const movimientos: MovimientoInventario[] = [];
-
-    for (const insumo of this.insumosPara(cantidad)) {
-      const materiaPrima = materiasPrimas.get(insumo.id)!;
-      const inventario = materiaPrima.inventario;
-
-      movimientos.push(operacion(inventario, insumo.cantidad, materiaPrima));
-
-      inventarios.push(inventario);
+      for (const receta of this.recetas) {
+        receta.materiaPrima.devolver(receta.cantidad * cantidad, nota);
+      }
+    } else {
+      this.stock += cantidad;
     }
   }
 

@@ -46,6 +46,5 @@ export const usuarioService = new UsuarioService(usuariosRepository);
 export const ventaService = new VentaService(
   ventasRepository,
   productosRepository,
-  inventariosRepository,
   movimientosRepository,
 );

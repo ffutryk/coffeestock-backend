@@ -6,10 +6,7 @@ import type { ProductoRepository } from "../repositories/interfaces/producto.int
 import type { ActualizarVentaDTO } from "../dtos/venta/actualizar.dto";
 import type { CrearVentaDTO } from "../dtos/venta/crear.dto";
 import { PaginacionDTO } from "../dtos/paginacion.dto";
-import { Inventario } from "../models/entities/inventario";
-import { MovimientoInventario } from "../models/entities/movimiento-inventario";
 import { Transactional } from "../decorators/transactional.decorator";
-import type { InventarioRepository } from "../repositories/interfaces/inventario.interface";
 import type { MovimientoInventarioRepository } from "../repositories/interfaces/movimiento.interface";
 
 @Transactional()
@@ -17,7 +14,6 @@ export class VentaService {
   constructor(
     private readonly ventaRepository: VentaRepository,
     private readonly productoRepository: ProductoRepository,
-    private readonly inventarioRepository: InventarioRepository,
     private readonly movimientosRepository: MovimientoInventarioRepository,
   ) {}
 
@@ -34,6 +30,13 @@ export class VentaService {
     }
 
     const ventaGuardada = await this.ventaRepository.save(venta);
+
+    const movimientos = productos
+      .filter((p) => p.tieneReceta())
+      .flatMap((p) => p.recetas.map((r) => r.materiaPrima))
+      .flatMap((mp) => mp.movimientosPendientes());
+
+    this.movimientosRepository.save(movimientos);
 
     return ventaGuardada;
   }
