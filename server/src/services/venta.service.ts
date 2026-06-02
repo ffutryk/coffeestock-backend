@@ -28,18 +28,13 @@ export class VentaService {
 
     const productosMap = new Map(productos.map((p) => [p.id, p]));
     const venta = Venta.crear(datos.medioDePago);
-    const inventarios: Inventario[] = [];
-    const movimientos: MovimientoInventario[] = [];
 
     for (const { productoId, cantidad } of datos.items) {
-      const efectos = venta.agregarItem(productosMap.get(productoId)!, cantidad);
-      inventarios.push(...efectos.inventariosModificados);
-      movimientos.push(...efectos.movimientosGenerados);
+      venta.agregarItem(productosMap.get(productoId)!, cantidad);
     }
 
     const ventaGuardada = await this.ventaRepository.save(venta);
-    await this.inventarioRepository.save(inventarios);
-    await this.movimientosRepository.save(movimientos);
+
     return ventaGuardada;
   }
 
@@ -47,14 +42,9 @@ export class VentaService {
     const ventaExistente = await this.ventaRepository.findByIdWithInventories(id);
     if (!ventaExistente) throw new NotFoundError("Venta no encontrada");
 
-    const inventarios: Inventario[] = [];
-    const movimientos: MovimientoInventario[] = [];
-
     for (const item of [...ventaExistente.items]) {
       if (item.producto) {
-        const efectos = ventaExistente.revertirItem(item);
-        inventarios.push(...efectos.inventariosModificados);
-        movimientos.push(...efectos.movimientosGenerados);
+        ventaExistente.revertirItem(item);
       }
     }
 
@@ -68,15 +58,12 @@ export class VentaService {
 
       const productosMap = new Map(productos.map((p) => [p.id, p]));
       for (const { productoId, cantidad } of datos.items) {
-        const efectos = ventaExistente.agregarItem(productosMap.get(productoId)!, cantidad);
-        inventarios.push(...efectos.inventariosModificados);
-        movimientos.push(...efectos.movimientosGenerados);
+        ventaExistente.agregarItem(productosMap.get(productoId)!, cantidad);
       }
     }
 
     const ventaActualizada = await this.ventaRepository.save(ventaExistente);
-    await this.inventarioRepository.save(inventarios);
-    await this.movimientosRepository.save(movimientos);
+
     return ventaActualizada;
   }
 

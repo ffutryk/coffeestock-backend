@@ -4,7 +4,6 @@ import { Auditable } from "../base/auditable";
 import { Receta } from "./receta";
 import { MovimientoInventario } from "./movimiento-inventario";
 import { Inventario } from "./inventario";
-import { ResultadoVenta } from "../types/resultado-venta";
 import {
   IngredientesDuplicadosError,
   RecetaFaltanteError,
@@ -57,7 +56,7 @@ export class Producto extends Auditable {
     }));
   }
 
-  serVendido(cantidad: number): ResultadoVenta {
+  serVendido(cantidad: number): void {
     if (!this.tieneReceta() && !this.stock) throw new RecetaFaltanteError(this.nombre);
 
     if (this.tieneReceta()) {
@@ -65,13 +64,9 @@ export class Producto extends Auditable {
     }
 
     this.decrementarStock(cantidad);
-    return {
-      inventariosModificados: [],
-      movimientosGenerados: [],
-    };
   }
 
-  revertirVenta(cantidad: number, nota?: string): ResultadoVenta {
+  revertirVenta(cantidad: number, nota?: string): void {
     if (this.tieneReceta()) {
       return this.aplicarOperacionSobreReceta(cantidad, (inv, cant, mp) =>
         inv.devolverStock(cant, mp, nota),
@@ -79,10 +74,6 @@ export class Producto extends Auditable {
     }
 
     this.stock += cantidad;
-    return {
-      inventariosModificados: [],
-      movimientosGenerados: [],
-    };
   }
 
   private aplicarOperacionSobreReceta(
@@ -92,7 +83,7 @@ export class Producto extends Auditable {
       cantidad: number,
       materiaPrima: MateriaPrima,
     ) => MovimientoInventario,
-  ): ResultadoVenta {
+  ): void {
     const materiasPrimas = new Map(this.recetas.map((r) => [r.materiaPrima.id, r.materiaPrima]));
 
     const inventarios: Inventario[] = [];
@@ -106,11 +97,6 @@ export class Producto extends Auditable {
 
       inventarios.push(inventario);
     }
-
-    return {
-      inventariosModificados: inventarios,
-      movimientosGenerados: movimientos,
-    };
   }
 
   construirReceta(ingredientes: { materiaPrima: MateriaPrima; cantidad: number }[]): Receta[] {
