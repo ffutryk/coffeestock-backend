@@ -32,10 +32,7 @@ export const inventarioService = new InventarioService(
   inventariosRepository,
   movimientosRepository,
 );
-export const materiaPrimaService = new MateriasPrimasService(
-  materiasPrimasRepository,
-  inventariosRepository,
-);
+export const materiaPrimaService = new MateriasPrimasService(materiasPrimasRepository);
 export const productoService = new ProductoService(productosRepository);
 export const recetaService = new RecetaService(
   recetasRepository,

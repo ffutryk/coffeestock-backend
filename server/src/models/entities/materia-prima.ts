@@ -56,4 +56,25 @@ export class MateriaPrima extends Auditable {
 
     this._movimientosPendientes.push(MovimientoInventario.generarCorreccion(this, cantidad, nota));
   }
+
+  static crear(
+    nombre: string,
+    marca: string,
+    unidad: UnidadDeMedida,
+    cantidadUnidad: number,
+    esSinTacc?: boolean,
+  ): MateriaPrima {
+    const materiaPrima = new MateriaPrima();
+
+    materiaPrima.nombre = nombre;
+    materiaPrima.marca = marca;
+    materiaPrima.unidad = unidad;
+    materiaPrima.cantidad_unidad = cantidadUnidad;
+    materiaPrima.esSinTacc = esSinTacc ?? false;
+
+    materiaPrima.inventario = new Inventario();
+    materiaPrima.inventario.materiaPrima = materiaPrima;
+
+    return materiaPrima;
+  }
 }
