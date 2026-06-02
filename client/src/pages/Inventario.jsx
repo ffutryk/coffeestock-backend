@@ -63,8 +63,8 @@ export default function Inventario() {
   const fetchInventory = async () => {
     try {
       // Placeholder: reemplazar con api.get("/inventory")
-      // const response = await api.get("/inventory");
-      // setInventory(response.data);
+      //const response = await api.get("/inventario");
+      //setInventory(response.data);
       const mock = [
         { id: "1", 
           name: "Granos de Café Arábica", 

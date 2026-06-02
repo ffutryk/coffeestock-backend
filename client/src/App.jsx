@@ -9,6 +9,7 @@ import Vender from "./pages/Vender";
 import Inventario from "./pages/Inventario";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Layout from "./components/Layout";
+import HistorialVentas from "./pages/HistorialVentas";
 
 function decodeToken(token) {
   try {
@@ -45,6 +46,7 @@ function App() {
 
   return (
     <Routes>
+      <Route path="/" element={<Login onLogin={handleLogin} />} />
       <Route path="/login" element={<Login onLogin={handleLogin} />} />
       
       {/* Rutas Protegidas dentro del Layout */}
@@ -69,6 +71,9 @@ function App() {
       
       <Route path="/" element={<Navigate to={token ? "/vender" : "/login"} replace />} />
       <Route path="*" element={<Navigate to={token ? "/vender" : "/login"} replace />} />
+      <Route path="/dashboard" element={<Dashboard usuario={usuario} onLogout={handleLogout} />} />
+      <Route path="/historial-ventas" element={<HistorialVentas usuario={usuario} />} />
+      <Route path="*" element={<Login onLogin={handleLogin} />} />
     </Routes>
   );
 }

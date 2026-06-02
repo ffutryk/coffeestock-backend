@@ -1,6 +1,5 @@
-import { string } from "zod";
 import { IngresarUsuarioDTO } from "../dtos/usuario/ingresar.dto";
-import { InvalidCredentialsError, NotFoundError } from "../errors";
+import { InvalidCredentialsError } from "../errors";
 import { Usuario } from "../models/entities/usuario";
 import { UsuarioRepository } from "../repositories/interfaces/usuario.interface";
 import { IAuthService } from "./interfaces/auth.service";

@@ -5,7 +5,7 @@ export class VentaResponseDTO {
   medioDePago: string;
   total: number;
   items: {
-    id: number;
+    productoId: number;
     nombre: string;
     cantidad: number;
     precio: number;
@@ -19,7 +19,7 @@ export class VentaResponseDTO {
     this.total = venta.getPrecioTotal();
     this.createdAt = venta.createdAt;
     this.items = venta.items.map((item) => ({
-      id: item.id,
+      productoId: item.productoId,
       nombre: item.nombre,
       cantidad: item.cantidad,
       precio: Number(item.precio),

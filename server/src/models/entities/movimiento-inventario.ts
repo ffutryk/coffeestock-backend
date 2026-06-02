@@ -1,44 +1,79 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  CreateDateColumn,
-  UpdateDateColumn,
-  DeleteDateColumn,
-} from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from "typeorm";
+import { Auditable } from "../base/auditable";
+import { MateriaPrima } from "./materia-prima";
+import { MotivoMovimiento } from "../enums/motivo-movimiento";
 
 @Entity({ name: "movimientos_inventario" })
-export class MovimientoInventario {
+export class MovimientoInventario extends Auditable {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Column("int")
-  idMateriaPrima!: number;
+  @ManyToOne(() => MateriaPrima, { nullable: false, onDelete: "CASCADE" })
+  materiaPrima!: MateriaPrima;
 
   @Column("decimal", { precision: 10, scale: 2 })
   cantidad!: number; // (+ para ingresos, - para egresos)
 
-  @Column("varchar", { length: 100 })
-  motivo!: string; // ejemplo: 'Compra'
+  @Column({ type: "enum", enum: MotivoMovimiento })
+  motivo!: MotivoMovimiento;
 
   @Column("text", { nullable: true })
-  nota?: string;
-  
-  @CreateDateColumn()
-  createdAt!: Date;
+  nota!: string;
 
-  @Column("varchar", { nullable: true })
-  createdBy?: string;
+  static generarCompra(
+    materiaPrima: MateriaPrima,
+    cantidad: number,
+    nota?: string,
+  ): MovimientoInventario {
+    return this.generar(MotivoMovimiento.COMPRA, materiaPrima, cantidad, nota);
+  }
 
-  @UpdateDateColumn()
-  updatedAt!: Date;
+  static generarUso(
+    materiaPrima: MateriaPrima,
+    cantidad: number,
+    nota?: string,
+  ): MovimientoInventario {
+    return this.generar(MotivoMovimiento.USO, materiaPrima, -cantidad, nota);
+  }
 
-  @Column("varchar", { nullable: true })
-  updatedBy?: string;
+  static generarVenta(
+    materiaPrima: MateriaPrima,
+    cantidad: number,
+    nota?: string,
+  ): MovimientoInventario {
+    return this.generar(MotivoMovimiento.VENTA, materiaPrima, -cantidad, nota);
+  }
 
-  @DeleteDateColumn()
-  deletedAt?: Date;
+  static generarCorreccion(
+    materiaPrima: MateriaPrima,
+    cantidad: number,
+    nota?: string,
+  ): MovimientoInventario {
+    return this.generar(MotivoMovimiento.CORRECCION, materiaPrima, cantidad, nota);
+  }
 
-  @Column("varchar", { nullable: true })
-  deletedBy?: string;
+  static generarDescarte(
+    materiaPrima: MateriaPrima,
+    cantidad: number,
+    nota?: string,
+  ): MovimientoInventario {
+    return this.generar(MotivoMovimiento.DESCARTE, materiaPrima, cantidad, nota);
+  }
+
+  private static generar(
+    motivo: MotivoMovimiento,
+    materiaPrima: MateriaPrima,
+    cantidad: number,
+    nota?: string,
+  ): MovimientoInventario {
+    const movimiento = new MovimientoInventario();
+
+    movimiento.materiaPrima = materiaPrima;
+    movimiento.cantidad = cantidad;
+    movimiento.motivo = motivo;
+
+    if (nota) movimiento.nota = nota;
+
+    return movimiento;
+  }
 }

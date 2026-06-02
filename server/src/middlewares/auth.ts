@@ -1,7 +1,7 @@
 import type { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import { JWT_SECRET } from "../config/envs";
-import { UnauthorizedError, ForbiddenError } from "../errors";
+import { UnauthorizedError } from "../errors";
 import { TypeOrmUsuarioRepository } from "../repositories/typeorm/usuario.repository";
 import { TokenPayload } from "../models/types/token-payload";
 import { UsuarioService } from "../services/usuario.service";
