@@ -78,4 +78,22 @@ export class Producto extends Auditable {
       Receta.crear(this, materiaPrima, cantidad),
     );
   }
+
+  static crear(
+    nombre: string,
+    descripcion: string,
+    precio: number,
+    tipo: TipoItemVenta,
+    sinTacc?: boolean,
+  ): Producto {
+    const producto = new Producto();
+
+    producto.nombre = nombre;
+    producto.descripcion = descripcion;
+    producto.precio = precio;
+    producto.tipo = tipo;
+    producto.sinTacc = sinTacc ?? false;
+
+    return producto;
+  }
 }
