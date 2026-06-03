@@ -17,4 +17,13 @@ export class Alerta {
 
   @Column({ type: "enum", enum: GravedadAlerta })
   gravedad!: GravedadAlerta;
+
+  static crear(mensaje: string, gravedad: GravedadAlerta): Alerta {
+    const alerta = new Alerta();
+
+    alerta.mensaje = mensaje;
+    alerta.gravedad = gravedad;
+
+    return alerta;
+  }
 }
