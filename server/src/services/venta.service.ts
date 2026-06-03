@@ -31,13 +31,6 @@ export class VentaService {
 
     const ventaGuardada = await this.ventaRepository.save(venta);
 
-    const movimientos = productos
-      .filter((p) => p.tieneReceta())
-      .flatMap((p) => p.recetas.map((r) => r.materiaPrima))
-      .flatMap((mp) => mp.movimientosPendientes());
-
-    this.movimientosRepository.save(movimientos);
-
     return ventaGuardada;
   }
 
