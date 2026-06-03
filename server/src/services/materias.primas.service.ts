@@ -9,28 +9,26 @@ import type { IMateriasPrimasService } from "./interfaces/materias.primas.servic
 
 @Transactional()
 class MateriasPrimasService implements IMateriasPrimasService {
-  constructor(
-    private readonly materiasPrimasRepository: MateriasPrimasRepository,
-    private readonly inventarioRepository: InventarioRepository,
-  ) {}
+  constructor(private readonly materiasPrimasRepository: MateriasPrimasRepository) {}
+
   async crearMateriaPrima(materiaPrimaACrear: CrearMateriaPrimaDTO): Promise<MateriaPrima> {
     const { nombre, marca } = materiaPrimaACrear;
-    let materiaPrimaRecuperada = await this.materiasPrimasRepository.findByNameAndBrand({
+    const materiaPrimaRecuperada = await this.materiasPrimasRepository.findByNameAndBrand({
       nombre,
       marca,
     });
     if (materiaPrimaRecuperada != null) {
       throw new BadRequestError("La materia prima ya existe");
     }
-    materiaPrimaRecuperada = new MateriaPrima();
-    Object.assign(materiaPrimaRecuperada, materiaPrimaACrear);
-    const materiaPrima = await this.materiasPrimasRepository.save(materiaPrimaRecuperada);
-    const inventario = new Inventario();
-    inventario.materiaPrima = materiaPrima;
 
-    await this.inventarioRepository.save(inventario);
+    const materiaPrima = MateriaPrima.crear(
+      nombre,
+      marca,
+      materiaPrimaACrear.unidad,
+      materiaPrimaACrear.cantidad_unidad,
+    );
 
-    return materiaPrima;
+    return await this.materiasPrimasRepository.save(materiaPrima);
   }
 }
 

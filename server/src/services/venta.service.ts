@@ -6,10 +6,7 @@ import type { ProductoRepository } from "../repositories/interfaces/producto.int
 import type { ActualizarVentaDTO } from "../dtos/venta/actualizar.dto";
 import type { CrearVentaDTO } from "../dtos/venta/crear.dto";
 import { PaginacionDTO } from "../dtos/paginacion.dto";
-import { Inventario } from "../models/entities/inventario";
-import { MovimientoInventario } from "../models/entities/movimiento-inventario";
 import { Transactional } from "../decorators/transactional.decorator";
-import type { InventarioRepository } from "../repositories/interfaces/inventario.interface";
 import type { MovimientoInventarioRepository } from "../repositories/interfaces/movimiento.interface";
 
 @Transactional()
@@ -17,7 +14,6 @@ export class VentaService {
   constructor(
     private readonly ventaRepository: VentaRepository,
     private readonly productoRepository: ProductoRepository,
-    private readonly inventarioRepository: InventarioRepository,
     private readonly movimientosRepository: MovimientoInventarioRepository,
   ) {}
 
@@ -28,18 +24,13 @@ export class VentaService {
 
     const productosMap = new Map(productos.map((p) => [p.id, p]));
     const venta = Venta.crear(datos.medioDePago);
-    const inventarios: Inventario[] = [];
-    const movimientos: MovimientoInventario[] = [];
 
     for (const { productoId, cantidad } of datos.items) {
-      const efectos = venta.agregarItem(productosMap.get(productoId)!, cantidad);
-      inventarios.push(...efectos.inventariosModificados);
-      movimientos.push(...efectos.movimientosGenerados);
+      venta.agregarItem(productosMap.get(productoId)!, cantidad);
     }
 
     const ventaGuardada = await this.ventaRepository.save(venta);
-    await this.inventarioRepository.save(inventarios);
-    await this.movimientosRepository.save(movimientos);
+
     return ventaGuardada;
   }
 
@@ -47,14 +38,9 @@ export class VentaService {
     const ventaExistente = await this.ventaRepository.findByIdWithInventories(id);
     if (!ventaExistente) throw new NotFoundError("Venta no encontrada");
 
-    const inventarios: Inventario[] = [];
-    const movimientos: MovimientoInventario[] = [];
-
     for (const item of [...ventaExistente.items]) {
       if (item.producto) {
-        const efectos = ventaExistente.revertirItem(item);
-        inventarios.push(...efectos.inventariosModificados);
-        movimientos.push(...efectos.movimientosGenerados);
+        ventaExistente.revertirItem(item);
       }
     }
 
@@ -68,15 +54,12 @@ export class VentaService {
 
       const productosMap = new Map(productos.map((p) => [p.id, p]));
       for (const { productoId, cantidad } of datos.items) {
-        const efectos = ventaExistente.agregarItem(productosMap.get(productoId)!, cantidad);
-        inventarios.push(...efectos.inventariosModificados);
-        movimientos.push(...efectos.movimientosGenerados);
+        ventaExistente.agregarItem(productosMap.get(productoId)!, cantidad);
       }
     }
 
     const ventaActualizada = await this.ventaRepository.save(ventaExistente);
-    await this.inventarioRepository.save(inventarios);
-    await this.movimientosRepository.save(movimientos);
+
     return ventaActualizada;
   }
 

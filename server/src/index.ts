@@ -11,8 +11,11 @@ import estadisticaRoutes from "./routes/estadistica.routes";
 import inventarioRouter from "./routes/inventario.routes";
 import materiasPrimasRouter from "./routes/materias.primas.routes";
 import recetaRoutes from "./routes/receta.routes";
+import http from "http";
+import { wsService } from "./container/di";
 
 const app = express();
+const server = http.createServer(app);
 
 app.use(morgan(DEBUG ? "dev" : "combined"));
 app.use(express.json());
@@ -35,7 +38,9 @@ app.use(errorHandler);
 async function main() {
   try {
     await AppDataSource.initialize();
-    app.listen(PORT, () => console.log(`Ready, ${PORT}`));
+
+    wsService.init(server);
+    server.listen(PORT, () => console.log(`Ready, ${PORT}`));
   } catch (err) {
     console.error("Error al conectar la base de datos:", err);
     process.exit(1);
