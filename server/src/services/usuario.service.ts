@@ -17,17 +17,27 @@ export class UsuarioService implements IUsuarioService {
   constructor(private readonly usuarioRepository: UsuarioRepository) {}
   async crearUsuario(datos: CrearUsuarioDTO): Promise<Usuario> {
     const usuarioExistente = await this.usuarioRepository.findByCuil(datos.cuil);
+
     if (usuarioExistente) {
       throw new ConflictError("El empleado ya está registrado");
     }
+
     const emailExistente = await this.usuarioRepository.findByEmail(datos.email);
+
     if (emailExistente) {
       throw new ConflictError("El email ya está en uso");
     }
-    const usuario = new Usuario();
-    datos.password = hashSHA256(datos.password); // Para guardar la contraseña hasheada...
-    Object.assign(usuario, datos);
-    usuario.rol = RolUsuario.EMPLEADO;
+
+    const { cuil, nombre, apellido, email, password } = datos;
+
+    const usuario = Usuario.crear(
+      cuil,
+      nombre,
+      apellido,
+      email,
+      hashSHA256(password),
+      RolUsuario.EMPLEADO,
+    );
 
     return await this.usuarioRepository.save(usuario);
   }

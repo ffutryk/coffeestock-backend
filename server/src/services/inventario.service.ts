@@ -5,6 +5,7 @@ import type { MovimientoInventarioRepository } from "../repositories/interfaces/
 import { AppDataSource } from "../config/data-source";
 import { MovimientoInventario } from "../models/entities/movimiento-inventario";
 import { BadRequestError, NotFoundError } from "../errors";
+import { EntityManager } from "typeorm";
 import { MotivoMovimiento } from "../models/enums/motivo-movimiento";
 import { Transactional } from "../decorators/transactional.decorator";
 
@@ -17,6 +18,15 @@ export class InventarioService {
 
   async obtenerInventario() {
     return await this.inventarioRepository.findAllWithDetails();
+  }
+
+  async obtenerHistorialMovimientos() {
+    return await AppDataSource.getRepository(MovimientoInventario).find({
+      relations: ["materiaPrima"],
+      order: {
+        id: "DESC",
+      },
+    });
   }
 
   async registrarMovimiento(datos: RegistrarMovimientoDTO) {
@@ -44,7 +54,8 @@ export class InventarioService {
     return await AppDataSource.transaction(async (transactionalEntityManager) => {
       const movimiento = new MovimientoInventario();
 
-      movimiento.materiaPrima = inventario.materiaPrima;
+      //movimiento.materiaPrima = inventario.materiaPrima;
+      movimiento.materiaPrima = { id: datos.idMateriaPrima } as any;
       movimiento.cantidad = impactoStock;
       movimiento.motivo = datos.motivo;
 

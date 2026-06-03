@@ -68,20 +68,8 @@ export default function Inventario() {
 
   const fetchInventory = async () => {
     try {
-      // Placeholder: reemplazar con api.get("/inventario")
       const response = await api.get("/inventario");
       setInventory(response.data);
-      // const mock = [
-      //   { id: 1, nombre: "Grano de café Arábica", stockActual: 180, stockMinimo: 200, unidadDeMedida: "Kilogramos" },
-      //   { id: 2, nombre: "Leche Entera", stockActual: 45, stockMinimo: 50, unidadDeMedida: "Litros" },
-      //   { id: 3, nombre: "Leche Deslactosada", stockActual: 18, stockMinimo: 30, unidadDeMedida: "Litros" },
-      //   { id: 4, nombre: "Jarabe de Vainilla", stockActual: 12, stockMinimo: 15, unidadDeMedida: "Unidades" },
-      //   { id: 5, nombre: "Jarabe de Caramelo", stockActual: 4, stockMinimo: 20, unidadDeMedida: "Unidades" },
-      //   { id: 6, nombre: "Vasos 16oz", stockActual: 500, stockMinimo: 500, unidadDeMedida: "Unidades" },
-      //   { id: 7, nombre: "Tapas para Vasos", stockActual: 60, stockMinimo: 500, unidadDeMedida: "Unidades" },
-      //   { id: 8, nombre: "Azúcar", stockActual: 10, stockMinimo: 25, unidadDeMedida: "Kilogramos" },
-      // ];
-      //setInventory(mock);
     } catch (error) {
       console.error("Error fetching inventory:", error);
       showMensaje("Error al cargar inventario", "error");

@@ -1,8 +1,6 @@
 import { Entity, Column, OneToOne, JoinColumn, PrimaryColumn } from "typeorm";
 import { Auditable } from "../base/auditable";
 import { MateriaPrima } from "./materia-prima";
-import { MovimientoInventario } from "./movimiento-inventario";
-import { StockInsuficienteError } from "../../errors";
 
 @Entity({ name: "inventario" })
 export class Inventario extends Auditable {
@@ -19,6 +17,7 @@ export class Inventario extends Auditable {
   @JoinColumn({ name: "id" })
   materiaPrima!: MateriaPrima;
 
+<<<<<<< HEAD
   consumir(cantidad: number, materiaPrima: MateriaPrima): MovimientoInventario {
     if (Number(this.stockActual) < cantidad) {
       throw new StockInsuficienteError(`${materiaPrima.nombre} marca ${materiaPrima.marca}`);
@@ -32,5 +31,13 @@ export class Inventario extends Auditable {
   devolverStock(cantidad: number, materiaPrima: MateriaPrima, nota?: string): MovimientoInventario {
     this.stockActual = Number(this.stockActual) + cantidad;
     return MovimientoInventario.generarCorreccion(materiaPrima, cantidad, nota);
+=======
+  consumir(cantidad: number): void {
+    this.stockActual -= cantidad;
+  }
+
+  devolverStock(cantidad: number): void {
+    this.stockActual += cantidad;
+>>>>>>> 2d6b14b1eb78c51adfb63e739fdfbeeebbf4548c
   }
 }

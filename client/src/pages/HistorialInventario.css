@@ -1,0 +1,117 @@
+body {
+    background: #ffffff !important;
+}
+
+.historial-container {
+    max-width: 960px;
+    margin: 72px auto;
+    background: var(--card);
+    padding: 24px;
+    border-radius: 8px;
+    box-shadow: 0 6px 18px rgba(16, 24, 40, 0.08);
+}
+
+.historial-container h2 {
+    margin-top: 0;
+}
+
+.movimientos-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.movimiento-card {
+    display: flex;
+    gap: 20px;
+    padding: 16px 20px;
+    border-radius: 8px;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-left: 4px solid #6b7280;
+    transition: box-shadow 0.15s;
+}
+
+.movimiento-card:hover {
+    box-shadow: 0 2px 8px rgba(16, 24, 40, 0.1);
+}
+
+.movimiento-compra {
+    border-left-color: #10b981;
+}
+
+.movimiento-uso {
+    border-left-color: #f59e0b;
+}
+
+.movimiento-descarte {
+    border-left-color: #ef4444;
+}
+
+.movimiento-correccion {
+    border-left-color: #6366f1;
+}
+
+.movimiento-time {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-width: 72px;
+}
+
+.movimiento-hora {
+    font-size: 18px;
+    font-weight: 600;
+    color: #111827;
+}
+
+.movimiento-fecha {
+    font-size: 12px;
+    color: #6b7280;
+    margin-top: 2px;
+}
+
+.movimiento-body {
+    flex: 1;
+}
+
+.movimiento-titulo {
+    margin: 0 0 4px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #111827;
+}
+
+.movimiento-detalle {
+    margin: 0;
+    font-size: 14px;
+    color: #374151;
+}
+
+.movimiento-venta {
+    margin: 6px 0 0;
+    font-size: 12px;
+    color: #6b7280;
+}
+
+.movimiento-nota {
+    margin: 6px 0 0;
+    font-size: 12px;
+    color: #6b7280;
+    font-style: italic;
+}
+
+.historial-paginacion {
+    margin-top: 16px;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    font-size: 14px;
+}
+
+.historial-paginacion button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}

@@ -9,6 +9,7 @@ import { Receta } from "../models/entities/receta";
 import { MateriaPrima } from "../models/entities/materia-prima";
 import { Inventario } from "../models/entities/inventario";
 import { MovimientoInventario } from "../models/entities/movimiento-inventario";
+import { Alerta } from "../models/entities/alerta";
 
 export const AppDataSource = new DataSource({
   type: "postgres",
@@ -28,6 +29,7 @@ export const AppDataSource = new DataSource({
     Inventario,
     MovimientoInventario,
     Receta,
+    Alerta,
   ],
   subscribers: [],
   migrations: [],

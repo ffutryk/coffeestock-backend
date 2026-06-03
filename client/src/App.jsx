@@ -10,6 +10,8 @@ import Inventario from "./pages/Inventario";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Layout from "./components/Layout";
 import HistorialVentas from "./pages/HistorialVentas";
+import Empleados from "./pages/Empleados";
+import HistorialInventario from "./pages/HistorialInventario";
 
 function decodeToken(token) {
   try {
@@ -48,7 +50,7 @@ function App() {
     <Routes>
       <Route path="/" element={<Login onLogin={handleLogin} />} />
       <Route path="/login" element={<Login onLogin={handleLogin} />} />
-      
+
       {/* Rutas Protegidas dentro del Layout */}
       <Route element={<ProtectedRoute usuario={usuario}><Layout usuario={usuario} onLogout={handleLogout} /></ProtectedRoute>}>
         <Route path="/dashboard" element={<Dashboard usuario={usuario} onLogout={handleLogout} />} />
@@ -62,16 +64,16 @@ function App() {
             <ProtectedRoute usuario={usuario} allowedRoles={["GERENTE"]}>
               <div className="placeholder-page"><h2>Reportes (Próximamente)</h2></div>
             </ProtectedRoute>
-          } 
+          }
         />
         <Route path="/historial-ventas" element={<HistorialVentas usuario={usuario} />} />
-        <Route 
-          path="/empleados" 
+        <Route
+          path="/empleados"
           element={
             <ProtectedRoute usuario={usuario} allowedRoles={["GERENTE"]}>
-              <div className="placeholder-page"><h2>Empleados (Próximamente)</h2></div>
+              <Empleados />
             </ProtectedRoute>
-          } 
+          }
         />
       </Route>
 
@@ -84,6 +86,8 @@ function App() {
         }
       />
       <Route path="/dashboard" element={<Dashboard usuario={usuario} onLogout={handleLogout} />} />
+      <Route path="/historial-ventas" element={<HistorialVentas usuario={usuario} />} />
+      <Route path="/historial-inventario" element={<HistorialInventario usuario={usuario} />} />
       <Route path="*" element={<Login onLogin={handleLogin} />} />
     </Routes>
   );

@@ -21,7 +21,7 @@ export class Receta extends Auditable {
   @ManyToOne(() => MateriaPrima, {
     nullable: false,
     eager: true,
-    onDelete: "CASCADE",
+    cascade: true,
   })
   @JoinColumn({ name: "materiaPrimaId" })
   materiaPrima!: MateriaPrima;
