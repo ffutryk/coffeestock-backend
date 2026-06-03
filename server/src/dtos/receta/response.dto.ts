@@ -7,6 +7,7 @@ export interface RecetaResponseDTO {
     materiaPrima: {
       id: number;
       nombre: string;
+      unidad: string;
     };
     cantidad: number;
   }[];

@@ -6,9 +6,17 @@ export class RecetaController {
 
   crear = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const creada = await this.recetaService.crearReceta(req.body);
+      const createdBy = (req as any).user?.id;
 
-      return res.status(201).json({ success: true, data: creada });
+      const creada = await this.recetaService.crearReceta(
+        req.body,
+        createdBy,
+      );
+
+      return res.status(201).json({
+        success: true,
+        data: creada,
+      });
     } catch (err) {
       next(err);
     }
