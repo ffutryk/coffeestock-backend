@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { describe, it, expect, beforeEach } from "vitest";
 import { Venta } from "../../../src/models/entities/venta";
 import { Producto } from "../../../src/models/entities/producto";
 import { MateriaPrima } from "../../../src/models/entities/materia-prima";
