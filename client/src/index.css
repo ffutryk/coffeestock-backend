@@ -11,8 +11,18 @@ body,
   width: 100%;
   min-height: 100vh;
   margin: 0;
-  background: var(--bg);
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.placeholder-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 50vh;
+  color: var(--coffee-light);
+  border: 2px dashed var(--border-color);
+  border-radius: 20px;
+  background: white;
 }
 
 #logo {
