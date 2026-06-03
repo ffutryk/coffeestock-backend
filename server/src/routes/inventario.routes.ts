@@ -25,4 +25,11 @@ router.post(
   inventarioController.registrarMovimiento,
 );
 
+router.get(
+  "/movimientos",
+  auth,
+  roles([RolUsuario.GERENTE, RolUsuario.EMPLEADO]),
+  inventarioController.obtenerHistorial,
+);
+
 export default router;

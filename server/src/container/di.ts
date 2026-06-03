@@ -15,6 +15,10 @@ import MateriasPrimasService from "../services/materias.primas.service";
 import { ProductoService } from "../services/producto.service";
 import { RecetaService } from "../services/receta.service";
 import { UsuarioService } from "../services/usuario.service";
+import { MovimientoInventarioEventHandler, StockBajoAlertaEventHandler } from "../handlers";
+import { eventBus } from "../models/events/event-bus";
+import { TypeOrmAlertaRepository } from "../repositories/typeorm/alerta.repository";
+import { WebsocketService } from "../services/websocket.service";
 
 const estadisticasRepository = new TypeORMEstadisticaRepository();
 const inventariosRepository = new TypeOrmInventarioRepository();
@@ -24,6 +28,7 @@ const productosRepository = new TypeOrmProductoRepository();
 const recetasRepository = new TypeOrmRecetaRepository();
 const usuariosRepository = new TypeOrmUsuarioRepository();
 const ventasRepository = new TypeOrmVentaRepository();
+const alertaRepository = new TypeOrmAlertaRepository();
 
 export const tokenService = new TokenService();
 export const authService = new AuthService(tokenService, usuariosRepository);
@@ -32,10 +37,7 @@ export const inventarioService = new InventarioService(
   inventariosRepository,
   movimientosRepository,
 );
-export const materiaPrimaService = new MateriasPrimasService(
-  materiasPrimasRepository,
-  inventariosRepository,
-);
+export const materiaPrimaService = new MateriasPrimasService(materiasPrimasRepository);
 export const productoService = new ProductoService(productosRepository);
 export const recetaService = new RecetaService(
   recetasRepository,
@@ -46,6 +48,14 @@ export const usuarioService = new UsuarioService(usuariosRepository);
 export const ventaService = new VentaService(
   ventasRepository,
   productosRepository,
-  inventariosRepository,
   movimientosRepository,
 );
+
+export const wsService = WebsocketService.getInstance();
+
+const stockBajoAlertaEventHandler = new StockBajoAlertaEventHandler(alertaRepository, wsService);
+const movimientoInventarioEventHandler = new MovimientoInventarioEventHandler(
+  movimientosRepository,
+);
+eventBus.subscribe("StockBajoAlertaEvent", stockBajoAlertaEventHandler);
+eventBus.subscribe("MovimientoInventarioEvent", movimientoInventarioEventHandler);
