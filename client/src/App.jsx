@@ -55,9 +55,24 @@ function App() {
         <Route path="/vender" element={<Vender />} />
         {/* Placeholder para otras rutas */}
         <Route path="/inventario" element={<Inventario/>} />
-        <Route path="/reportes" element={<div className="placeholder-page"><h2>Reportes (Próximamente)</h2></div>} />
         <Route path="/auditoria" element={<div className="placeholder-page"><h2>Auditoría (Próximamente)</h2></div>} />
-        <Route path="/empleados" element={<div className="placeholder-page"><h2>Empleados (Próximamente)</h2></div>} />
+        <Route 
+          path="/reportes" 
+          element={
+            <ProtectedRoute usuario={usuario} allowedRoles={["GERENTE"]}>
+              <div className="placeholder-page"><h2>Reportes (Próximamente)</h2></div>
+            </ProtectedRoute>
+          } 
+        />
+        <Route path="/historial-ventas" element={<HistorialVentas usuario={usuario} />} />
+        <Route 
+          path="/empleados" 
+          element={
+            <ProtectedRoute usuario={usuario} allowedRoles={["GERENTE"]}>
+              <div className="placeholder-page"><h2>Empleados (Próximamente)</h2></div>
+            </ProtectedRoute>
+          } 
+        />
       </Route>
 
       <Route
@@ -68,11 +83,7 @@ function App() {
           </ProtectedRoute>
         }
       />
-      
-      <Route path="/" element={<Navigate to={token ? "/vender" : "/login"} replace />} />
-      <Route path="*" element={<Navigate to={token ? "/vender" : "/login"} replace />} />
       <Route path="/dashboard" element={<Dashboard usuario={usuario} onLogout={handleLogout} />} />
-      <Route path="/historial-ventas" element={<HistorialVentas usuario={usuario} />} />
       <Route path="*" element={<Login onLogin={handleLogin} />} />
     </Routes>
   );

@@ -121,7 +121,6 @@ export default function Vender() {
               <h3>Pedido Actual</h3>
               <p>{new Date().toLocaleDateString()}</p>
             </div>
-            <div className="pedido-icon">📋</div>
           </div>
 
           <div className="orden-inputs">
@@ -139,9 +138,9 @@ export default function Vender() {
               <label>Medio de Pago</label>
               <select value={medioDePago} onChange={(e) => setMedioDePago(e.target.value)}>
                 <option value="EFECTIVO">Efectivo</option>
+                <option value="TRANSFERENCIA">Transferencia</option>
                 <option value="TARJETA_DEBITO">Tarjeta de Débito</option>
                 <option value="TARJETA_CREDITO">Tarjeta de Crédito</option>
-                <option value="TRANSFERENCIA">Transferencia</option>
               </select>
             </div>
           </div>
