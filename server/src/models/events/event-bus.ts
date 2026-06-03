@@ -1,6 +1,6 @@
 import { EventBus } from "./event-bus.interface";
 import { Event } from "./event";
-import { Handler } from "../../events/handlers/handler";
+import { Handler } from "../../handlers/handler.interface";
 
 class EventBusImpl implements EventBus {
   private _listeners: Map<string, Handler[]> = new Map();

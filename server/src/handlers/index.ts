@@ -1,11 +1,11 @@
-import { Alerta } from "../../models/entities/alerta";
-import { MateriaPrima } from "../../models/entities/materia-prima";
-import { GravedadAlerta } from "../../models/enums/gravedad-alerta";
-import { MovimientoInventarioEventPayload, StockBajoAlertaEventPayload } from "../../models/events";
-import { Event } from "../../models/events/event";
-import { AlertaRepository } from "../../repositories/interfaces/alerta.interface";
-import { MovimientoInventarioRepository } from "../../repositories/interfaces/movimiento.interface";
-import { Handler } from "./handler";
+import { Alerta } from "../models/entities/alerta";
+import { MateriaPrima } from "../models/entities/materia-prima";
+import { GravedadAlerta } from "../models/enums/gravedad-alerta";
+import { MovimientoInventarioEventPayload, StockBajoAlertaEventPayload } from "../models/events";
+import { Event } from "../models/events/event";
+import { AlertaRepository } from "../repositories/interfaces/alerta.interface";
+import { MovimientoInventarioRepository } from "../repositories/interfaces/movimiento.interface";
+import { Handler } from "./handler.interface";
 
 export class StockBajoAlertaEventHandler implements Handler {
   constructor(private readonly alertaRepository: AlertaRepository) {}

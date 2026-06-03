@@ -15,7 +15,7 @@ import MateriasPrimasService from "../services/materias.primas.service";
 import { ProductoService } from "../services/producto.service";
 import { RecetaService } from "../services/receta.service";
 import { UsuarioService } from "../services/usuario.service";
-import { MovimientoInventarioEventHandler, StockBajoAlertaEventHandler } from "../events/handlers";
+import { MovimientoInventarioEventHandler, StockBajoAlertaEventHandler } from "../handlers";
 import { eventBus } from "../models/events/event-bus";
 import { TypeOrmAlertaRepository } from "../repositories/typeorm/alerta.repository";
 
