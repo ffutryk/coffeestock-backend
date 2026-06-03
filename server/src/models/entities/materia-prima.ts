@@ -41,7 +41,7 @@ export class MateriaPrima extends Auditable {
       throw new StockInsuficienteError(`${this.nombre} marca ${this.marca}`);
     }
 
-    this.inventario.consumir(cantidad);
+    this.inventario.consumir(cantidad, this);
 
     eventBus.publish(
       new MovimientoInventarioEvent({
@@ -57,7 +57,7 @@ export class MateriaPrima extends Auditable {
   }
 
   devolver(cantidad: number, nota?: string): void {
-    this.inventario.devolverStock(cantidad);
+    this.inventario.devolverStock(cantidad, this, nota);
 
     eventBus.publish(
       new MovimientoInventarioEvent({
