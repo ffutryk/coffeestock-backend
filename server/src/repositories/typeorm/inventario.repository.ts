@@ -1,7 +1,7 @@
 import { AppDataSource } from "../../config/data-source";
 import { Inventario } from "../../models/entities/inventario";
 import { MateriaPrima } from "../../models/entities/materia-prima";
-import { InventarioRepository } from "../interfaces/inventario.interface";
+import { InventarioDetalle, InventarioRepository } from "../interfaces/inventario.interface";
 import { TypeOrmBaseRepository } from "./base.repository";
 
 export class TypeOrmInventarioRepository
@@ -19,7 +19,7 @@ export class TypeOrmInventarioRepository
     });
   }
 
-  async findAllWithDetails(): Promise<any[]> {
+  async findAllWithDetails(): Promise<InventarioDetalle[]> {
     const query = AppDataSource.createQueryBuilder()
       .select([
         "mp.id AS id",
@@ -31,6 +31,6 @@ export class TypeOrmInventarioRepository
       .from(MateriaPrima, "mp")
       .leftJoin(Inventario, "i", "mp.id = i.id");
 
-    return await query.getRawMany();
+    return (await query.getRawMany()) as InventarioDetalle[];
   }
 }
