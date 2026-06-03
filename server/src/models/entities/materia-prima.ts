@@ -1,9 +1,11 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToOne, OneToMany } from "typeorm";
 import { UnidadDeMedida } from "../enums/unidad-de-medida";
-import { Auditable } from "../base/auditable";
 import { Inventario } from "./inventario";
 import { MovimientoInventario } from "./movimiento-inventario";
 import { StockInsuficienteError } from "../../errors";
+import { MovimientoInventarioEvent, StockBajoAlertaEvent } from "../events";
+import { Auditable } from "../base/auditable";
+import { eventBus } from "../events/event-bus";
 
 @Entity()
 export class MateriaPrima extends Auditable {
@@ -48,7 +50,17 @@ export class MateriaPrima extends Auditable {
 
     this.inventario.consumir(cantidad);
 
-    this._movimientosPendientes.push(MovimientoInventario.generarUso(this, cantidad));
+    eventBus.publish(
+      new MovimientoInventarioEvent({
+        movimiento: MovimientoInventario.generarUso(this, cantidad),
+      }),
+    );
+
+    if (this.inventario.stockActual < this.inventario.stockMinimo) {
+      const event = new StockBajoAlertaEvent({ materiaPrima: this });
+
+      eventBus.publish(event);
+    }
   }
 
   devolver(cantidad: number, nota?: string): void {
