@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { registerUsuario } from "../services/auth";
 import { parseApiError } from "../utils/parseApiError";
 import logo from "../assets/logo.png";
@@ -83,6 +84,11 @@ export default function Register() {
           <button type="submit" disabled={loading}>
             {loading ? "Registrando..." : "Registrar"}
           </button>
+          <div style={{ marginTop: "1rem", textAlign: "center" }}>
+            <Link to="/empleados" style={{ color: "var(--coffee-medium)", fontSize: "0.9rem" }}>
+              ← Volver a la lista
+            </Link>
+          </div>
         </form>
       </div>
     </div>
