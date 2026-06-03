@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { registerUsuario } from "../services/auth";
 import { parseApiError } from "../utils/parseApiError";
-import logo from "../assets/logo.png";
+import logo from "../assets/logo-coffee-stock.png";
 
 export default function Register() {
   const [form, setForm] = useState({ cuil: "", nombre: "", apellido: "", email: "", password: "" });
@@ -36,56 +36,102 @@ export default function Register() {
   };
 
   return (
-    <div className="centered-page">
-      <img src={logo} alt="logo" id="logo" />
-      <div className="form-container">
-        <form onSubmit={handleSubmit}>
-          <h2>Registrar empleado</h2>
-          {message && <div className="success">{message}</div>}
+    <div className="auth-page">
+      <div className="auth-card">
+        <img src={logo} alt="Coffee Stock Logo" className="auth-logo" />
+        <form className="auth-form" onSubmit={handleSubmit}>
+          {message && <div className="auth-success">{message}</div>}
           {error && (
-            <div className="error">{typeof error === "string" ? error : JSON.stringify(error)}</div>
+            <div className="auth-error">{typeof error === "string" ? error : JSON.stringify(error)}</div>
           )}
-          <div className="form-row">
-            <label>CUIL</label>
+          
+          <div className="input-container">
+            <span className="input-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+            </span>
             <input
               name="cuil"
               value={form.cuil}
               onChange={handleChange}
-              placeholder="20-12345678-3"
+              placeholder="Cuil"
+              required
             />
           </div>
-          <div className="form-row">
-            <label>Nombre</label>
-            <input name="nombre" value={form.nombre} onChange={handleChange} placeholder="Nombre" />
+
+          <div className="input-container">
+            <span className="input-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="4 17 10 11 4 5"></polyline>
+                <line x1="12" y1="19" x2="20" y2="19"></line>
+              </svg>
+            </span>
+            <input 
+              name="nombre" 
+              value={form.nombre} 
+              onChange={handleChange} 
+              placeholder="Nombre" 
+              required
+            />
           </div>
-          <div className="form-row">
-            <label>Apellido</label>
+
+          <div className="input-container">
+            <span className="input-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 20h9"></path>
+                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+              </svg>
+            </span>
             <input
               name="apellido"
               value={form.apellido}
               onChange={handleChange}
               placeholder="Apellido"
+              required
             />
           </div>
-          <div className="form-row">
-            <label>Email</label>
-            <input name="email" value={form.email} onChange={handleChange} placeholder="Email" />
+
+          <div className="input-container">
+            <span className="input-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                <polyline points="22,6 12,13 2,6"></polyline>
+              </svg>
+            </span>
+            <input 
+              name="email" 
+              type="email"
+              value={form.email} 
+              onChange={handleChange} 
+              placeholder="Email" 
+              required
+            />
           </div>
-          <div className="form-row">
-            <label>Contraseña</label>
+
+          <div className="input-container">
+            <span className="input-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3L15.5 7.5z"></path>
+              </svg>
+            </span>
             <input
               name="password"
               type="password"
               value={form.password}
               onChange={handleChange}
               placeholder="Contraseña"
+              required
             />
           </div>
-          <button type="submit" disabled={loading}>
-            {loading ? "Registrando..." : "Registrar"}
+
+          <button type="submit" className="auth-button" disabled={loading}>
+            {loading ? "Registrando..." : "REGISTRAR"}
           </button>
-          <div style={{ marginTop: "1rem", textAlign: "center" }}>
-            <Link to="/empleados" style={{ color: "var(--coffee-medium)", fontSize: "0.9rem" }}>
+          
+          <div className="auth-footer">
+            <Link to="/empleados" className="auth-link">
               ← Volver a la lista
             </Link>
           </div>
