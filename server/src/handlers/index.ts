@@ -16,11 +16,18 @@ export class StockBajoAlertaEventHandler implements Handler {
     const ultima = await this.alertaRepository.findLatestStockBajoAlertByMateriaPrimaId(
       materiaPrima.id,
     );
-    console.log(ultima);
-    if (!EmitirAlertaStockBajoPolicy.canEmit(ultima, materiaPrima)) return;
+
+    if (
+      !EmitirAlertaStockBajoPolicy.canEmit(
+        ultima,
+        this.gravedadAlerta(materiaPrima),
+        materiaPrima.inventario.stockActual,
+      )
+    )
+      return;
 
     const mensaje = `Stock (${materiaPrima.inventario.stockActual}) bajo para: ${materiaPrima.nombre}`;
-    const alerta = Alerta.crear(mensaje, this.gravedadAlerta(event.payload.materiaPrima));
+    const alerta = Alerta.crear(mensaje, this.gravedadAlerta(materiaPrima));
 
     alerta.metadata = {
       materiaPrimaId: materiaPrima.id,
