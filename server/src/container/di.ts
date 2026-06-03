@@ -18,6 +18,7 @@ import { UsuarioService } from "../services/usuario.service";
 import { MovimientoInventarioEventHandler, StockBajoAlertaEventHandler } from "../handlers";
 import { eventBus } from "../models/events/event-bus";
 import { TypeOrmAlertaRepository } from "../repositories/typeorm/alerta.repository";
+import { WebsocketService } from "../services/websocket.service";
 
 const estadisticasRepository = new TypeORMEstadisticaRepository();
 const inventariosRepository = new TypeOrmInventarioRepository();
@@ -28,13 +29,6 @@ const recetasRepository = new TypeOrmRecetaRepository();
 const usuariosRepository = new TypeOrmUsuarioRepository();
 const ventasRepository = new TypeOrmVentaRepository();
 const alertaRepository = new TypeOrmAlertaRepository();
-
-const stockBajoAlertaEventHandler = new StockBajoAlertaEventHandler(alertaRepository);
-const movimientoInventarioEventHandler = new MovimientoInventarioEventHandler(
-  movimientosRepository,
-);
-eventBus.subscribe("StockBajoAlertaEvent", stockBajoAlertaEventHandler);
-eventBus.subscribe("MovimientoInventarioEvent", movimientoInventarioEventHandler);
 
 export const tokenService = new TokenService();
 export const authService = new AuthService(tokenService, usuariosRepository);
@@ -56,3 +50,12 @@ export const ventaService = new VentaService(
   productosRepository,
   movimientosRepository,
 );
+
+export const wsService = WebsocketService.getInstance();
+
+const stockBajoAlertaEventHandler = new StockBajoAlertaEventHandler(alertaRepository, wsService);
+const movimientoInventarioEventHandler = new MovimientoInventarioEventHandler(
+  movimientosRepository,
+);
+eventBus.subscribe("StockBajoAlertaEvent", stockBajoAlertaEventHandler);
+eventBus.subscribe("MovimientoInventarioEvent", movimientoInventarioEventHandler);

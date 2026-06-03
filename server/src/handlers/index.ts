@@ -4,12 +4,17 @@ import { GravedadAlerta } from "../models/enums/gravedad-alerta";
 import { MovimientoInventarioEventPayload, StockBajoAlertaEventPayload } from "../models/events";
 import { Event } from "../models/events/event";
 import { EmitirAlertaStockBajoPolicy } from "../models/policies/alerta-stock-bajo.policy";
+import { AlertaPayload, SocketEvent } from "../models/types/websocket.types";
 import { AlertaRepository } from "../repositories/interfaces/alerta.interface";
 import { MovimientoInventarioRepository } from "../repositories/interfaces/movimiento.interface";
+import { IWebSocketService } from "../services/interfaces/websocket.service";
 import { Handler } from "./handler.interface";
 
 export class StockBajoAlertaEventHandler implements Handler {
-  constructor(private readonly alertaRepository: AlertaRepository) {}
+  constructor(
+    private readonly alertaRepository: AlertaRepository,
+    private readonly wsService: IWebSocketService,
+  ) {}
 
   async handle(event: Event<StockBajoAlertaEventPayload>): Promise<void> {
     const materiaPrima = event.payload.materiaPrima;
@@ -35,7 +40,19 @@ export class StockBajoAlertaEventHandler implements Handler {
       stockActual: materiaPrima.inventario.stockActual,
     };
 
-    await this.alertaRepository.save(alerta);
+    const alertaGuardada = await this.alertaRepository.save(alerta);
+
+    const notification: SocketEvent<AlertaPayload> = {
+      type: "ALERTA_STOCK_BAJO",
+      payload: {
+        id: alertaGuardada.id,
+        mensaje: `El stock de ${materiaPrima.nombre} se encuentra bajo el mínimo establecido`,
+        gravedad: this.gravedadAlerta(materiaPrima),
+        createdAt: alertaGuardada.createdAt,
+      },
+    };
+
+    this.wsService.broadcast(notification);
   }
 
   private gravedadAlerta(materiaPrima: MateriaPrima): GravedadAlerta {
