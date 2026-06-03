@@ -1,10 +1,10 @@
 import { AppDataSource } from "../../config/data-source";
 import { ItemVenta } from "../../models/entities/item-venta";
 import { Venta } from "../../models/entities/venta";
-import { EstadisticaDao, EstadisticasVentasDTO } from "../interfaces/estadistica.interface";
+import { EstadisticaRepository, EstadisticasVentasDTO } from "../interfaces/estadistica.interface";
 import { ReporteEstadisticasDTO } from "../../models/types/estadisticas";
 
-export class TypeORMEstadisticaRepository implements EstadisticaDao {
+export class TypeORMEstadisticaRepository implements EstadisticaRepository {
   async obtenerEstadisticasVentas(fechaInicio?: Date, fechaFin?: Date): Promise<EstadisticasVentasDTO> {
     const ventaRepo = AppDataSource.getRepository(Venta);
 

@@ -1,10 +1,12 @@
 import { CrearRecetaDTO } from "../dtos/receta/crear.dto";
 import { NotFoundError } from "../errors";
-import { ProductoRepository } from "../repositories/interfaces/producto.interface";
-import { MateriasPrimasRepository } from "../repositories/interfaces/materias.primas.interface";
-import { RecetaRepository } from "../repositories/interfaces/receta.interface";
+import type { ProductoRepository } from "../repositories/interfaces/producto.interface";
+import type { MateriasPrimasRepository } from "../repositories/interfaces/materias.primas.interface";
+import type { RecetaRepository } from "../repositories/interfaces/receta.interface";
 import { RecetaResponseDTO } from "../dtos/receta/response.dto";
+import { Transactional } from "../decorators/transactional.decorator";
 
+@Transactional()
 export class RecetaService {
   constructor(
     private readonly recetaRepository: RecetaRepository,

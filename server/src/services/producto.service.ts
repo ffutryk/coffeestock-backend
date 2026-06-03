@@ -3,7 +3,9 @@ import type { ProductoRepository } from "../repositories/interfaces/producto.int
 import type { ActualizarProductoDTO } from "../dtos/producto/actualizar.dto";
 import type { CrearProductoDTO } from "../dtos/producto/crear.dto";
 import { NotFoundError } from "../errors";
+import { Transactional } from "../decorators/transactional.decorator";
 
+@Transactional()
 export class ProductoService {
   constructor(private readonly productoRepository: ProductoRepository) {}
 
