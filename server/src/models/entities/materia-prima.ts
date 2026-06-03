@@ -36,13 +36,6 @@ export class MateriaPrima extends Auditable {
   @OneToMany(() => MovimientoInventario, (mov) => mov.materiaPrima)
   movimientos!: MovimientoInventario[];
 
-  private _movimientosPendientes: MovimientoInventario[] = [];
-  movimientosPendientes() {
-    const movimientos = this._movimientosPendientes;
-    this._movimientosPendientes = [];
-    return movimientos;
-  }
-
   consumir(cantidad: number): void {
     if (this.inventario.stockActual < cantidad) {
       throw new StockInsuficienteError(`${this.nombre} marca ${this.marca}`);
@@ -66,7 +59,11 @@ export class MateriaPrima extends Auditable {
   devolver(cantidad: number, nota?: string): void {
     this.inventario.devolverStock(cantidad);
 
-    this._movimientosPendientes.push(MovimientoInventario.generarCorreccion(this, cantidad, nota));
+    eventBus.publish(
+      new MovimientoInventarioEvent({
+        movimiento: MovimientoInventario.generarCorreccion(this, cantidad, nota),
+      }),
+    );
   }
 
   static crear(
