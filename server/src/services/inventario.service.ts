@@ -5,7 +5,6 @@ import type { MovimientoInventarioRepository } from "../repositories/interfaces/
 import { AppDataSource } from "../config/data-source";
 import { MovimientoInventario } from "../models/entities/movimiento-inventario";
 import { BadRequestError, NotFoundError } from "../errors";
-import { EntityManager } from "typeorm";
 import { MotivoMovimiento } from "../models/enums/motivo-movimiento";
 import { Transactional } from "../decorators/transactional.decorator";
 
@@ -54,8 +53,7 @@ export class InventarioService {
     return await AppDataSource.transaction(async (transactionalEntityManager) => {
       const movimiento = new MovimientoInventario();
 
-      //movimiento.materiaPrima = inventario.materiaPrima;
-      movimiento.materiaPrima = { id: datos.idMateriaPrima } as any;
+      movimiento.materiaPrima = inventario.materiaPrima;
       movimiento.cantidad = impactoStock;
       movimiento.motivo = datos.motivo;
 

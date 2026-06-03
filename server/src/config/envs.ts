@@ -12,6 +12,6 @@ export const PORT = Number(process.env.BACKEND_PORT) || 3000;
 export const DB_HOSTNAME = process.env.POSTGRES_HOSTNAME ?? "localhost";
 export const DB_PORT = Number(process.env.POSTGRES_PORT) || 5432;
 export const DB_USERNAME = process.env.POSTGRES_USER ?? "postgres";
-export const DB_PASSWORD = process.env.POSTGRES_PASSWORD ?? "";
+export const DB_PASSWORD = process.env.POSTGRES_PASSWORD ?? "root";
 export const DB_DATABASE = required("POSTGRES_DB");
 export const JWT_SECRET = required("JWT_SECRET");

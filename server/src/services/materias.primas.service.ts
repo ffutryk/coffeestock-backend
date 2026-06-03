@@ -1,9 +1,7 @@
 import { Transactional } from "../decorators/transactional.decorator";
 import { CrearMateriaPrimaDTO } from "../dtos/materiasPrimas/crear.dto";
 import { BadRequestError } from "../errors";
-import { Inventario } from "../models/entities/inventario";
 import { MateriaPrima } from "../models/entities/materia-prima";
-import type { InventarioRepository } from "../repositories/interfaces/inventario.interface";
 import type { MateriasPrimasRepository } from "../repositories/interfaces/materias.primas.interface";
 import type { IMateriasPrimasService } from "./interfaces/materias.primas.service";
 

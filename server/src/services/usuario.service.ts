@@ -51,8 +51,7 @@ export class UsuarioService implements IUsuarioService {
   async listarUsuarios(paginacion: PaginacionDTO): Promise<ResultadoPaginado<UsuarioSinPassword>> {
     const resultado = await this.usuarioRepository.findAllPaginated(paginacion);
 
-    const dataSinPassword = resultado.data.map((usuario) => {
-      const { password, ...usuarioSinPassword } = usuario;
+    const dataSinPassword = resultado.data.map(({ password: _password, ...usuarioSinPassword }) => {
       return usuarioSinPassword as UsuarioSinPassword;
     });
 
