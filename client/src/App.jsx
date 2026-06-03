@@ -9,6 +9,7 @@ import Vender from "./pages/Vender";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Layout from "./components/Layout";
 import HistorialVentas from "./pages/HistorialVentas";
+import Empleados from "./pages/Empleados";
 
 function decodeToken(token) {
   try {
@@ -67,7 +68,7 @@ function App() {
           path="/empleados" 
           element={
             <ProtectedRoute usuario={usuario} allowedRoles={["GERENTE"]}>
-              <div className="placeholder-page"><h2>Empleados (Próximamente)</h2></div>
+              <Empleados />
             </ProtectedRoute>
           } 
         />
