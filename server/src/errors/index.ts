@@ -32,6 +32,14 @@ export class StockInsuficienteError extends AppError {
   }
 }
 
+export class RecetaFaltanteError extends AppError {
+  readonly statusCode = 400;
+
+  constructor(nombre: string) {
+    super(`Receta faltante para ${nombre}`);
+  }
+}
+
 export class IngredientesDuplicadosError extends AppError {
   readonly statusCode = 400;
 

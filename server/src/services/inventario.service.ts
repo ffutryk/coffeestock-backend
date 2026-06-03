@@ -1,24 +1,26 @@
 import { Inventario } from "../models/entities/inventario";
 import { RegistrarMovimientoDTO } from "../dtos/inventario/registrar-movimiento.dto";
-import { InventarioDao } from "../repositories/interfaces/inventario.interface";
-import { MovimientoInventarioRepository } from "../repositories/interfaces/movimiento.interface";
+import type { InventarioRepository } from "../repositories/interfaces/inventario.interface";
+import type { MovimientoInventarioRepository } from "../repositories/interfaces/movimiento.interface";
 import { AppDataSource } from "../config/data-source";
 import { MovimientoInventario } from "../models/entities/movimiento-inventario";
 import { BadRequestError, NotFoundError } from "../errors";
 import { MotivoMovimiento } from "../models/enums/motivo-movimiento";
+import { Transactional } from "../decorators/transactional.decorator";
 
+@Transactional()
 export class InventarioService {
   constructor(
-    private readonly inventarioDao: InventarioDao,
-    private readonly movimientoDao: MovimientoInventarioRepository,
+    private readonly inventarioRepository: InventarioRepository,
+    private readonly movimientoRepository: MovimientoInventarioRepository,
   ) {}
 
   async obtenerInventario() {
-    return await this.inventarioDao.findAllWithDetails();
+    return await this.inventarioRepository.findAllWithDetails();
   }
 
   async registrarMovimiento(datos: RegistrarMovimientoDTO) {
-    const inventario = await this.inventarioDao.findById(datos.idMateriaPrima);
+    const inventario = await this.inventarioRepository.findById(datos.idMateriaPrima);
     if (!inventario) {
       throw new NotFoundError("No se encontró el inventario para la materia prima.");
     }

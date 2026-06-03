@@ -1,17 +1,14 @@
 import { Router } from "express";
 import { EstadisticaController } from "../controllers/estadistica.controller";
-import { EstadisticaService } from "../services/estadistica.service";
-import { TypeORMEstadisticaRepository } from "../repositories/typeorm/estadistica.repository";
 import { RolUsuario } from "../models/enums/rol-usuario";
 import { validateQuery } from "../middlewares/validate";
 import { FiltrarEstadisticasVentasSchema } from "../dtos/estadistica/filtrar-ventas.dto";
 import { roles } from "../middlewares/role";
 import { auth } from "../middlewares/auth";
+import { estadisticaService } from "../container/di";
 
 const router = Router();
 
-const estadisticaRepository = new TypeORMEstadisticaRepository();
-const estadisticaService = new EstadisticaService(estadisticaRepository);
 const estadisticaController = new EstadisticaController(estadisticaService);
 
 router.get(

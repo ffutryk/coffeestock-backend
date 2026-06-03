@@ -5,7 +5,11 @@ import { Receta } from "./receta";
 import { MovimientoInventario } from "./movimiento-inventario";
 import { Inventario } from "./inventario";
 import { ResultadoVenta } from "../types/resultado-venta";
-import { IngredientesDuplicadosError, StockInsuficienteError } from "../../errors";
+import {
+  IngredientesDuplicadosError,
+  RecetaFaltanteError,
+  StockInsuficienteError,
+} from "../../errors";
 import { MateriaPrima } from "./materia-prima";
 
 @Entity({ name: "productos" })
@@ -19,7 +23,7 @@ export class Producto extends Auditable {
   @Column({ nullable: true })
   descripcion?: string;
 
-  @Column("int", { default: 0 })
+  @Column("int", { nullable: true })
   stock!: number;
 
   @Column("decimal")
@@ -54,6 +58,8 @@ export class Producto extends Auditable {
   }
 
   serVendido(cantidad: number): ResultadoVenta {
+    if (!this.tieneReceta() && !this.stock) throw new RecetaFaltanteError(this.nombre);
+
     if (this.tieneReceta()) {
       return this.aplicarOperacionSobreReceta(cantidad, (inv, cant, mp) => inv.consumir(cant, mp));
     }
