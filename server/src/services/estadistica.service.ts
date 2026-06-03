@@ -1,9 +1,9 @@
-import { EstadisticaDao, EstadisticasVentasDTO } from "../repositories/interfaces/estadistica.interface";
+import { EstadisticaRepository, EstadisticasVentasDTO } from "../repositories/interfaces/estadistica.interface";
 import { ReporteEstadisticasDTO } from "../models/types/estadisticas";
 
 export class EstadisticaService {
 
-  constructor(private estadisticaDao: EstadisticaDao) {}
+  constructor(private estadisticaRepository: EstadisticaRepository) {}
 
   async obtenerEstadisticasVentas(fechaInicio?: string, fechaFin?: string): Promise<EstadisticasVentasDTO> {
     let inicio: Date | undefined;
@@ -20,7 +20,7 @@ export class EstadisticaService {
       }
     }
 
-    return await this.estadisticaDao.obtenerEstadisticasVentas(inicio, fin);
+    return await this.estadisticaRepository.obtenerEstadisticasVentas(inicio, fin);
   }
 
   async obtenerEstadisticasProductos(user: string): Promise<ReporteEstadisticasDTO> {
@@ -28,7 +28,7 @@ export class EstadisticaService {
       throw new Error("Usuario no autenticado");
     }
 
-    const estadisticas = await this.estadisticaDao.obtenerMetricasGenerales();
+    const estadisticas = await this.estadisticaRepository.obtenerMetricasGenerales();
 
     if (!estadisticas) {
       throw new Error("No hay ventas disponibles para realizar estadísticas");

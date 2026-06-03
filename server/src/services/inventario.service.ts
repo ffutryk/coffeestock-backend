@@ -1,24 +1,36 @@
 import { Inventario } from "../models/entities/inventario";
 import { RegistrarMovimientoDTO } from "../dtos/inventario/registrar-movimiento.dto";
-import { InventarioDao } from "../repositories/interfaces/inventario.interface";
-import { MovimientoInventarioRepository } from "../repositories/interfaces/movimiento.interface";
+import type { InventarioRepository } from "../repositories/interfaces/inventario.interface";
+import type { MovimientoInventarioRepository } from "../repositories/interfaces/movimiento.interface";
 import { AppDataSource } from "../config/data-source";
 import { MovimientoInventario } from "../models/entities/movimiento-inventario";
 import { BadRequestError, NotFoundError } from "../errors";
+import { EntityManager } from "typeorm";
 import { MotivoMovimiento } from "../models/enums/motivo-movimiento";
+import { Transactional } from "../decorators/transactional.decorator";
 
+@Transactional()
 export class InventarioService {
   constructor(
-    private readonly inventarioDao: InventarioDao,
-    private readonly movimientoDao: MovimientoInventarioRepository,
+    private readonly inventarioRepository: InventarioRepository,
+    private readonly movimientoRepository: MovimientoInventarioRepository,
   ) {}
 
   async obtenerInventario() {
-    return await this.inventarioDao.findAllWithDetails();
+    return await this.inventarioRepository.findAllWithDetails();
+  }
+
+  async obtenerHistorialMovimientos() {
+    return await AppDataSource.getRepository(MovimientoInventario).find({
+      relations: ["materiaPrima"],
+      order: {
+        id: "DESC",
+      },
+    });
   }
 
   async registrarMovimiento(datos: RegistrarMovimientoDTO) {
-    const inventario = await this.inventarioDao.findById(datos.idMateriaPrima);
+    const inventario = await this.inventarioRepository.findById(datos.idMateriaPrima);
     if (!inventario) {
       throw new NotFoundError("No se encontró el inventario para la materia prima.");
     }
@@ -42,7 +54,8 @@ export class InventarioService {
     return await AppDataSource.transaction(async (transactionalEntityManager) => {
       const movimiento = new MovimientoInventario();
 
-      movimiento.materiaPrima = inventario.materiaPrima;
+      //movimiento.materiaPrima = inventario.materiaPrima;
+      movimiento.materiaPrima = { id: datos.idMateriaPrima } as any;
       movimiento.cantidad = impactoStock;
       movimiento.motivo = datos.motivo;
 
@@ -50,7 +63,7 @@ export class InventarioService {
 
       await transactionalEntityManager.save(movimiento);
 
-      inventario.stockActual += impactoStock;
+      inventario.stockActual = Number(inventario.stockActual) + impactoStock;
 
       await transactionalEntityManager.save(Inventario, inventario);
 

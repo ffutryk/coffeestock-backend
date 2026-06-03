@@ -3,19 +3,21 @@ import type { ProductoRepository } from "../repositories/interfaces/producto.int
 import type { ActualizarProductoDTO } from "../dtos/producto/actualizar.dto";
 import type { CrearProductoDTO } from "../dtos/producto/crear.dto";
 import { NotFoundError } from "../errors";
+import { Transactional } from "../decorators/transactional.decorator";
 
+@Transactional()
 export class ProductoService {
   constructor(private readonly productoRepository: ProductoRepository) {}
 
   async crearProducto(datos: CrearProductoDTO): Promise<Producto> {
-    const producto = new Producto();
-    Object.assign(producto, datos);
-    // if (datos.nombre !== undefined) producto.nombre = datos.nombre;
-    // if (datos.descripcion !== undefined) producto.descripcion = datos.descripcion;
-    // if (datos.precio !== undefined) producto.precio = datos.precio;
-    // if (datos.stock !== undefined && datos.stock !== null) producto.stock = datos.stock;
-    // if (datos.tipo !== undefined) producto.tipo = datos.tipo;
-    // if (datos.sinTacc !== undefined) producto.sinTacc = datos.sinTacc;
+    const producto = Producto.crear(
+      datos.nombre,
+      datos.descripcion ?? "",
+      datos.precio,
+      datos.tipo,
+      datos.sinTacc,
+    );
+
     return await this.productoRepository.save(producto);
   }
 

@@ -1,15 +1,13 @@
-import { ProductoService } from "../services/producto.service";
 import { ProductoController } from "../controllers/producto.controller";
 import { validateBody } from "../middlewares/validate";
 import { ActualizarProductoSchema } from "../dtos/producto/actualizar.dto";
 import { CrearProductoSchema } from "../dtos/producto/crear.dto";
-import { TypeOrmProductoRepository } from "../repositories/typeorm/producto.repository";
 import { Router } from "express";
 import { auth } from "../middlewares/auth";
+import { productoService } from "../container/di";
 
 const router = Router();
-const productoDao = new TypeOrmProductoRepository();
-const productoService = new ProductoService(productoDao);
+
 const productoController = new ProductoController(productoService);
 
 // ruta para crear

@@ -24,4 +24,24 @@ export class Usuario extends Auditable {
 
   @Column({ type: "enum", enum: RolUsuario, default: RolUsuario.EMPLEADO })
   rol!: RolUsuario;
+
+  static crear(
+    cuil: string,
+    nombre: string,
+    apellido: string,
+    email: string,
+    password: string,
+    rol: RolUsuario,
+  ): Usuario {
+    const usuario = new Usuario();
+
+    usuario.cuil = cuil;
+    usuario.nombre = nombre;
+    usuario.apellido = apellido;
+    usuario.email = email;
+    usuario.password = password;
+    usuario.rol = rol;
+
+    return usuario;
+  }
 }

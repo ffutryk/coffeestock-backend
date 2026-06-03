@@ -1,312 +1,172 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, beforeEach, vi } from "vitest";
 import { Producto } from "../../../src/models/entities/producto";
-import { Receta } from "../../../src/models/entities/receta";
 import { MateriaPrima } from "../../../src/models/entities/materia-prima";
-import { Inventario } from "../../../src/models/entities/inventario";
-import { MotivoMovimiento } from "../../../src/models/enums/motivo-movimiento";
-import { StockInsuficienteError } from "../../../src/errors";
+import { Receta } from "../../../src/models/entities/receta";
+import { TipoItemVenta } from "../../../src/models/enums/tipo-item-venta";
+import { UnidadDeMedida } from "../../../src/models/enums/unidad-de-medida";
+import {
+  StockInsuficienteError,
+  RecetaFaltanteError,
+  IngredientesDuplicadosError,
+} from "../../../src/errors";
+
+vi.mock("../../../src/models/events/event-bus", () => ({
+  eventBus: {
+    publish: vi.fn(),
+  },
+}));
 
 describe("Producto", () => {
-  describe("serVendido", () => {
-    it("debería restar stock directamente si el producto NO tiene receta", () => {
-      const producto = new Producto();
-      producto.nombre = "Pitusas";
-      producto.stock = 10;
-      producto.recetas = [];
+  let productoSinReceta: Producto;
+  let productoConReceta: Producto;
+  let materiaPrima1: MateriaPrima;
+  let materiaPrima2: MateriaPrima;
 
-      producto.serVendido(3);
+  beforeEach(() => {
+    vi.clearAllMocks();
 
-      expect(producto.stock).toBe(7);
+    productoSinReceta = Producto.crear("Pitusas", "Galletitas", 500, TipoItemVenta.PRODUCTO, false);
+    productoSinReceta.id = 1;
+    productoSinReceta.stock = 10;
+    productoSinReceta.recetas = [];
+
+    productoConReceta = Producto.crear(
+      "Café con Leche",
+      "Doble",
+      1500,
+      TipoItemVenta.PRODUCTO,
+      true,
+    );
+    productoConReceta.id = 2;
+    productoConReceta.stock = 0;
+
+    materiaPrima1 = MateriaPrima.crear("Café", "Nestle", UnidadDeMedida.KG, 1);
+    materiaPrima1.id = 1;
+    materiaPrima1.inventario.stockActual = 100;
+
+    materiaPrima2 = MateriaPrima.crear("Leche", "Serenísima", UnidadDeMedida.L, 1);
+    materiaPrima2.id = 2;
+    materiaPrima2.inventario.stockActual = 50;
+
+    const receta1 = Receta.crear(productoConReceta, materiaPrima1, 10);
+    const receta2 = Receta.crear(productoConReceta, materiaPrima2, 5);
+    productoConReceta.recetas = [receta1, receta2];
+  });
+
+  describe("crear()", () => {
+    it("debería crear un producto con los atributos correctos", () => {
+      const nuevoProducto = Producto.crear("Té", "Té verde", 300, TipoItemVenta.PRODUCTO);
+
+      expect(nuevoProducto.nombre).toBe("Té");
+      expect(nuevoProducto.descripcion).toBe("Té verde");
+      expect(nuevoProducto.precio).toBe(300);
+      expect(nuevoProducto.tipo).toBe(TipoItemVenta.PRODUCTO);
+      expect(nuevoProducto.sinTacc).toBe(false);
     });
 
-    it("debería lanzar error si el stock es insuficiente (sin receta)", () => {
-      const producto = new Producto();
-      producto.stock = 2;
-      producto.recetas = [];
-
-      expect(() => producto.serVendido(5)).toThrow(StockInsuficienteError);
-    });
-
-    it("debería retornar resultado vacío para producto sin receta", () => {
-      const producto = new Producto();
-      producto.stock = 10;
-      producto.recetas = [];
-
-      const resultado = producto.serVendido(2);
-
-      expect(resultado.inventariosModificados).toHaveLength(0);
-      expect(resultado.movimientosGenerados).toHaveLength(0);
-    });
-
-    it("debería consumir materia prima si el producto TIENE receta", () => {
-      const mp = new MateriaPrima();
-      mp.id = 1;
-      mp.nombre = "Café";
-      mp.marca = "Nestle";
-
-      const inv = new Inventario();
-      inv.id = 1;
-      inv.stockActual = 100;
-      inv.materiaPrima = mp;
-      mp.inventario = inv;
-
-      const receta = new Receta();
-      receta.materiaPrima = mp;
-      receta.cantidad = 10;
-
-      const producto = new Producto();
-      producto.id = 1;
-      producto.recetas = [receta];
-
-      const resultado = producto.serVendido(2);
-
-      expect(inv.stockActual).toBe(80);
-      expect(resultado.movimientosGenerados).toHaveLength(1);
-      expect(resultado.inventariosModificados).toHaveLength(1);
-      expect(resultado.movimientosGenerados[0].motivo).toBe(MotivoMovimiento.VENTA);
-    });
-
-    it("debería fallar si uno de los insumos de la receta no alcanza", () => {
-      const mp = new MateriaPrima();
-      mp.nombre = "Café";
-
-      const inv = new Inventario();
-      inv.stockActual = 5;
-      inv.materiaPrima = mp;
-      mp.inventario = inv;
-
-      const receta = new Receta();
-      receta.materiaPrima = mp;
-      receta.cantidad = 10;
-
-      const producto = new Producto();
-      producto.recetas = [receta];
-
-      expect(() => producto.serVendido(1)).toThrow(StockInsuficienteError);
-    });
-
-    it("debería procesar múltiples recetas", () => {
-      const mp1 = new MateriaPrima();
-      mp1.id = 1;
-      mp1.nombre = "Café";
-      const inv1 = new Inventario();
-      inv1.id = 1;
-      inv1.stockActual = 100;
-      inv1.materiaPrima = mp1;
-      mp1.inventario = inv1;
-
-      const receta1 = new Receta();
-      receta1.materiaPrima = mp1;
-      receta1.cantidad = 5;
-
-      const mp2 = new MateriaPrima();
-      mp2.id = 2;
-      mp2.nombre = "Leche";
-      const inv2 = new Inventario();
-      inv2.id = 2;
-      inv2.stockActual = 50;
-      inv2.materiaPrima = mp2;
-      mp2.inventario = inv2;
-
-      const receta2 = new Receta();
-      receta2.materiaPrima = mp2;
-      receta2.cantidad = 3;
-
-      const producto = new Producto();
-      producto.recetas = [receta1, receta2];
-
-      const resultado = producto.serVendido(2);
-
-      expect(inv1.stockActual).toBe(90);
-      expect(inv2.stockActual).toBe(44);
-      expect(resultado.movimientosGenerados).toHaveLength(2);
-      expect(resultado.inventariosModificados).toHaveLength(2);
+    it("debería asignar sinTacc si se provee explícitamente", () => {
+      const nuevoProducto = Producto.crear("Alfajor", "Maicena", 400, TipoItemVenta.PRODUCTO, true);
+      expect(nuevoProducto.sinTacc).toBe(true);
     });
   });
 
-  describe("revertirVenta", () => {
-    it("debería aumentar stock directamente si el producto NO tiene receta", () => {
-      const producto = new Producto();
-      producto.nombre = "Pitusas";
-      producto.stock = 10;
-      producto.recetas = [];
+  describe("tieneReceta()", () => {
+    it("debería retornar false si el array de recetas está vacío o es undefined", () => {
+      expect(productoSinReceta.tieneReceta()).toBe(false);
 
-      const resultado = producto.revertirVenta(3);
-
-      expect(producto.stock).toBe(13);
-      expect(resultado.inventariosModificados).toHaveLength(0);
-      expect(resultado.movimientosGenerados).toHaveLength(0);
+      const productoVacio = new Producto();
+      expect(productoVacio.tieneReceta()).toBe(false);
     });
 
-    it("debería devolver materia prima si el producto TIENE receta", () => {
-      const mp = new MateriaPrima();
-      mp.id = 1;
-      mp.nombre = "Café";
-
-      const inv = new Inventario();
-      inv.id = 1;
-      inv.stockActual = 50;
-      inv.materiaPrima = mp;
-      mp.inventario = inv;
-
-      const receta = new Receta();
-      receta.materiaPrima = mp;
-      receta.cantidad = 10;
-
-      const producto = new Producto();
-      producto.recetas = [receta];
-
-      const resultado = producto.revertirVenta(2);
-
-      expect(inv.stockActual).toBe(70);
-      expect(resultado.movimientosGenerados).toHaveLength(1);
-      expect(resultado.movimientosGenerados[0].motivo).toBe(MotivoMovimiento.CORRECCION);
-    });
-
-    it("debería incluir nota en movimientos de corrección", () => {
-      const mp = new MateriaPrima();
-      mp.id = 1;
-      mp.nombre = "Café";
-
-      const inv = new Inventario();
-      inv.id = 1;
-      inv.stockActual = 50;
-      inv.materiaPrima = mp;
-      mp.inventario = inv;
-
-      const receta = new Receta();
-      receta.materiaPrima = mp;
-      receta.cantidad = 10;
-
-      const producto = new Producto();
-      producto.recetas = [receta];
-
-      const nota = "Reversión de venta #42 - Item: Café Espresso";
-      const resultado = producto.revertirVenta(2, nota);
-
-      expect(resultado.movimientosGenerados[0].nota).toBe(nota);
-    });
-
-    it("debería procesar reversión de múltiples recetas", () => {
-      const mp1 = new MateriaPrima();
-      mp1.id = 1;
-      mp1.nombre = "Café";
-      const inv1 = new Inventario();
-      inv1.id = 1;
-      inv1.stockActual = 50;
-      inv1.materiaPrima = mp1;
-      mp1.inventario = inv1;
-
-      const receta1 = new Receta();
-      receta1.materiaPrima = mp1;
-      receta1.cantidad = 5;
-
-      const mp2 = new MateriaPrima();
-      mp2.id = 2;
-      mp2.nombre = "Leche";
-      const inv2 = new Inventario();
-      inv2.id = 2;
-      inv2.stockActual = 30;
-      inv2.materiaPrima = mp2;
-      mp2.inventario = inv2;
-
-      const receta2 = new Receta();
-      receta2.materiaPrima = mp2;
-      receta2.cantidad = 3;
-
-      const producto = new Producto();
-      producto.recetas = [receta1, receta2];
-
-      const resultado = producto.revertirVenta(2);
-
-      expect(inv1.stockActual).toBe(60);
-      expect(inv2.stockActual).toBe(36);
-      expect(resultado.movimientosGenerados).toHaveLength(2);
-    });
-
-    it("debería revertir completamente una venta anterior", () => {
-      const mp = new MateriaPrima();
-      mp.id = 1;
-      mp.nombre = "Café";
-
-      const inv = new Inventario();
-      inv.id = 1;
-      inv.stockActual = 100;
-      inv.materiaPrima = mp;
-      mp.inventario = inv;
-
-      const receta = new Receta();
-      receta.materiaPrima = mp;
-      receta.cantidad = 10;
-
-      const producto = new Producto();
-      producto.recetas = [receta];
-
-      producto.serVendido(3);
-      expect(inv.stockActual).toBe(70);
-
-      producto.revertirVenta(3);
-      expect(inv.stockActual).toBe(100);
+    it("debería retornar true si tiene al menos una receta", () => {
+      expect(productoConReceta.tieneReceta()).toBe(true);
     });
   });
 
-  describe("tieneReceta", () => {
-    it("debería retornar false si no hay recetas", () => {
-      const producto = new Producto();
-      producto.recetas = [];
-
-      expect(producto.tieneReceta()).toBe(false);
+  describe("decrementarStock()", () => {
+    it("debería restar stock si no tiene receta y el stock es suficiente", () => {
+      productoSinReceta.decrementarStock(3);
+      expect(productoSinReceta.stock).toBe(7);
     });
 
-    it("debería retornar true si hay al menos una receta", () => {
-      const receta = new Receta();
-      const producto = new Producto();
-      producto.recetas = [receta];
-
-      expect(producto.tieneReceta()).toBe(true);
+    it("debería lanzar StockInsuficienteError si no alcanza el stock", () => {
+      expect(() => productoSinReceta.decrementarStock(15)).toThrow(StockInsuficienteError);
+      expect(() => productoSinReceta.decrementarStock(15)).toThrow("Pitusas");
+      expect(productoSinReceta.stock).toBe(10); // No debió modificarse
     });
   });
 
-  describe("insumosPara", () => {
-    it("debería calcular insumos correctamente", () => {
-      const mp1 = new MateriaPrima();
-      mp1.id = 1;
-      const mp2 = new MateriaPrima();
-      mp2.id = 2;
-
-      const receta1 = new Receta();
-      receta1.materiaPrima = mp1;
-      receta1.cantidad = 5;
-
-      const receta2 = new Receta();
-      receta2.materiaPrima = mp2;
-      receta2.cantidad = 10;
-
-      const producto = new Producto();
-      producto.recetas = [receta1, receta2];
-
-      const insumos = producto.insumosPara(2);
-
-      expect(insumos).toEqual([
-        { id: 1, cantidad: 10 },
-        { id: 2, cantidad: 20 },
-      ]);
+  describe("serVendido()", () => {
+    it("debería lanzar RecetaFaltanteError si no tiene receta y su stock es falsy (0 o undefined)", () => {
+      productoSinReceta.stock = 0;
+      expect(() => productoSinReceta.serVendido(1)).toThrow(RecetaFaltanteError);
+      expect(() => productoSinReceta.serVendido(1)).toThrow("Pitusas");
     });
 
-    it("debería calcular cero para cantidad cero", () => {
-      const mp = new MateriaPrima();
-      mp.id = 1;
+    it("debería decrementar su propio stock si NO tiene receta", () => {
+      productoSinReceta.serVendido(4);
+      expect(productoSinReceta.stock).toBe(6);
+    });
 
-      const receta = new Receta();
-      receta.materiaPrima = mp;
-      receta.cantidad = 5;
+    it("debería consumir materia prima de todas sus recetas si TIENE receta", () => {
+      productoConReceta.serVendido(2);
 
-      const producto = new Producto();
-      producto.recetas = [receta];
+      expect(materiaPrima1.inventario.stockActual).toBe(80);
+      expect(materiaPrima2.inventario.stockActual).toBe(40);
+    });
 
-      const insumos = producto.insumosPara(0);
+    it("debería fallar si alguna materia prima no alcanza, sin alterar las posteriores", () => {
+      materiaPrima2.inventario.stockActual = 2;
 
-      expect(insumos[0].cantidad).toBe(0);
+      expect(() => productoConReceta.serVendido(1)).toThrow(StockInsuficienteError);
+
+      expect(materiaPrima1.inventario.stockActual).toBe(90);
+      expect(materiaPrima2.inventario.stockActual).toBe(2);
+    });
+  });
+
+  describe("revertirVenta()", () => {
+    it("debería aumentar su propio stock si NO tiene receta", () => {
+      productoSinReceta.revertirVenta(3);
+      expect(productoSinReceta.stock).toBe(13);
+    });
+
+    it("debería devolver stock a todas las materias primas si TIENE receta", () => {
+      productoConReceta.revertirVenta(2, "Venta cancelada");
+
+      expect(materiaPrima1.inventario.stockActual).toBe(120);
+      expect(materiaPrima2.inventario.stockActual).toBe(60);
+    });
+  });
+
+  describe("construirReceta()", () => {
+    it("debería crear un array de recetas válido a partir de ingredientes", () => {
+      const ingredientes = [
+        { materiaPrima: materiaPrima1, cantidad: 15 },
+        { materiaPrima: materiaPrima2, cantidad: 20 },
+      ];
+
+      const nuevasRecetas = productoSinReceta.construirReceta(ingredientes);
+
+      expect(nuevasRecetas).toHaveLength(2);
+      expect(nuevasRecetas[0].producto).toBe(productoSinReceta);
+      expect(nuevasRecetas[0].materiaPrima).toBe(materiaPrima1);
+      expect(nuevasRecetas[0].cantidad).toBe(15);
+
+      expect(nuevasRecetas[1].producto).toBe(productoSinReceta);
+      expect(nuevasRecetas[1].materiaPrima).toBe(materiaPrima2);
+      expect(nuevasRecetas[1].cantidad).toBe(20);
+    });
+
+    it("debería lanzar IngredientesDuplicadosError si se pasa la misma materia prima varias veces", () => {
+      const ingredientes = [
+        { materiaPrima: materiaPrima1, cantidad: 10 },
+        { materiaPrima: materiaPrima1, cantidad: 5 },
+      ];
+
+      expect(() => productoSinReceta.construirReceta(ingredientes)).toThrow(
+        IngredientesDuplicadosError,
+      );
     });
   });
 });

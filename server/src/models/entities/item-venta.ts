@@ -27,7 +27,7 @@ export class ItemVenta {
   @JoinColumn({ name: "ventaId" })
   venta!: Venta;
 
-  @ManyToOne(() => Producto, { nullable: true, onDelete: "SET NULL" })
+  @ManyToOne(() => Producto, { nullable: true, cascade: true })
   @JoinColumn({ name: "productoId" })
   producto!: Producto;
 

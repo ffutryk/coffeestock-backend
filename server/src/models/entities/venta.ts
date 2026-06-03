@@ -3,7 +3,6 @@ import { ItemVenta } from "./item-venta";
 import { MedioDePago } from "../enums/medio-de-pago";
 import { Auditable } from "../base/auditable";
 import { Producto } from "./producto";
-import { ResultadoVenta } from "../types/resultado-venta";
 
 @Entity("ventas")
 export class Venta extends Auditable {
@@ -29,16 +28,14 @@ export class Venta extends Auditable {
     return venta;
   }
 
-  agregarItem(producto: Producto, cantidad: number): ResultadoVenta {
-    const efectos = producto.serVendido(cantidad);
+  agregarItem(producto: Producto, cantidad: number): void {
+    producto.serVendido(cantidad);
     this.items.push(ItemVenta.create(producto, cantidad, this));
-    return efectos;
   }
 
-  revertirItem(item: ItemVenta): ResultadoVenta {
+  revertirItem(item: ItemVenta): void {
     const nota = `Reversión de venta #${this.id} - Item: ${item.nombre}`;
-    const efectos = item.producto.revertirVenta(item.cantidad, nota);
+    item.producto.revertirVenta(item.cantidad, nota);
     this.items = this.items.filter((i) => i !== item);
-    return efectos;
   }
 }
