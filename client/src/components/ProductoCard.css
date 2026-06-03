@@ -1,0 +1,101 @@
+.producto-card {
+  background: var(--white);
+  border-radius: 15px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  position: relative;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid transparent;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+  overflow: hidden;
+}
+
+.producto-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(62, 39, 35, 0.1);
+  border-color: var(--coffee-light);
+}
+
+.producto-icon {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.producto-info h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.1rem;
+  color: var(--coffee-dark);
+}
+
+.producto-precio {
+  font-weight: 800;
+  color: var(--accent-color);
+  font-size: 1.2rem;
+  margin: 0 0 1rem 0;
+}
+
+.producto-footer {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.stock-tag, .sintacc-tag {
+  font-size: 0.7rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 20px;
+  font-weight: 600;
+}
+
+.stock-tag {
+  background-color: var(--latte-cream);
+  color: var(--coffee-medium);
+}
+
+.sintacc-tag {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+/* Sin Stock Styles */
+.producto-card.sin-stock {
+  filter: grayscale(0.8) opacity(0.7);
+  cursor: not-allowed;
+  background-color: #f0f0f0;
+}
+
+.badge-sin-stock {
+  position: absolute;
+  top: 10px;
+  right: -30px;
+  background-color: var(--error-color);
+  color: white;
+  padding: 5px 35px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  transform: rotate(45deg);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.card-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--coffee-dark);
+  color: white;
+  padding: 0.8rem;
+  transform: translateY(100%);
+  transition: transform 0.3s;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.producto-card:hover:not(.sin-stock) .card-overlay {
+  transform: translateY(0);
+}
