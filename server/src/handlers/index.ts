@@ -3,6 +3,7 @@ import { MateriaPrima } from "../models/entities/materia-prima";
 import { GravedadAlerta } from "../models/enums/gravedad-alerta";
 import { MovimientoInventarioEventPayload, StockBajoAlertaEventPayload } from "../models/events";
 import { Event } from "../models/events/event";
+import { EmitirAlertaStockBajoPolicy } from "../models/policies/alerta-stock-bajo.policy";
 import { AlertaRepository } from "../repositories/interfaces/alerta.interface";
 import { MovimientoInventarioRepository } from "../repositories/interfaces/movimiento.interface";
 import { Handler } from "./handler.interface";
@@ -11,8 +12,21 @@ export class StockBajoAlertaEventHandler implements Handler {
   constructor(private readonly alertaRepository: AlertaRepository) {}
 
   async handle(event: Event<StockBajoAlertaEventPayload>): Promise<void> {
-    const mensaje = `Stock (${event.payload.materiaPrima.inventario.stockActual}) bajo para: ${event.payload.materiaPrima.nombre}`;
+    const materiaPrima = event.payload.materiaPrima;
+    const ultima = await this.alertaRepository.findLatestStockBajoAlertByMateriaPrimaId(
+      materiaPrima.id,
+    );
+    console.log(ultima);
+    if (!EmitirAlertaStockBajoPolicy.canEmit(ultima, materiaPrima)) return;
+
+    const mensaje = `Stock (${materiaPrima.inventario.stockActual}) bajo para: ${materiaPrima.nombre}`;
     const alerta = Alerta.crear(mensaje, this.gravedadAlerta(event.payload.materiaPrima));
+
+    alerta.metadata = {
+      materiaPrimaId: materiaPrima.id,
+      reason: "STOCK_BAJO",
+      stockActual: materiaPrima.inventario.stockActual,
+    };
 
     await this.alertaRepository.save(alerta);
   }

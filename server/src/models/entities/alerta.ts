@@ -4,6 +4,7 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  Index,
 } from "typeorm";
 import { GravedadAlerta } from "../enums/gravedad-alerta";
 
@@ -31,6 +32,7 @@ export class Alerta {
     type: "jsonb",
     nullable: true,
   })
+  @Index()
   metadata?: Record<string, unknown>;
 
   static crear(mensaje: string, gravedad: GravedadAlerta): Alerta {
