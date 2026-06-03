@@ -3,29 +3,35 @@ import api from "../services/api";
 import "./Inventario.css";
 
 const InventoryItemCard = ({ item, onUpdateStock }) => {
-  const pct = item.capacity > 0 ? (item.currentStock / item.capacity) * 100 : 0;
-  const status = pct <= 15 ? "critical" : pct <= 30 ? "low" : "ok";
+  const pct = item.stockMinimo > 0
+    ? (item.stockActual / item.stockMinimo) * 100
+    : 100;
+  const status = item.stockActual < item.stockMinimo / 2
+    ? "critical"
+    : item.stockActual < item.stockMinimo
+      ? "low"
+      : "ok";
 
   return (
     <div className={`inventory-item-card ${status}`}>
       <div className="item-header">
-        <h3 className="item-name">{item.name}</h3>
+        <h3 className="item-name">{item.nombre}</h3>
         <span className={`item-status-badge ${status}`}>
           {status === "ok" ? "OK" : status.toUpperCase()}
         </span>
       </div>
       <p className="item-stock">
-        <span className="current-stock">{item.currentStock}</span>
-        <span className="capacity"> / {item.capacity} {item.unit}</span>
+        <span className="current-stock">{item.stockActual}</span>
+        <span className="capacity"> / {item.stockMinimo} {item.unidadDeMedida}</span>
       </p>
       <div className="stock-bar-container">
         <div className="stock-bar" style={{ width: `${Math.min(pct, 100)}%` }} />
       </div>
       <div className="item-controls">
-        <button className="control-btn" onClick={() => onUpdateStock(item.id, -10)}>-10</button>
-        <button className="control-btn" onClick={() => onUpdateStock(item.id, -1)}>-1</button>
-        <button className="control-btn plus" onClick={() => onUpdateStock(item.id, 1)}>+1</button>
-        <button className="control-btn plus" onClick={() => onUpdateStock(item.id, 10)}>+10</button>
+        <button className="control-btn sub" onClick={() => onUpdateStock(item.id, -10)}>−10</button>
+        <button className="control-btn sub" onClick={() => onUpdateStock(item.id, -1)}>−1</button>
+        <button className="control-btn add" onClick={() => onUpdateStock(item.id, 1)}>+1</button>
+        <button className="control-btn add" onClick={() => onUpdateStock(item.id, 10)}>+10</button>
       </div>
     </div>
   );
@@ -62,25 +68,20 @@ export default function Inventario() {
 
   const fetchInventory = async () => {
     try {
-      // Placeholder: reemplazar con api.get("/inventory")
-      //const response = await api.get("/inventario");
-      //setInventory(response.data);
-      const mock = [
-        { id: "1", 
-          name: "Granos de Café Arábica", 
-          currentStock: 180, 
-          capacity: 200, 
-          unit: "kg" 
-        },
-        { id: "2", name: "Leche Entera", currentStock: 45, capacity: 50, unit: "lt" },
-        { id: "3", name: "Leche Deslactosada", currentStock: 8, capacity: 30, unit: "lt" },
-        { id: "4", name: "Jarabe de Vainilla", currentStock: 12, capacity: 15, unit: "btl" },
-        { id: "5", name: "Jarabe de Caramelo", currentStock: 4, capacity: 20, unit: "btl" },
-        { id: "6", name: "Vasos 16oz", currentStock: 500, capacity: 500, unit: "pcs" },
-        { id: "7", name: "Tapas para Vasos", currentStock: 60, capacity: 500, unit: "pcs" },
-        { id: "8", name: "Azúcar", currentStock: 10, capacity: 25, unit: "kg" },
-      ];
-      setInventory(mock);
+      // Placeholder: reemplazar con api.get("/inventario")
+      const response = await api.get("/inventario");
+      setInventory(response.data);
+      // const mock = [
+      //   { id: 1, nombre: "Grano de café Arábica", stockActual: 180, stockMinimo: 200, unidadDeMedida: "Kilogramos" },
+      //   { id: 2, nombre: "Leche Entera", stockActual: 45, stockMinimo: 50, unidadDeMedida: "Litros" },
+      //   { id: 3, nombre: "Leche Deslactosada", stockActual: 18, stockMinimo: 30, unidadDeMedida: "Litros" },
+      //   { id: 4, nombre: "Jarabe de Vainilla", stockActual: 12, stockMinimo: 15, unidadDeMedida: "Unidades" },
+      //   { id: 5, nombre: "Jarabe de Caramelo", stockActual: 4, stockMinimo: 20, unidadDeMedida: "Unidades" },
+      //   { id: 6, nombre: "Vasos 16oz", stockActual: 500, stockMinimo: 500, unidadDeMedida: "Unidades" },
+      //   { id: 7, nombre: "Tapas para Vasos", stockActual: 60, stockMinimo: 500, unidadDeMedida: "Unidades" },
+      //   { id: 8, nombre: "Azúcar", stockActual: 10, stockMinimo: 25, unidadDeMedida: "Kilogramos" },
+      // ];
+      //setInventory(mock);
     } catch (error) {
       console.error("Error fetching inventory:", error);
       showMensaje("Error al cargar inventario", "error");
@@ -91,16 +92,19 @@ export default function Inventario() {
 
   const handleUpdateStock = async (itemId, change) => {
     const prev = [...inventory];
-    setInventory(prev =>
-      prev.map(item =>
+    setInventory(items =>
+      items.map(item =>
         item.id === itemId
-          ? { ...item, currentStock: Math.max(0, item.currentStock + change) }
+          ? { ...item, stockActual: Math.max(0, item.stockActual + change) }
           : item
       )
     );
     try {
-      // Placeholder: api.put(`/inventory/${itemId}`, { change })
-      // await api.put(`/inventory/${itemId}`, { change });
+      await api.post("/inventario/movimientos", {
+        idMateriaPrima: itemId,
+        cantidad: Math.abs(change),
+        motivo: change > 0 ? "COMPRA" : "DESCARTE",
+      });
       showMensaje("Stock actualizado", "success");
     } catch (error) {
       console.error("Error updating stock:", error);
@@ -114,14 +118,11 @@ export default function Inventario() {
     setTimeout(() => setMensaje({ text: "", type: "" }), 3000);
   };
 
-  const getPct = (item) =>
-    item.capacity > 0 ? (item.currentStock / item.capacity) * 100 : 0;
-
   const lowStockItems = inventory.filter(
-    (i) => getPct(i) > 15 && getPct(i) <= 30
+    (i) => i.stockActual < i.stockMinimo && i.stockActual >= i.stockMinimo / 2
   ).length;
   const criticalStockItems = inventory.filter(
-    (i) => getPct(i) <= 15
+    (i) => i.stockActual < i.stockMinimo / 2
   ).length;
 
   if (loading) return <div className="loading">Cargando inventario...</div>;

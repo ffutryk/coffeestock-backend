@@ -13,7 +13,10 @@ export class TypeOrmInventarioRepository
   }
 
   async findById(idMateriaPrima: number): Promise<Inventario | null> {
-    return await this.repository.findOneBy({ materiaPrima: { id: idMateriaPrima } });
+    return await this.repository.findOne({
+      where: { materiaPrima: { id: idMateriaPrima } },
+      relations: ["materiaPrima"],
+    });
   }
 
   async findAllWithDetails(): Promise<any[]> {
@@ -26,7 +29,7 @@ export class TypeOrmInventarioRepository
         'mp.unidad AS "unidadDeMedida"',
       ])
       .from(MateriaPrima, "mp")
-      .leftJoin(Inventario, "i", "mp.id = i.idMateriaPrima");
+      .leftJoin(Inventario, "i", "mp.id = i.id");
 
     return await query.getRawMany();
   }

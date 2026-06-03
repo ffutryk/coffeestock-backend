@@ -52,7 +52,7 @@ export class InventarioService {
 
       await transactionalEntityManager.save(movimiento);
 
-      inventario.stockActual += impactoStock;
+      inventario.stockActual = Number(inventario.stockActual) + impactoStock;
 
       await transactionalEntityManager.save(Inventario, inventario);
 

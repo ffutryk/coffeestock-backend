@@ -20,17 +20,17 @@ export class Inventario extends Auditable {
   materiaPrima!: MateriaPrima;
 
   consumir(cantidad: number, materiaPrima: MateriaPrima): MovimientoInventario {
-    if (this.stockActual < cantidad) {
+    if (Number(this.stockActual) < cantidad) {
       throw new StockInsuficienteError(`${materiaPrima.nombre} marca ${materiaPrima.marca}`);
     }
 
-    this.stockActual -= cantidad;
+    this.stockActual = Number(this.stockActual) - cantidad;
 
     return MovimientoInventario.generarVenta(materiaPrima, cantidad);
   }
 
   devolverStock(cantidad: number, materiaPrima: MateriaPrima, nota?: string): MovimientoInventario {
-    this.stockActual += cantidad;
+    this.stockActual = Number(this.stockActual) + cantidad;
     return MovimientoInventario.generarCorreccion(materiaPrima, cantidad, nota);
   }
 }
