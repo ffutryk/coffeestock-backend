@@ -15,6 +15,9 @@ import MateriasPrimasService from "../services/materias.primas.service";
 import { ProductoService } from "../services/producto.service";
 import { RecetaService } from "../services/receta.service";
 import { UsuarioService } from "../services/usuario.service";
+import { MovimientoInventarioEventHandler, StockBajoAlertaEventHandler } from "../events/handlers";
+import { eventBus } from "../models/events/event-bus";
+import { TypeOrmAlertaRepository } from "../repositories/typeorm/alerta.repository";
 
 const estadisticasRepository = new TypeORMEstadisticaRepository();
 const inventariosRepository = new TypeOrmInventarioRepository();
@@ -24,6 +27,14 @@ const productosRepository = new TypeOrmProductoRepository();
 const recetasRepository = new TypeOrmRecetaRepository();
 const usuariosRepository = new TypeOrmUsuarioRepository();
 const ventasRepository = new TypeOrmVentaRepository();
+const alertaRepository = new TypeOrmAlertaRepository();
+
+const stockBajoAlertaEventHandler = new StockBajoAlertaEventHandler(alertaRepository);
+const movimientoInventarioEventHandler = new MovimientoInventarioEventHandler(
+  movimientosRepository,
+);
+eventBus.subscribe("StockBajoAlertaEvent", stockBajoAlertaEventHandler);
+eventBus.subscribe("MovimientoInventarioEvent", movimientoInventarioEventHandler);
 
 export const tokenService = new TokenService();
 export const authService = new AuthService(tokenService, usuariosRepository);
