@@ -1,7 +1,10 @@
 import { createContext, useContext, useState } from "react";
 import Modal from "../components/modals/Modal";
+import CrearMateriaPrimaModal from "../components/modals/CrearMateriaPrima";
 
-const MODALES = {};
+const MODALES = {
+    "crear-materia-prima": CrearMateriaPrimaModal,
+};
 
 const ModalContext = createContext(null);
 
