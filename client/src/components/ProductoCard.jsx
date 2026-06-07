@@ -1,6 +1,8 @@
 import "./ProductoCard.css";
 
 export default function ProductoCard({ producto, onAgregar }) {
+  
+  const isCombo = producto.items !== undefined;
   const isSinStock = producto.stock <= 0;
 
   return (

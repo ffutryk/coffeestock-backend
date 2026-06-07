@@ -10,9 +10,12 @@ export default function Vender() {
   const [medioDePago, setMedioDePago] = useState("EFECTIVO");
   const [loading, setLoading] = useState(true);
   const [mensaje, setMensaje] = useState({ text: "", type: "" });
+  const [combos, setCombos] = useState([]);
+  const [filtro, setFiltro] = useState("TODOS");
 
   useEffect(() => {
     fetchProductos();
+    fetchCombos();
   }, []);
 
   const fetchProductos = async () => {
@@ -26,6 +29,22 @@ export default function Vender() {
       setLoading(false);
     }
   };
+
+  const fetchCombos = async () => {
+  try {
+    const response = await api.get("/combos");
+    console.log(response.data.data);
+    setCombos(
+      response.data.data.map((combo) => ({
+        ...combo,
+        tipo: "COMBO",
+      }))
+    );
+  } catch (error) {
+    console.error("Error fetching combos:", error);
+    showMensaje("Error al cargar combos", "error");
+  }
+};
 
   const showMensaje = (text, type) => {
     setMensaje({ text, type });
@@ -95,19 +114,37 @@ export default function Vender() {
 
   if (loading) return <div className="loading">Cargando productos...</div>;
 
+  const itemsMostrados =
+    filtro === "PRODUCTOS"
+      ? productos
+      : filtro === "COMBOS"
+      ? combos
+      : [...productos, ...combos];
+
   return (
     <div className="vender-container">
       <div className="catalogo-section">
         <div className="section-header">
           <h2>Catálogo de Productos</h2>
-          <span className="productos-count">{productos.length} items disponibles</span>
+          <span className="productos-count">{itemsMostrados.length} items disponibles</span>
+          <div className="filtros">
+            <button onClick={() => setFiltro("TODOS")}>
+              Todos
+            </button>
+            <button onClick={() => setFiltro("PRODUCTOS")}>
+              Productos
+            </button>
+            <button onClick={() => setFiltro("COMBOS")}>
+              Combos
+            </button>
+          </div>
         </div>
         
         <div className="productos-grid">
-          {productos.map((prod) => (
+          {itemsMostrados.map((item) => (
             <ProductoCard
-              key={prod.id}
-              producto={prod}
+              key={item.id}
+              producto={item}
               onAgregar={agregarAlPedido}
             />
           ))}
