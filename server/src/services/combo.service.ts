@@ -40,6 +40,7 @@ export class ComboService implements IComboService {
             id: comboGuardado.id,
             nombre: comboGuardado.nombre,
             precio: Number(comboGuardado.precio),
+            stock: combo.calcularStock(),
             items: comboGuardado.items.map((item) => ({
             producto: {
                 id: item.producto.id,
@@ -56,6 +57,7 @@ export class ComboService implements IComboService {
         id: combo.id,
         nombre: combo.nombre,
         precio: Number(combo.precio),
+        stock: combo.calcularStock(),
         items: 
             combo.items.map((item) => ({
                 producto: {

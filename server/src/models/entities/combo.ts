@@ -23,4 +23,16 @@ export class Combo extends Auditable {
         combo.items = [];
         return combo;
     }
+
+    calcularStock(): number {
+        if (this.items.length === 0) {
+            return 0;
+        }
+
+        return Math.min(
+            ...this.items.map((item) =>
+                Math.floor(item.producto.stock / item.cantidad)
+            )
+        );
+    }
 }
