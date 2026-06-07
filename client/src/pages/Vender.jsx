@@ -131,13 +131,22 @@ export default function Vender() {
             <h2>Catálogo de Productos</h2>
             <span className="productos-count">{itemsMostrados.length} items disponibles</span>
             <div className="filtros">
-              <button onClick={() => setFiltro("TODOS")}>
+              <button
+                className={filtro === "TODOS" ? "filtro-btn activo" : "filtro-btn"}
+                onClick={() => setFiltro("TODOS")}
+              >
                 Todos
               </button>
-              <button onClick={() => setFiltro("PRODUCTOS")}>
+              <button
+                className={filtro === "PRODUCTOS" ? "filtro-btn activo" : "filtro-btn"}
+                onClick={() => setFiltro("PRODUCTOS")}
+              >
                 Productos
               </button>
-              <button onClick={() => setFiltro("COMBOS")}>
+              <button
+                className={filtro === "COMBOS" ? "filtro-btn activo" : "filtro-btn"}
+                onClick={() => setFiltro("COMBOS")}
+              >
                 Combos
               </button>
             </div>

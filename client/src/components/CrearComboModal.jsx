@@ -125,7 +125,7 @@ export default function CrearComboModal({
                     key={producto.id}
                     value={producto.id}
                   >
-                    {producto.nombre}
+                    {producto.nombre} (${Number(producto.precio).toLocaleString("es-AR")})
                   </option>
                 ))}
               </select>
