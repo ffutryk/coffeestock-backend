@@ -3,6 +3,7 @@ import api from "../services/api";
 import ProductoCard from "../components/ProductoCard";
 import "./Vender.css";
 import CrearComboModal from "../components/CrearComboModal";
+import { useNavigate } from "react-router-dom";
 
 export default function Vender() {
   const [productos, setProductos] = useState([]);
@@ -14,6 +15,7 @@ export default function Vender() {
   const [combos, setCombos] = useState([]);
   const [filtro, setFiltro] = useState("TODOS");
   const [mostrarModalCombo, setMostrarModalCombo] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchProductos();
@@ -33,20 +35,20 @@ export default function Vender() {
   };
 
   const fetchCombos = async () => {
-  try {
-    const response = await api.get("/combos");
-    console.log(response.data.data);
-    setCombos(
-      response.data.data.map((combo) => ({
-        ...combo,
-        tipo: "COMBO",
-      }))
-    );
-  } catch (error) {
-    console.error("Error fetching combos:", error);
-    showMensaje("Error al cargar combos", "error");
-  }
-};
+    try {
+      const response = await api.get("/combos");
+      console.log(response.data.data);
+      setCombos(
+        response.data.data.map((combo) => ({
+          ...combo,
+          tipo: "COMBO",
+        })),
+      );
+    } catch (error) {
+      console.error("Error fetching combos:", error);
+      showMensaje("Error al cargar combos", "error");
+    }
+  };
 
   const showMensaje = (text, type) => {
     setMensaje({ text, type });
@@ -60,7 +62,9 @@ export default function Vender() {
       const itemExistente = prev.find((item) => item.id === producto.id);
       if (itemExistente) {
         return prev.map((item) =>
-          item.id === producto.id ? { ...item, cantidad: item.cantidad + 1 } : item
+          item.id === producto.id
+            ? { ...item, cantidad: item.cantidad + 1 }
+            : item,
         );
       }
       return [...prev, { ...producto, cantidad: 1 }];
@@ -74,13 +78,18 @@ export default function Vender() {
         return prev.filter((item) => item.id !== productoId);
       }
       return prev.map((item) =>
-        item.id === productoId ? { ...item, cantidad: item.cantidad - 1 } : item
+        item.id === productoId
+          ? { ...item, cantidad: item.cantidad - 1 }
+          : item,
       );
     });
   };
 
   const calcularTotal = () => {
-    return orden.reduce((total, item) => total + item.precio * item.cantidad, 0);
+    return orden.reduce(
+      (total, item) => total + item.precio * item.cantidad,
+      0,
+    );
   };
 
   const handleConfirmarVenta = async () => {
@@ -120,8 +129,8 @@ export default function Vender() {
     filtro === "PRODUCTOS"
       ? productos
       : filtro === "COMBOS"
-      ? combos
-      : [...productos, ...combos];
+        ? combos
+        : [...productos, ...combos];
 
   return (
     <>
@@ -129,22 +138,30 @@ export default function Vender() {
         <div className="catalogo-section">
           <div className="section-header">
             <h2>Catálogo de Productos</h2>
-            <span className="productos-count">{itemsMostrados.length} items disponibles</span>
+            <span className="productos-count">
+              {itemsMostrados.length} items disponibles
+            </span>
             <div className="filtros">
               <button
-                className={filtro === "TODOS" ? "filtro-btn activo" : "filtro-btn"}
+                className={
+                  filtro === "TODOS" ? "filtro-btn activo" : "filtro-btn"
+                }
                 onClick={() => setFiltro("TODOS")}
               >
                 Todos
               </button>
               <button
-                className={filtro === "PRODUCTOS" ? "filtro-btn activo" : "filtro-btn"}
+                className={
+                  filtro === "PRODUCTOS" ? "filtro-btn activo" : "filtro-btn"
+                }
                 onClick={() => setFiltro("PRODUCTOS")}
               >
                 Productos
               </button>
               <button
-                className={filtro === "COMBOS" ? "filtro-btn activo" : "filtro-btn"}
+                className={
+                  filtro === "COMBOS" ? "filtro-btn activo" : "filtro-btn"
+                }
                 onClick={() => setFiltro("COMBOS")}
               >
                 Combos
@@ -164,6 +181,13 @@ export default function Vender() {
                 key={item.id}
                 producto={item}
                 onAgregar={agregarAlPedido}
+                onEditar={
+                  item.tipo === "COMBO"
+                    ? () => {
+                        navigate(`/combos/editar/${item.id}`);
+                      }
+                    : () => navigate(`/productos/editar/${item.id}`)
+                }
               />
             ))}
           </div>
@@ -180,10 +204,12 @@ export default function Vender() {
 
             <div className="orden-inputs">
               <div className="input-group">
-                <label>Cliente <span style={{ color: "var(--error-color)" }}>*</span></label>
-                <input 
-                  type="text" 
-                  placeholder="Nombre del cliente..." 
+                <label>
+                  Cliente <span style={{ color: "var(--error-color)" }}>*</span>
+                </label>
+                <input
+                  type="text"
+                  placeholder="Nombre del cliente..."
                   value={cliente}
                   onChange={(e) => setCliente(e.target.value)}
                   required
@@ -191,7 +217,10 @@ export default function Vender() {
               </div>
               <div className="input-group">
                 <label>Medio de Pago</label>
-                <select value={medioDePago} onChange={(e) => setMedioDePago(e.target.value)}>
+                <select
+                  value={medioDePago}
+                  onChange={(e) => setMedioDePago(e.target.value)}
+                >
                   <option value="EFECTIVO">Efectivo</option>
                   <option value="TRANSFERENCIA">Transferencia</option>
                   <option value="TARJETA_DEBITO">Tarjeta de Débito</option>
@@ -210,12 +239,29 @@ export default function Vender() {
                   <div key={item.id} className="item-row">
                     <div className="item-info">
                       <span className="item-name">{item.nombre}</span>
-                      <span className="item-price">${Number(item.precio).toLocaleString()} x {item.cantidad}</span>
+                      <span className="item-price">
+                        ${Number(item.precio).toLocaleString()} x{" "}
+                        {item.cantidad}
+                      </span>
                     </div>
                     <div className="item-controls">
-                      <button onClick={(e) => { e.stopPropagation(); quitarDelPedido(item.id); }}>-</button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          quitarDelPedido(item.id);
+                        }}
+                      >
+                        -
+                      </button>
                       <span className="item-qty">{item.cantidad}</span>
-                      <button onClick={(e) => { e.stopPropagation(); agregarAlPedido(item); }}>+</button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          agregarAlPedido(item);
+                        }}
+                      >
+                        +
+                      </button>
                     </div>
                     <div className="item-subtotal">
                       ${Number(item.precio * item.cantidad).toLocaleString()}
@@ -228,15 +274,20 @@ export default function Vender() {
             <div className="orden-footer">
               <div className="total-row">
                 <span>Total a Pagar</span>
-                <span className="total-amount">${Number(calcularTotal()).toLocaleString('es-AR', { minimumFractionDigits: 2 })}</span>
+                <span className="total-amount">
+                  $
+                  {Number(calcularTotal()).toLocaleString("es-AR", {
+                    minimumFractionDigits: 2,
+                  })}
+                </span>
               </div>
               {mensaje.text && (
                 <div className={`mensaje-alerta ${mensaje.type}`}>
                   {mensaje.text}
                 </div>
               )}
-              <button 
-                className="confirmar-btn" 
+              <button
+                className="confirmar-btn"
                 disabled={orden.length === 0}
                 onClick={handleConfirmarVenta}
               >

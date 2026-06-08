@@ -28,4 +28,11 @@ router.put(
   comboController.actualizar,
 );
 
+router.get(
+  "/:id",
+  auth,
+  roles([RolUsuario.EMPLEADO, RolUsuario.GERENTE]),
+  comboController.obtenerPorId,
+);
+
 export default router;

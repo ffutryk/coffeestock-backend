@@ -1,0 +1,256 @@
+.editar-combo-page {
+  min-height: 100vh;
+  background: var(--background-color);
+  padding: 2rem;
+}
+
+.editar-combo-card {
+  max-width: 900px;
+  margin: 0 auto;
+  background: var(--white);
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 10px 30px rgba(62, 39, 35, 0.08);
+}
+
+.editar-combo-card h1 {
+  margin: 0 0 2rem 0;
+  color: var(--coffee-dark);
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+/* ===========================
+   FORM
+=========================== */
+
+.ec-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.ec-form-group label {
+  color: var(--coffee-dark);
+  font-weight: 600;
+}
+
+.ec-form-group input,
+.combo-item-row select,
+.combo-item-row input {
+  width: 100%;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 0.8rem 1rem;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+}
+
+.ec-form-group input:focus,
+.combo-item-row select:focus,
+.combo-item-row input:focus {
+  outline: none;
+  border-color: var(--coffee-medium);
+  box-shadow: 0 0 0 3px rgba(111, 78, 55, 0.15);
+}
+
+/* ===========================
+   PRODUCTOS
+=========================== */
+
+.ec-list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.ec-list-header h3 {
+  margin: 0;
+  color: var(--coffee-dark);
+}
+
+.ec-list-header button {
+  border: none;
+  background: var(--accent-color);
+  color: white;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.ec-list-header button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+.combo-item-row {
+  display: grid;
+  grid-template-columns: 1fr 120px 50px;
+  gap: 1rem;
+  align-items: center;
+
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+
+  background: var(--latte-cream);
+  border-radius: 12px;
+}
+
+.combo-item-row button {
+  width: 42px;
+  height: 42px;
+
+  border: none;
+  border-radius: 50%;
+
+  background: #fdeaea;
+  color: #c53030;
+
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+}
+
+.combo-item-row button:hover {
+  background: #f8d1d1;
+  transform: scale(1.05);
+}
+
+/* ===========================
+   STOCK DISPONIBLE
+=========================== */
+
+.combo-stock-preview {
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+
+  padding: 1rem 1.25rem;
+
+  background: var(--latte-cream);
+  border-left: 5px solid var(--accent-color);
+  border-radius: 10px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.combo-stock-preview span {
+  color: var(--coffee-medium);
+  font-weight: 600;
+}
+
+.combo-stock-preview strong {
+  color: var(--accent-color);
+  font-size: 1.4rem;
+  font-weight: 800;
+}
+
+/* ===========================
+   ERROR
+=========================== */
+
+.ec-error {
+  color: var(--error-color);
+  margin: 1rem 0;
+  font-weight: 600;
+}
+
+/* ===========================
+   ACCIONES
+=========================== */
+
+.ec-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.ec-btn-save {
+  border: none;
+  background: var(--accent-color);
+  color: white;
+
+  padding: 0.9rem 1.5rem;
+  border-radius: 10px;
+
+  font-weight: 700;
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+}
+
+.ec-btn-save:hover:not(:disabled) {
+  transform: translateY(-2px);
+}
+
+.ec-btn-cancel {
+  border: 1px solid var(--coffee-light);
+  background: white;
+  color: var(--coffee-dark);
+
+  padding: 0.9rem 1.5rem;
+  border-radius: 10px;
+
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+}
+
+.ec-btn-cancel:hover {
+  background: var(--latte-cream);
+}
+
+.ec-btn-save:disabled,
+.ec-btn-cancel:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ===========================
+   VALIDACIONES
+=========================== */
+
+.ec-validation {
+  margin-top: 0.5rem;
+  color: var(--error-color);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+/* ===========================
+   RESPONSIVE
+=========================== */
+
+@media (max-width: 768px) {
+  .editar-combo-page {
+    padding: 1rem;
+  }
+
+  .editar-combo-card {
+    padding: 1.25rem;
+  }
+
+  .combo-item-row {
+    grid-template-columns: 1fr;
+  }
+
+  .ec-actions {
+    flex-direction: column;
+  }
+
+  .ec-actions button {
+    width: 100%;
+  }
+
+  .combo-stock-preview {
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: center;
+  }
+}

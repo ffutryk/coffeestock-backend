@@ -1,7 +1,6 @@
 import { useMemo, useState } from "react";
 
 import ComboProductosList from "./ComboProductosList";
-import ComboStockPreview from "./ComboStockPreview";
 
 export default function ComboForm({
   combo,

@@ -1,6 +1,11 @@
 import "./ProductoCard.css";
 
-export default function ProductoCard({ producto, onAgregar }) {
+export default function ProductoCard({
+  producto,
+  onAgregar,
+  onEditar,
+  onEliminar,
+}) {
   const isCombo = producto.items !== undefined;
   const isSinStock = producto.stock <= 0;
 

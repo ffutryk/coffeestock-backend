@@ -32,4 +32,13 @@ export class ComboController {
       next(err);
     }
   };
+
+  obtenerPorId = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const combo = await this.comboService.obtenerPorId(Number(req.params.id));
+      return res.status(200).json({ success: true, data: combo });
+    } catch (err) {
+      next(err);
+    }
+  };
 }

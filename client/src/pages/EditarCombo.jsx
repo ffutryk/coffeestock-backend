@@ -9,7 +9,7 @@ import ComboForm from "../components/ComboForm";
 import "./EditarCombo.css";
 
 export default function EditarCombo() {
-  const { id } = useParams();
+  const { comboId } = useParams();
   const navigate = useNavigate();
 
   const [combo, setCombo] = useState(null);
@@ -20,23 +20,25 @@ export default function EditarCombo() {
 
   useEffect(() => {
     const cargar = async () => {
-      const comboResponse = await getComboPorId(id);
+      const comboResponse = await getComboPorId(comboId);
       const productos = await getTodosLosProductos();
+      console.log(comboResponse);
+      console.log(productos);
 
       setCombo(comboResponse.data);
       setProductosDisponibles(productos);
     };
 
     cargar();
-  }, [id]);
+  }, [comboId]);
 
   const handleSave = async (formData) => {
     try {
       setSubmitting(true);
 
-      await actualizarCombo(id, formData);
+      await actualizarCombo(comboId, formData);
 
-      navigate("/mostrador");
+      navigate("/vender");
     } catch {
       setError("Error al actualizar el combo");
     } finally {
@@ -57,7 +59,7 @@ export default function EditarCombo() {
           combo={combo}
           productosDisponibles={productosDisponibles}
           onSave={handleSave}
-          onCancel={() => navigate("/mostrador")}
+          onCancel={() => navigate("/vender")}
           submitting={submitting}
           error={error}
         />

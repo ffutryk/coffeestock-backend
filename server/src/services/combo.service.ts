@@ -15,6 +15,26 @@ export class ComboService implements IComboService {
     private readonly productoRepository: ProductoRepository,
   ) {}
 
+  async obtenerPorId(id: number): Promise<ComboResponseDTO> {
+    const combo = await this.comboRepository.findById(id);
+    if (!combo) {
+      throw new NotFoundError("Combo no encontrado");
+    }
+    return {
+      id: combo.id,
+      nombre: combo.nombre,
+      precio: Number(combo.precio),
+      stock: combo.calcularStock(),
+      items: combo.items.map((item) => ({
+        producto: {
+          id: item.producto.id,
+          nombre: item.producto.nombre,
+        },
+        cantidad: item.cantidad,
+      })),
+    };
+  }
+
   async actualizarCombo(id: number, datos: CrearComboDTO): Promise<ComboResponseDTO> {
     const comboRecuperado = await this.comboRepository.findById(id);
     if (!comboRecuperado) {
