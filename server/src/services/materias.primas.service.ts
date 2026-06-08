@@ -24,6 +24,8 @@ class MateriasPrimasService implements IMateriasPrimasService {
       marca,
       materiaPrimaACrear.unidad,
       materiaPrimaACrear.cantidad_unidad,
+      materiaPrimaACrear.stockMinimo,
+      materiaPrimaACrear.stockInicial,
     );
 
     return await this.materiasPrimasRepository.save(materiaPrima);
