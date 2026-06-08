@@ -3,6 +3,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import api from "../services/api";
 import MedioPagoSelect from "../components/MedioDePagoSelect";
 import ProductosList from "../components/ProductosList";
+import { getVentaPorId } from "../services/ventas";
+import { getTodosLosProductos } from "../services/productos";
 import "./EditarVenta.css";
 
 export default function EditVentaPage() {
@@ -17,14 +19,13 @@ export default function EditVentaPage() {
 
   useEffect(() => {
     const cargar = async () => {
-      const responseVenta = await api.get(`/ventas/${id}`);
-      const responseProductos = await api.get("/productos");
-      console.log(responseProductos.data);
-      setVenta(responseVenta.data.data);
-      setProductosDisponibles(responseProductos.data);
+      const responseVenta = await getVentaPorId(id);
+      const responseProductos = await getTodosLosProductos();
+      setVenta(responseVenta.data);
+      setProductosDisponibles(responseProductos);
       setEditForm({
-        medioDePago: responseVenta.data.data.medioDePago,
-        items: responseVenta.data.data.items.map((item) => ({
+        medioDePago: responseVenta.data.medioDePago,
+        items: responseVenta.data.items.map((item) => ({
           productoId: item.productoId,
           nombre: item.nombre,
           precio: Number(item.precio),
@@ -150,7 +151,7 @@ export default function EditVentaPage() {
           </button>
           <button
             className="ev-btn-cancel"
-            onClick={() => navigate("/auditoria")}
+            onClick={() => navigate("/historial-ventas")}
             disabled={submitting}
           >
             Cancelar
