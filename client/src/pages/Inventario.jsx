@@ -140,6 +140,9 @@ export default function Inventario() {
           {mensaje.text}
         </div>
       )}
+      <button className="historial-button" onClick={() => window.location.href = "/historial-inventario"}>
+        Ver Historial
+      </button>
     </div>
   );
 }
