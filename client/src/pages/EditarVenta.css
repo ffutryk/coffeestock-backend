@@ -620,3 +620,32 @@
   padding: 2rem;
   color: var(--coffee-light);
 }
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.45);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  z-index: 1000;
+}
+
+.modal {
+  background: white;
+  padding: 24px;
+  border-radius: 12px;
+  min-width: 320px;
+  text-align: center;
+}
+
+.modal button {
+  margin-top: 16px;
+  padding: 10px 20px;
+  cursor: pointer;
+}

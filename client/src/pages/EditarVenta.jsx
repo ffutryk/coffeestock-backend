@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import api from "../services/api";
 import MedioPagoSelect from "../components/MedioDePagoSelect";
 import ProductosList from "../components/ProductosList";
-import { getVentaPorId } from "../services/ventas";
+import { getVentaPorId, actualizarVenta } from "../services/ventas";
 import { getTodosLosProductos } from "../services/productos";
 import "./EditarVenta.css";
 
@@ -16,6 +16,7 @@ export default function EditVentaPage() {
   const [editForm, setEditForm] = useState({ medioDePago: "", items: [] });
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   useEffect(() => {
     const cargar = async () => {
@@ -74,7 +75,10 @@ export default function EditVentaPage() {
           cantidad,
         })),
       });
-      navigate("/auditoria");
+      setShowSuccessModal(true);
+      setTimeout(() => {
+        navigate("/historial-ventas");
+      }, 2000);
     } catch (err) {
       setError("Error al guardar los cambios.");
     } finally {
@@ -158,6 +162,14 @@ export default function EditVentaPage() {
           </button>
         </div>
       </div>
+      {showSuccessModal && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <h3>✅ Venta actualizada correctamente</h3>
+            <p>Redirigiendo al historial...</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -38,15 +38,21 @@ export class VentaService {
     const ventaExistente = await this.ventaRepository.findByIdWithInventories(id);
     if (!ventaExistente) throw new NotFoundError("Venta no encontrada");
 
-    for (const item of [...ventaExistente.items]) {
-      if (item.producto) {
-        ventaExistente.revertirItem(item);
-      }
+    if (datos.medioDePago) {
+      ventaExistente.medioDePago = datos.medioDePago;
     }
 
-    if (datos.medioDePago) ventaExistente.medioDePago = datos.medioDePago;
-
     if (datos.items?.length) {
+      const productosARevertir = ventaExistente.items
+        .filter((item) => item.producto)
+        .map((item) => {
+          ventaExistente.revertirItem(item);
+          return item.producto; // guardar referencia antes de filtrar
+        });
+
+      // Persistir reversión de stock
+      await this.productoRepository.save(productosARevertir);
+
       const ids = datos.items.map((i) => i.productoId);
       const productos = await this.productoRepository.findWithInventarios(ids);
       if (productos.length !== ids.length)
@@ -56,11 +62,12 @@ export class VentaService {
       for (const { productoId, cantidad } of datos.items) {
         ventaExistente.agregarItem(productosMap.get(productoId)!, cantidad);
       }
+
+      // Persistir nuevo descuento de stock
+      await this.productoRepository.save([...productosMap.values()]);
     }
 
-    const ventaActualizada = await this.ventaRepository.save(ventaExistente);
-
-    return ventaActualizada;
+    return await this.ventaRepository.save(ventaExistente);
   }
 
   async obtenerMuchas(paginacion: PaginacionDTO): Promise<ResultadoPaginado<Venta>> {
