@@ -31,11 +31,6 @@
   font-size: 14px;
 }
 
-.historial-fila {
-  cursor: pointer;
-  transition: background 0.15s;
-}
-
 .historial-fila:hover {
   background: #f9fafb;
 }

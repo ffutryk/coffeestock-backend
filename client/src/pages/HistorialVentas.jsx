@@ -28,7 +28,7 @@ export default function HistorialVentas({ usuario }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [ventaExpandida, setVentaExpandida] = useState(null);
-  const navigation = useNavigate();
+  const navigate = useNavigate();
 
   const cargarVentas = async (page) => {
     setLoading(true);
@@ -82,10 +82,7 @@ export default function HistorialVentas({ usuario }) {
             <tbody>
               {ventas.map((venta) => (
                 <React.Fragment key={venta.id}>
-                  <tr
-                    className="historial-fila"
-                    onClick={() => toggleExpandir(venta.id)}
-                  >
+                  <tr className="historial-fila">
                     <td>#{venta.id}</td>
                     <td>{formatearFecha(venta.createdAt)}</td>
                     <td>${venta.total.toFixed(2)}</td>
@@ -99,7 +96,7 @@ export default function HistorialVentas({ usuario }) {
                       <button
                         className="btn-accion edit"
                         title="Editar"
-                        onClick={() => handleEditarVenta(venta)}
+                        onClick={() => navigate(`/ventas/${venta.id}`)}
                       >
                         <svg
                           width="18"
@@ -134,6 +131,35 @@ export default function HistorialVentas({ usuario }) {
                           <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
                           <line x1="10" y1="11" x2="10" y2="17"></line>
                           <line x1="14" y1="11" x2="14" y2="17"></line>
+                        </svg>
+                      </button>
+                      <button
+                        className="btn-accion expand"
+                        title={
+                          ventaExpandida === venta.id
+                            ? "Cerrar detalle"
+                            : "Ver detalle"
+                        }
+                        onClick={() => toggleExpandir(venta.id)}
+                      >
+                        <svg
+                          width="18"
+                          height="18"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          {ventaExpandida === venta.id ? (
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                          ) : (
+                            <>
+                              <line x1="12" y1="5" x2="12" y2="19"></line>
+                              <line x1="5" y1="12" x2="19" y2="12"></line>
+                            </>
+                          )}
                         </svg>
                       </button>
                     </td>
