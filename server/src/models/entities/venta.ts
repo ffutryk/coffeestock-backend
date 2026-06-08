@@ -12,7 +12,7 @@ export class Venta extends Auditable {
   @Column({ type: "enum", enum: MedioDePago, name: "medio_de_pago" })
   medioDePago!: MedioDePago;
 
-  @OneToMany(() => ItemVenta, (item) => item.venta, { cascade: true })
+  @OneToMany(() => ItemVenta, (item) => item.venta, { cascade: true, orphanedRowAction: "delete" })
   items!: ItemVenta[];
 
   getPrecioTotal(): number {

@@ -41,4 +41,8 @@ export class TypeOrmVentaRepository
       ],
     });
   }
+
+  async deleteItems(ventaId: number): Promise<void> {
+    await this.repository.manager.delete("item_venta", { ventaId });
+  }
 }

@@ -61,6 +61,7 @@ export default function EditVentaPage() {
   };
 
   const onUpdateForm = (changes) => {
+    console.log("Actualizando form con cambios:", changes);
     setEditForm((prev) => ({ ...prev, ...changes }));
   };
 
