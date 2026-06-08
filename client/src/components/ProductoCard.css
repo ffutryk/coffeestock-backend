@@ -10,7 +10,7 @@
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   border: 1px solid transparent;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
   overflow: hidden;
 }
 
@@ -45,7 +45,8 @@
   justify-content: center;
 }
 
-.stock-tag, .sintacc-tag {
+.stock-tag,
+.sintacc-tag {
   font-size: 0.7rem;
   padding: 0.2rem 0.6rem;
   border-radius: 20px;
@@ -79,7 +80,7 @@
   font-size: 0.7rem;
   font-weight: 700;
   transform: rotate(45deg);
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .card-overlay {
@@ -98,4 +99,62 @@
 
 .producto-card:hover:not(.sin-stock) .card-overlay {
   transform: translateY(0);
+}
+
+.producto-actions {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+
+  display: flex;
+  gap: 0.35rem;
+
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: all 0.2s ease;
+
+  z-index: 5;
+}
+
+.producto-card:hover .producto-actions {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.producto-action-btn {
+  width: 32px;
+  height: 32px;
+
+  border: none;
+  border-radius: 50%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+
+  font-size: 0.9rem;
+}
+
+.producto-action-btn.editar {
+  background: var(--latte-cream);
+  color: var(--coffee-dark);
+}
+
+.producto-action-btn.editar:hover {
+  background: var(--coffee-light);
+  transform: scale(1.08);
+}
+
+.producto-action-btn.eliminar {
+  background: #fdeaea;
+  color: #c53030;
+}
+
+.producto-action-btn.eliminar:hover {
+  background: #f8d1d1;
+  transform: scale(1.08);
 }
