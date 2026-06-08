@@ -64,6 +64,11 @@ export class VentaService {
   }
 
   async obtenerMuchas(paginacion: PaginacionDTO): Promise<ResultadoPaginado<Venta>> {
+    if (paginacion.rango === "24h") {
+      const fechaDesde = new Date();
+      fechaDesde.setHours(fechaDesde.getHours() - 24);
+      return this.ventaRepository.findManyWithItems(paginacion, fechaDesde);
+    }
     return this.ventaRepository.findManyWithItems(paginacion);
   }
 
