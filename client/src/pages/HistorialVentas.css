@@ -63,3 +63,20 @@
     opacity: 0.5;
     cursor: not-allowed;
 }
+
+.historial-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.historial-header select {
+  padding: 0.7rem 1rem;
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  background: white;
+  font-weight: 600;
+  color: var(--coffee-dark);
+  cursor: pointer;
+}
