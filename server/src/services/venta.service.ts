@@ -23,7 +23,7 @@ export class VentaService {
     if (productos.length !== ids.length) throw new NotFoundError("Uno o más productos no existen");
 
     const productosMap = new Map(productos.map((p) => [p.id, p]));
-    const venta = Venta.crear(datos.medioDePago);
+    const venta = Venta.crear(datos.medioDePago, datos.descuentoTipo, datos.descuentoValor);
 
     for (const { productoId, cantidad } of datos.items) {
       venta.agregarItem(productosMap.get(productoId)!, cantidad);
