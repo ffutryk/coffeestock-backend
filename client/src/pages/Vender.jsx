@@ -10,6 +10,9 @@ export default function Vender() {
   const [medioDePago, setMedioDePago] = useState("EFECTIVO");
   const [loading, setLoading] = useState(true);
   const [mensaje, setMensaje] = useState({ text: "", type: "" });
+  const [discountType, setDiscountType] = useState("PORCENTAJE");
+  const [discountValue, setDiscountValue] = useState(0);
+  const [discountError, setDiscountError] = useState("");
 
   useEffect(() => {
     fetchProductos();
@@ -58,9 +61,35 @@ export default function Vender() {
     });
   };
 
-  const calcularTotal = () => {
+  const calcularSubtotal = () => {
     return orden.reduce((total, item) => total + item.precio * item.cantidad, 0);
   };
+
+  const calcularDescuentoAplicado = (subtotal) => {
+    if (!discountValue || discountValue <= 0) return 0;
+    if (discountType === "PORCENTAJE") {
+      return subtotal * (discountValue / 100);
+    }
+    return Math.min(discountValue, subtotal);
+  };
+
+  const calcularTotalNeto = () => {
+    const subtotal = calcularSubtotal();
+    return subtotal - calcularDescuentoAplicado(subtotal);
+  };
+
+  useEffect(() => {
+    const subtotal = calcularSubtotal();
+    if (discountValue < 0) {
+      setDiscountError("Descuento inválido");
+    } else if (discountType === "PORCENTAJE" && discountValue > 100) {
+      setDiscountError("Descuento inválido");
+    } else if (discountType === "FIJO" && discountValue > subtotal) {
+      setDiscountError("Descuento inválido");
+    } else {
+      setDiscountError("");
+    }
+  }, [discountValue, discountType, orden]);
 
   const handleConfirmarVenta = async () => {
     if (!cliente.trim()) {
@@ -73,6 +102,11 @@ export default function Vender() {
       return;
     }
 
+    if (discountError) {
+      showMensaje("Corrige el descuento antes de confirmar", "error");
+      return;
+    }
+
     try {
       const payload = {
         medioDePago,
@@ -80,12 +114,16 @@ export default function Vender() {
           productoId: item.id,
           cantidad: item.cantidad,
         })),
+        descuentoTipo: discountType,
+        descuentoValor: Number(discountValue),
       };
 
       await api.post("/ventas", payload);
       showMensaje("Venta realizada con éxito", "success");
       setOrden([]);
       setCliente("");
+      setDiscountValue(0);
+      setDiscountError("");
       fetchProductos(); // Refrescar stock
     } catch (error) {
       console.error("Error al realizar venta:", error);
@@ -170,10 +208,60 @@ export default function Vender() {
             )}
           </div>
 
+          <div className="descuento-section">
+            <div className="descuento-header">
+              <span className="descuento-title">
+                {discountType === "PORCENTAJE" ? "Descuentos (Porcentual)" : "Descuentos (Manual)"}
+              </span>
+            </div>
+            <div className="descuento-input-row">
+              <div className="descuento-type-selector">
+                <button
+                  className={`descuento-type-btn ${discountType === "PORCENTAJE" ? "active" : ""}`}
+                  onClick={() => { setDiscountType("PORCENTAJE"); setDiscountValue(0); }}
+                >
+                  %
+                </button>
+                <button
+                  className={`descuento-type-btn ${discountType === "FIJO" ? "active" : ""}`}
+                  onClick={() => { setDiscountType("FIJO"); setDiscountValue(0); }}
+                >
+                  $
+                </button>
+              </div>
+              <div className={`descuento-input-wrapper ${discountError ? "has-error" : ""}`}>
+                <span className="descuento-prefix">{discountType === "PORCENTAJE" ? "%" : "$"}</span>
+                <input
+                  type="number"
+                  className="descuento-input"
+                  min="0"
+                  placeholder="0"
+                  value={discountValue}
+                  onChange={(e) => setDiscountValue(e.target.value === '' ? '' : Number(e.target.value))}
+                />
+              </div>
+            </div>
+            {discountError && (
+              <div className="descuento-error">{discountError}</div>
+            )}
+          </div>
+
           <div className="orden-footer">
             <div className="total-row">
+              <span>Subtotal</span>
+              <span className="subtotal-amount">${Number(calcularSubtotal()).toLocaleString('es-AR', { minimumFractionDigits: 2 })}</span>
+            </div>
+            {Number(calcularDescuentoAplicado(calcularSubtotal())) > 0 && (
+              <div className="total-row descuento-row">
+                <span>Descuento</span>
+                <span className="descuento-amount">
+                  -${Number(calcularDescuentoAplicado(calcularSubtotal())).toLocaleString('es-AR', { minimumFractionDigits: 2 })}
+                </span>
+              </div>
+            )}
+            <div className="total-row total-final-row">
               <span>Total a Pagar</span>
-              <span className="total-amount">${Number(calcularTotal()).toLocaleString('es-AR', { minimumFractionDigits: 2 })}</span>
+              <span className="total-amount">${Number(calcularTotalNeto()).toLocaleString('es-AR', { minimumFractionDigits: 2 })}</span>
             </div>
             {mensaje.text && (
               <div className={`mensaje-alerta ${mensaje.type}`}>
@@ -182,7 +270,7 @@ export default function Vender() {
             )}
             <button 
               className="confirmar-btn" 
-              disabled={orden.length === 0}
+              disabled={orden.length === 0 || !!discountError}
               onClick={handleConfirmarVenta}
             >
               Confirmar Pedido
