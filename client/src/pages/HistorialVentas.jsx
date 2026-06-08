@@ -52,9 +52,11 @@ export default function HistorialVentas({ usuario }) {
     setVentaExpandida(ventaExpandida === id ? null : id);
   };
 
-  const handleEditarVenta = (venta) => {};
-
-  const handleEliminarVenta = (venta) => {};
+  const handleEliminarVenta = (venta) => {
+    console.log(
+      "Acá se supone que se eliminaría la venta, no se por qué quisieras hacer eso willis",
+    );
+  };
 
   return (
     <div className="historial-container">
