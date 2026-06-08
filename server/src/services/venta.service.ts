@@ -76,4 +76,12 @@ export class VentaService {
 
     return await this.ventaRepository.delete(id);
   }
+
+  async obtenerUna(id: number): Promise<Venta> {
+    const venta = await this.ventaRepository.findByIdWithInventories(id);
+    if (!venta) {
+      throw new NotFoundError("Venta no encontrada");
+    }
+    return venta;
+  }
 }
