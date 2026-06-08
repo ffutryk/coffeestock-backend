@@ -7,7 +7,8 @@ export const CrearMateriaPrimaSchema = z
     marca: z.string(),
     unidad: z.enum(UnidadDeMedida),
     cantidad_unidad: z.int().positive(),
-    stock: z.int().positive(),
+    stockInicial: z.int().positive(),
+    stockMinimo: z.int().positive(),
   })
   .strict();
 
