@@ -2,7 +2,7 @@ import { Router } from "express";
 import { validateBody } from "../middlewares/validate";
 import { CrearComboSchema } from "../dtos/combo/crear.dto";
 import { ComboController } from "../controllers/combo.controller";
-import { RolUsuario, RolUsuario } from "../models/enums/rol-usuario";
+import { RolUsuario } from "../models/enums/rol-usuario";
 import { roles } from "../middlewares/role";
 import { auth } from "../middlewares/auth";
 import { comboService } from "../container/di";
@@ -24,7 +24,7 @@ router.put(
   "/:id",
   auth,
   roles([RolUsuario.EMPLEADO, RolUsuario.GERENTE]),
-  validateBody(ActualizarComboSchema),
+  validateBody(CrearComboSchema),
   comboController.actualizar,
 );
 

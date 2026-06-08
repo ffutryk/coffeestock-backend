@@ -1,6 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm";
 import { Auditable } from "../base/auditable";
 import { ComboItem } from "./combo-item";
+import { Producto } from "./producto";
 
 @Entity({ name: "combos" })
 export class Combo extends Auditable {
@@ -30,5 +31,32 @@ export class Combo extends Auditable {
     }
 
     return Math.min(...this.items.map((item) => Math.floor(item.producto.stock / item.cantidad)));
+  }
+
+  actualizarCantidadesSegun(
+    productosActualizados: Producto[],
+    itemsActualizados: {
+      productoId: number;
+      cantidad: number;
+    }[],
+  ) {
+    itemsActualizados.forEach((itemActualizado) => {
+      const itemExistente = this.items.find(
+        (item) => item.productoId === itemActualizado.productoId,
+      );
+
+      if (itemExistente) {
+        itemExistente.cantidad = itemActualizado.cantidad;
+      } else {
+        const producto = productosActualizados.find((p) => p.id === itemActualizado.productoId);
+
+        if (producto) {
+          this.items.push(ComboItem.crear(this, producto, itemActualizado.cantidad));
+        }
+      }
+    });
+    this.items = this.items.filter((item) =>
+      itemsActualizados.some((i) => i.productoId === item.productoId),
+    );
   }
 }
