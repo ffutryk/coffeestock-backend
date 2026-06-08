@@ -1,7 +1,6 @@
 import "./ProductoCard.css";
 
 export default function ProductoCard({ producto, onAgregar }) {
-  
   const isCombo = producto.items !== undefined;
   const isSinStock = producto.stock <= 0;
 
@@ -10,6 +9,27 @@ export default function ProductoCard({ producto, onAgregar }) {
       className={`producto-card ${isSinStock ? "sin-stock" : ""}`}
       onClick={() => !isSinStock && onAgregar(producto)}
     >
+      <div className="producto-actions">
+        <button
+          className="producto-action-btn editar"
+          onClick={(e) => {
+            e.stopPropagation();
+            onEditar(producto);
+          }}
+        >
+          ✏️
+        </button>
+
+        <button
+          className="producto-action-btn eliminar"
+          onClick={(e) => {
+            e.stopPropagation();
+            onEliminar(producto);
+          }}
+        >
+          🗑️
+        </button>
+      </div>
       <div className="producto-icon">
         {producto.tipo === "COMBO" ? "🎁" : "☕"}
       </div>
@@ -17,7 +37,8 @@ export default function ProductoCard({ producto, onAgregar }) {
       <div className="producto-info">
         <h3>{producto.nombre}</h3>
         <p className="producto-precio">
-          ${Number(producto.precio).toLocaleString("es-AR", {
+          $
+          {Number(producto.precio).toLocaleString("es-AR", {
             minimumFractionDigits: 2,
           })}
         </p>
