@@ -3,7 +3,7 @@ import './EmployeeStatsTable.css';
 
 const columns = [
   { key: 'id', label: 'ID' },
-  { key: 'name', label: 'Nombre' },
+  { key: 'nombre', label: 'Nombre' },
   { key: 'totalSales', label: 'Ventas (Histórico)' },
   { key: 'last30DaysSales', label: 'Ventas (Últimos 30 Días)' },
   { key: 'totalRevenue', label: 'Total Recaudado' },
@@ -48,7 +48,7 @@ export default function EmployeeStatsTable({ data }) {
         {columns.map(col => (
           <div
             key={col.key}
-            className={`stats-header-cell ${col.key === 'name' ? 'col-name' : ''} ${col.key === 'totalSales' || col.key === 'last30DaysSales' || col.key === 'totalRevenue' ? 'col-numeric' : ''}`}
+            className={`stats-header-cell ${col.key === 'nombre' ? 'col-name' : ''} ${col.key === 'totalSales' || col.key === 'last30DaysSales' || col.key === 'totalRevenue' ? 'col-numeric' : ''}`}
             onClick={() => handleSort(col.key)}
           >
             {col.label}
@@ -60,7 +60,7 @@ export default function EmployeeStatsTable({ data }) {
         {sortedData.map(emp => (
           <div key={emp.id} className="stats-row">
             <div className="stats-cell col-id">{emp.id}</div>
-            <div className="stats-cell col-name">{emp.name}</div>
+            <div className="stats-cell col-name">{emp.nombre}</div>
             <div className="stats-cell col-numeric">{emp.totalSales.toLocaleString('es-AR')}</div>
             <div className="stats-cell col-numeric">{emp.last30DaysSales.toLocaleString('es-AR')}</div>
             <div className="stats-cell col-numeric">{formatRevenue(emp.totalRevenue)}</div>

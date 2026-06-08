@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import './EstadisticasEmpleados.css';
 import EmployeeStatsTable from '../components/EmployeeStatsTable';
+import api from "../services/api";
 
 function EstadisticasEmpleados() {
   const [employeeStats, setEmployeeStats] = useState([]);
@@ -38,19 +39,12 @@ function EstadisticasEmpleados() {
         //   },
         //   ...
         // ]
-        // const response = await fetch('/estadisticas/empleados', {
-        //   method: 'GET',
-        //   headers: {
-        //     'Content-Type': 'application/json',
-        //     'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        //   },
-        // });
-        // if (!response.ok) throw new Error('Error al obtener estadísticas de empleados');
-        // const data = await response.json();
-        // setEmployeeStats(data);
+        const res = await api.get("/estadisticas/empleados");
+
+        setEmployeeStats(res.data);
         // --------------------------------------------------------
 
-        setEmployeeStats(mockData);
+        //setEmployeeStats(mockData);
       } catch (err) {
         setError(err.message);
       } finally {

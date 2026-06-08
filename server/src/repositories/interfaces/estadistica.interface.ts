@@ -1,4 +1,4 @@
-import { ReporteEstadisticasDTO } from "../../models/types/estadisticas";
+import { ReporteEstadisticasDTO, EmpleadoEstadistica } from "../../models/types/estadisticas";
 
 export interface EstadisticasVentasDTO {
   totalFacturado: number;
@@ -9,4 +9,5 @@ export interface EstadisticasVentasDTO {
 export interface EstadisticaRepository {
   obtenerMetricasGenerales(): Promise<ReporteEstadisticasDTO | null>;
   obtenerEstadisticasVentas(fechaInicio?: Date, fechaFin?: Date): Promise<EstadisticasVentasDTO>;
+  obtenerEstadisticasEmpleados(): Promise<EmpleadoEstadistica[]>;
 }
