@@ -1,6 +1,9 @@
 import type { NextFunction, Request, Response } from "express";
 import { ProductoService } from "../services/producto.service";
 import { BadRequestError } from "../errors";
+import { PaginacionQuerySchema } from "../dtos/paginacion.dto";
+import { ResultadoPaginado } from "../models/types/resultado-paginado";
+import { Producto } from "../models/entities/producto";
 
 export class ProductoController {
   constructor(private readonly productoService: ProductoService) {}
@@ -31,9 +34,26 @@ export class ProductoController {
     }
   };
 
-  listar = async (_req: Request, res: Response, next: NextFunction) => {
+  listar = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const productos = await this.productoService.listarProductos();
+      const paginacion = PaginacionQuerySchema.parse(req.query);
+
+      // Cambiar esta asquerosidad
+      if (Object.keys(req.query).length === 0)
+        return res.status(200).json(await this.productoService.listarProductos());
+
+      const productos = (await this.productoService.listarProductos(
+        paginacion,
+      )) as ResultadoPaginado<Producto>;
+
+      if (productos.data.length === 0) {
+        return res.status(200).json({
+          data: [],
+          total: 0,
+          message: "No hay usuarios registrados",
+        });
+      }
+
       return res.status(200).json(productos);
     } catch (err) {
       next(err);

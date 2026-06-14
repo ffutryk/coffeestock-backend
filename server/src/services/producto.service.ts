@@ -4,6 +4,8 @@ import type { ActualizarProductoDTO } from "../dtos/producto/actualizar.dto";
 import type { CrearProductoDTO } from "../dtos/producto/crear.dto";
 import { NotFoundError } from "../errors";
 import { Transactional } from "../decorators/transactional.decorator";
+import { ResultadoPaginado } from "../models/types/resultado-paginado";
+import { PaginacionDTO } from "../dtos/paginacion.dto";
 
 @Transactional()
 export class ProductoService {
@@ -29,7 +31,10 @@ export class ProductoService {
     return producto;
   }
 
-  async listarProductos(): Promise<Producto[]> {
+  async listarProductos(
+    paginacion?: PaginacionDTO,
+  ): Promise<ResultadoPaginado<Producto> | Producto[]> {
+    if (paginacion) return await this.productoRepository.findAllPaginated(paginacion);
     return await this.productoRepository.findAll();
   }
 
