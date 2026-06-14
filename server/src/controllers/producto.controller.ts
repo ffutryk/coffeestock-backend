@@ -2,8 +2,7 @@ import type { NextFunction, Request, Response } from "express";
 import { ProductoService } from "../services/producto.service";
 import { BadRequestError } from "../errors";
 import { PaginacionQuerySchema } from "../dtos/paginacion.dto";
-import { ResultadoPaginado } from "../models/types/resultado-paginado";
-import { Producto } from "../models/entities/producto";
+import { ProductoResponseDTO } from "../dtos/producto/response.dto";
 
 export class ProductoController {
   constructor(private readonly productoService: ProductoService) {}
@@ -11,7 +10,7 @@ export class ProductoController {
   crear = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const creado = await this.productoService.crearProducto(req.body);
-      return res.status(201).json(creado);
+      return res.status(201).json(ProductoResponseDTO.from(creado));
     } catch (err) {
       next(err);
     }
@@ -19,16 +18,9 @@ export class ProductoController {
 
   ver = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { id: idParam } = req.params;
-      if (!idParam || typeof idParam !== "string") {
-        throw new BadRequestError("ID invalido");
-      }
-      const id = parseInt(idParam);
-      if (isNaN(id)) {
-        throw new BadRequestError("ID invalido");
-      }
+      const id = this.parseId(req.params.id);
       const producto = await this.productoService.verProducto(id);
-      return res.status(200).json(producto);
+      return res.status(200).json(ProductoResponseDTO.from(producto));
     } catch (err) {
       next(err);
     }
@@ -36,25 +28,19 @@ export class ProductoController {
 
   listar = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const paginacion = PaginacionQuerySchema.parse(req.query);
+      const paginacion =
+        Object.keys(req.query).length > 0 ? PaginacionQuerySchema.parse(req.query) : undefined;
 
-      // Cambiar esta asquerosidad
-      if (Object.keys(req.query).length === 0)
-        return res.status(200).json(await this.productoService.listarProductos());
+      const resultado = await this.productoService.listarProductos(paginacion);
 
-      const productos = (await this.productoService.listarProductos(
-        paginacion,
-      )) as ResultadoPaginado<Producto>;
-
-      if (productos.data.length === 0) {
-        return res.status(200).json({
-          data: [],
-          total: 0,
-          message: "No hay usuarios registrados",
-        });
+      if (Array.isArray(resultado)) {
+        return res.status(200).json(ProductoResponseDTO.fromMany(resultado));
       }
 
-      return res.status(200).json(productos);
+      return res.status(200).json({
+        ...resultado,
+        data: ProductoResponseDTO.fromMany(resultado.data),
+      });
     } catch (err) {
       next(err);
     }
@@ -62,33 +48,18 @@ export class ProductoController {
 
   actualizar = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { id: idParam } = req.params;
-
-      if (!idParam || typeof idParam !== "string") {
-        throw new BadRequestError("ID invalido");
-      }
-
-      const id = parseInt(idParam);
+      const id = this.parseId(req.params.id);
       const actualizado = await this.productoService.actualizarProducto(id, req.body);
-
-      return res.status(200).send(actualizado);
+      return res.status(200).json(ProductoResponseDTO.from(actualizado!));
     } catch (err) {
       next(err);
     }
   };
 
-  // uso el nextFunction como en actualizar
   eliminar = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { id: idParam } = req.params;
-
-      if (!idParam || typeof idParam !== "string") {
-        throw new BadRequestError("ID invalido");
-      }
-
-      const id = parseInt(idParam);
+      const id = this.parseId(req.params.id);
       await this.productoService.eliminarProducto(id);
-
       return res.status(200).json({
         success: true,
         message: "El producto fue eliminado correctamente",
@@ -97,4 +68,12 @@ export class ProductoController {
       next(err);
     }
   };
+
+  private parseId(param: string | string[] | undefined): number {
+    const raw = Array.isArray(param) ? param[0] : param;
+    if (!raw) throw new BadRequestError("ID inválido");
+    const id = parseInt(raw, 10);
+    if (isNaN(id)) throw new BadRequestError("ID inválido");
+    return id;
+  }
 }
