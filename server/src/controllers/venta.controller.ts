@@ -53,6 +53,20 @@ export class VentaController {
     }
   };
 
+  obtenerUna = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const id = parseInt(req.params.id as string);
+      const venta = await this.ventaService.obtenerUna(id);
+      const respuesta = new VentaResponseDTO(venta);
+
+      return res.status(200).json({
+        data: respuesta,
+      });
+    } catch (error: unknown) {
+      next(error);
+    }
+  };
+
   eliminar = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const id = parseInt(req.params.id as string);
