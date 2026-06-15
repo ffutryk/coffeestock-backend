@@ -33,13 +33,18 @@ export default function HistorialVentas({ usuario }) {
   const [deleting, setDeleting] = useState(false);
   const [ventaSeleccionada, setVentaSeleccionada] = useState(null);
   const navigate = useNavigate();
+  const [filtro, setFiltro] = useState("TODAS");
 
-  const cargarVentas = async (page) => {
+  const cargarVentas = async (page, filtroActual = filtro) => {
     setLoading(true);
     setError("");
     try {
-      const res = await api.get("/ventas", { params: { page, limit: 20 } });
-      setVentas(res.data.data); // sirve para guardar las ventas en el estado.
+      const params = {page, limit: 20};
+      if (filtroActual === "24H") {
+        params.rango = "24h";
+      }
+      const res = await api.get("/ventas", {params});
+      setVentas(res.data.data);
       setTotalPaginas(res.data.metadata.paginasTotales);
     } catch (err) {
       setError("Error al cargar el historial de ventas");
@@ -49,8 +54,8 @@ export default function HistorialVentas({ usuario }) {
   };
 
   useEffect(() => {
-    cargarVentas(pagina);
-  }, [pagina]);
+    cargarVentas(pagina, filtro);
+  }, [pagina, filtro]);
 
   const toggleExpandir = (id) => {
     setVentaExpandida(ventaExpandida === id ? null : id);
@@ -73,7 +78,24 @@ export default function HistorialVentas({ usuario }) {
 
   return (
     <div className="historial-container">
-      <h2>Historial de Ventas</h2>
+      <div className="historial-header">
+        <h2>Historial de Ventas</h2>
+        <select
+          value={filtro}
+          onChange={(e) => {
+          setPagina(1);
+          setFiltro(e.target.value);
+          {loading && <p>Cargando ventas...</p>} //esta bien?
+          }}
+        >
+          <option value="TODAS">
+            Todas
+          </option>
+          <option value="24H">
+            Últimas 24 horas
+          </option>
+        </select>
+      </div>
 
       {error && <div className="error">{error}</div>}
 

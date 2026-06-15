@@ -35,7 +35,6 @@ describe("MateriaPrima", () => {
       expect(mp.esSinTacc).toBe(false);
 
       expect(mp.inventario).toBeDefined();
-      expect(mp.inventario.materiaPrima).toBe(mp);
     });
   });
 

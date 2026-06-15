@@ -13,6 +13,7 @@ import HistorialVentas from "./pages/HistorialVentas";
 import Empleados from "./pages/Empleados";
 import HistorialInventario from "./pages/HistorialInventario";
 import EditarVenta from "./pages/EditarVenta";
+import EditarCombo from "./pages/EditarCombo";
 
 function decodeToken(token) {
   try {
@@ -98,6 +99,7 @@ function App() {
           }
         />
         <Route path="/ventas/:id" element={<EditarVenta />} />
+        <Route path="/combos/editar/:comboId" element={<EditarCombo />} />
       </Route>
 
       <Route
