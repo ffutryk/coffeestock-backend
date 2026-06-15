@@ -71,6 +71,8 @@ export class MateriaPrima extends Auditable {
     marca: string,
     unidad: UnidadDeMedida,
     cantidadUnidad: number,
+    stockMinimo?: number,
+    stock?: number,
     esSinTacc?: boolean,
   ): MateriaPrima {
     const materiaPrima = new MateriaPrima();
@@ -82,7 +84,8 @@ export class MateriaPrima extends Auditable {
     materiaPrima.esSinTacc = esSinTacc ?? false;
 
     materiaPrima.inventario = new Inventario();
-    materiaPrima.inventario.materiaPrima = materiaPrima;
+    materiaPrima.inventario.stockMinimo = stockMinimo ?? 0;
+    materiaPrima.inventario.stockActual = stock ?? 0;
 
     return materiaPrima;
   }

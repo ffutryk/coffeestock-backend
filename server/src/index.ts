@@ -13,6 +13,7 @@ import materiasPrimasRouter from "./routes/materias.primas.routes";
 import recetaRoutes from "./routes/receta.routes";
 import http from "http";
 import { wsService } from "./container/di";
+import comboRouter from "./routes/combo.route";
 
 const app = express();
 const server = http.createServer(app);
@@ -32,6 +33,7 @@ app.use("/materias-primas", materiasPrimasRouter);
 app.use("/estadisticas", estadisticaRoutes);
 app.use("/inventario", inventarioRouter);
 app.use("/recetas", recetaRoutes);
+app.use("/combos", comboRouter);
 
 app.use(errorHandler);
 

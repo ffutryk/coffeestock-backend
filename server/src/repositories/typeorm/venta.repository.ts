@@ -3,11 +3,9 @@ import { VentaRepository } from "../interfaces/venta.interface";
 import { TypeOrmBaseRepository } from "./base.repository";
 import { Paginacion } from "../../models/types/paginacion";
 import { ResultadoPaginado } from "../../models/types/resultado-paginado";
+import { MoreThanOrEqual } from "typeorm";
 
-export class TypeOrmVentaRepository
-  extends TypeOrmBaseRepository<Venta>
-  implements VentaRepository
-{
+export class TypeOrmVentaRepository extends TypeOrmBaseRepository<Venta>implements VentaRepository {
   constructor() {
     super(Venta);
   }
@@ -19,13 +17,17 @@ export class TypeOrmVentaRepository
     });
   }
 
-  async findManyWithItems({ page, limit }: Paginacion): Promise<ResultadoPaginado<Venta>> {
-    const [data, total] = await this.repository.findAndCount({
+  async findManyWithItems({ page, limit }: Paginacion, fechaDesde?: Date): Promise<ResultadoPaginado<Venta>> {
+    const options: any = {
       skip: (page - 1) * limit,
       take: limit,
       order: { createdAt: "DESC" },
       relations: ["items"],
-    });
+    };
+    if (fechaDesde) {
+      options.where = {createdAt: MoreThanOrEqual(fechaDesde)};
+    }
+    const [data, total] = await this.repository.findAndCount(options);
     return { data, total };
   }
 
