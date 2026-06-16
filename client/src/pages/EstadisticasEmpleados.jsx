@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import './EstadisticasEmpleados.css';
 import EmployeeStatsTable from '../components/EmployeeStatsTable';
 import api from "../services/api";
@@ -7,6 +8,7 @@ function EstadisticasEmpleados() {
   const [employeeStats, setEmployeeStats] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const location = useLocation();
 
   useEffect(() => {
 
@@ -31,6 +33,10 @@ function EstadisticasEmpleados() {
   if (loading) {
     return (
       <div className="estadisticas-empleados-container">
+        <div className="estadisticas-toggle">
+          <Link to="/estadisticas/empleados" className="toggle-tab active">Estadísticas de Empleados</Link>
+          <Link to="/estadisticas/productos" className="toggle-tab">Estadísticas de Productos</Link>
+        </div>
         <div className="loading">Cargando estadísticas...</div>
       </div>
     );
@@ -39,6 +45,10 @@ function EstadisticasEmpleados() {
   if (error) {
     return (
       <div className="estadisticas-empleados-container">
+        <div className="estadisticas-toggle">
+          <Link to="/estadisticas/empleados" className="toggle-tab active">Estadísticas de Empleados</Link>
+          <Link to="/estadisticas/productos" className="toggle-tab">Estadísticas de Productos</Link>
+        </div>
         <div className="mensaje-alerta error">{error}</div>
       </div>
     );
@@ -46,6 +56,10 @@ function EstadisticasEmpleados() {
 
   return (
     <div className="estadisticas-empleados-container">
+      <div className="estadisticas-toggle">
+        <Link to="/estadisticas/empleados" className="toggle-tab active">Estadísticas de Empleados</Link>
+        <Link to="/estadisticas/productos" className="toggle-tab">Estadísticas de Productos</Link>
+      </div>
       <div className="estadisticas-empleados-header">
         <h2 className="page-title">Estadísticas por empleado</h2>
       </div>

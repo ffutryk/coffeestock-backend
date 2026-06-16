@@ -1,4 +1,4 @@
-.employee-stats-table {
+.product-stats-table {
   background: var(--white);
   border-radius: 20px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
@@ -6,9 +6,9 @@
   overflow: hidden;
 }
 
-.employee-stats-table .stats-header {
+.product-stats-table .stats-header {
   display: grid;
-  grid-template-columns: 60px 1.5fr 1fr 1fr 1fr;
+  grid-template-columns: 50px 1.5fr 1fr 1fr;
   gap: 0.5rem;
   padding: 1rem 1.5rem;
   background: var(--coffee-dark);
@@ -19,7 +19,7 @@
   letter-spacing: 0.5px;
 }
 
-.employee-stats-table .stats-header-cell {
+.product-stats-table .stats-header-cell {
   cursor: pointer;
   user-select: none;
   display: flex;
@@ -28,26 +28,30 @@
   transition: opacity 0.15s;
 }
 
-.employee-stats-table .stats-header-cell.col-numeric {
+.product-stats-table .stats-header-cell.col-numeric {
   justify-content: flex-end;
 }
 
-.employee-stats-table .stats-header-cell:hover {
+.product-stats-table .stats-header-cell.col-index {
+  justify-content: center;
+}
+
+.product-stats-table .stats-header-cell:hover {
   opacity: 0.8;
 }
 
-.employee-stats-table .sort-indicator {
+.product-stats-table .sort-indicator {
   font-size: 0.7rem;
 }
 
-.employee-stats-table .stats-rows {
+.product-stats-table .stats-rows {
   display: flex;
   flex-direction: column;
 }
 
-.employee-stats-table .stats-row {
+.product-stats-table .stats-row {
   display: grid;
-  grid-template-columns: 60px 1.5fr 1fr 1fr 1fr;
+  grid-template-columns: 50px 1.5fr 1fr 1fr;
   gap: 0.5rem;
   padding: 1rem 1.5rem;
   border-bottom: 1px solid var(--border-color);
@@ -55,30 +59,31 @@
   align-items: center;
 }
 
-.employee-stats-table .stats-row:last-child {
+.product-stats-table .stats-row:last-child {
   border-bottom: none;
 }
 
-.employee-stats-table .stats-row:hover {
+.product-stats-table .stats-row:hover {
   background: rgba(0, 0, 0, 0.02);
 }
 
-.employee-stats-table .stats-cell {
+.product-stats-table .stats-cell {
   font-size: 0.95rem;
   color: var(--coffee-dark);
 }
 
-.employee-stats-table .stats-cell.col-id {
+.product-stats-table .stats-cell.col-index {
   font-weight: 700;
   color: var(--text-muted);
   font-size: 0.85rem;
+  text-align: center;
 }
 
-.employee-stats-table .stats-cell.col-name {
+.product-stats-table .stats-cell.col-name {
   font-weight: 700;
 }
 
-.employee-stats-table .stats-cell.col-numeric {
+.product-stats-table .stats-cell.col-numeric {
   font-family: 'Courier New', Courier, monospace;
   font-weight: 600;
   text-align: right;
