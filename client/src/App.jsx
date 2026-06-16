@@ -15,6 +15,7 @@ import HistorialInventario from "./pages/HistorialInventario";
 import EstadisticasEmpleados from "./pages/EstadisticasEmpleados";
 import EditarVenta from "./pages/EditarVenta";
 import EditarCombo from "./pages/EditarCombo";
+import Productos from "./pages/Productos"
 
 function decodeToken(token) {
   try {
@@ -68,6 +69,7 @@ function App() {
         />
         <Route path="/vender" element={<Vender />} />
         {/* Placeholder para otras rutas */}
+        <Route path="/productos" element={<Productos />} />
         <Route path="/inventario" element={<Inventario />} />
         <Route
           path="/auditoria"

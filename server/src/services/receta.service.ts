@@ -1,11 +1,11 @@
 import { CrearRecetaDTO } from "../dtos/receta/crear.dto";
-import { RecetaResponseDTO } from "../dtos/receta/response.dto";
 import { BadRequestError, NotFoundError } from "../errors";
 import { Transactional } from "../decorators/transactional.decorator";
 
 import type { ProductoRepository } from "../repositories/interfaces/producto.interface";
 import type { MateriasPrimasRepository } from "../repositories/interfaces/materias.primas.interface";
 import type { RecetaRepository } from "../repositories/interfaces/receta.interface";
+import { Receta } from "../models/entities/receta";
 
 @Transactional()
 export class RecetaService {
@@ -15,11 +15,7 @@ export class RecetaService {
     private readonly materiaPrimaRepository: MateriasPrimasRepository,
   ) {}
 
-  async crearReceta(
-    datos: CrearRecetaDTO,
-    createdBy: number,
-  ): Promise<RecetaResponseDTO> {
-
+  async crearReceta(datos: CrearRecetaDTO): Promise<Receta[]> {
     const producto = await this.productoRepository.findById(datos.idProducto);
 
     if (!producto) {
@@ -42,52 +38,24 @@ export class RecetaService {
 
       const faltante = ids.find((id) => !encontrados.has(id));
 
-      throw new NotFoundError(
-        `No se encontró la materia prima con id ${faltante}`,
-      );
+      throw new NotFoundError(`No se encontró la materia prima con id ${faltante}`);
     }
 
-    const materiasPrimasMap = new Map(
-      materiasPrimas.map((mp) => [mp.id, mp]),
-    );
+    const materiasPrimasMap = new Map(materiasPrimas.map((mp) => [mp.id, mp]));
 
     // Construir ingredientes
-    const ingredientes = datos.ingredientes.map(
-      ({ idMateriaPrima, cantidad }) => ({
-        materiaPrima: materiasPrimasMap.get(idMateriaPrima)!,
-        cantidad,
-      }),
-    );
+    const ingredientes = datos.ingredientes.map(({ idMateriaPrima, cantidad }) => ({
+      materiaPrima: materiasPrimasMap.get(idMateriaPrima)!,
+      cantidad,
+    }));
 
     // Crear recetas desde el dominio
     const recetas = producto.construirReceta(ingredientes);
 
-    // Setear auditoría
-    recetas.forEach((r) => {
-      r.createdBy = createdBy;
-    });
-
     // Guardar
-    const recetasGuardadas = await Promise.all(
-      recetas.map((r) => this.recetaRepository.save(r)),
-    );
+    const recetasGuardadas = await Promise.all(recetas.map((r) => this.recetaRepository.save(r)));
 
     // Response
-    return {
-      producto: {
-        id: producto.id,
-        nombre: producto.nombre,
-      },
-      ingredientes: recetasGuardadas.map(
-        ({ materiaPrima, cantidad }) => ({
-          materiaPrima: {
-            id: materiaPrima.id,
-            nombre: materiaPrima.nombre,
-            unidad: materiaPrima.unidad,
-          },
-          cantidad,
-        }),
-      ),
-    };
+    return recetasGuardadas;
   }
 }

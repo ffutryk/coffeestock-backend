@@ -41,3 +41,8 @@ export function validarCrearMateriaPrima(data) {
 
     return errors;
 }
+
+export async function getMateriasPrimas() {
+    const res = await api.get("/inventario");
+    return res.data;
+}

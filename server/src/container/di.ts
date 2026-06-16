@@ -41,7 +41,7 @@ export const inventarioService = new InventarioService(
   movimientosRepository,
 );
 export const materiaPrimaService = new MateriasPrimasService(materiasPrimasRepository);
-export const productoService = new ProductoService(productosRepository);
+export const productoService = new ProductoService(productosRepository, materiasPrimasRepository);
 export const recetaService = new RecetaService(
   recetasRepository,
   productosRepository,
@@ -53,10 +53,7 @@ export const ventaService = new VentaService(
   productosRepository,
   movimientosRepository,
 );
-export const comboService = new ComboService(
-  combosRepository,
-  productosRepository
-);
+export const comboService = new ComboService(combosRepository, productosRepository);
 
 export const wsService = WebsocketService.getInstance();
 

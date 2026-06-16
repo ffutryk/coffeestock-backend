@@ -4,7 +4,7 @@ import api from "../services/api";
 import MedioPagoSelect from "../components/MedioDePagoSelect";
 import ProductosList from "../components/ProductosList";
 import { getVentaPorId, actualizarVenta } from "../services/ventas";
-import { getTodosLosProductos } from "../services/productos";
+import { getProductos } from "../services/productos";
 import "./EditarVenta.css";
 
 export default function EditVentaPage() {
@@ -21,7 +21,7 @@ export default function EditVentaPage() {
   useEffect(() => {
     const cargar = async () => {
       const responseVenta = await getVentaPorId(id);
-      const responseProductos = await getTodosLosProductos();
+      const responseProductos = await getProductos({});
       setVenta(responseVenta.data);
       setProductosDisponibles(responseProductos);
       setEditForm({
