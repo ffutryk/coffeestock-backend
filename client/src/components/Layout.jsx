@@ -65,6 +65,18 @@ export default function Layout({ usuario, onLogout }) {
       ) 
     },
     { 
+      name: "Estadísticas", 
+      path: "/estadisticas/empleados", 
+      allowedRoles: ["GERENTE"],
+      icon: (
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"></path>
+          <path d="M3 5v14a2 2 0 0 0 2 2h16v-5"></path>
+          <path d="M18 12a2 2 0 0 0 0 4h4v-4Z"></path>
+        </svg>
+      ) 
+    },
+    { 
       name: "Auditoria", 
       path: "/historial-ventas", 
       icon: (

@@ -43,4 +43,8 @@ export class TypeOrmVentaRepository extends TypeOrmBaseRepository<Venta>implemen
       ],
     });
   }
+
+  async deleteItems(ventaId: number): Promise<void> {
+    await this.repository.manager.delete("item_venta", { ventaId });
+  }
 }

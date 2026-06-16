@@ -1,5 +1,5 @@
 import { EstadisticaRepository, EstadisticasVentasDTO } from "../repositories/interfaces/estadistica.interface";
-import { ReporteEstadisticasDTO } from "../models/types/estadisticas";
+import { ReporteEstadisticasDTO, EmpleadoEstadistica } from "../models/types/estadisticas";
 
 export class EstadisticaService {
 
@@ -36,6 +36,10 @@ export class EstadisticaService {
 
     return estadisticas;
 
+  }
+
+  async obtenerEstadisticasEmpleados(): Promise<EmpleadoEstadistica[]> {
+    return await this.estadisticaRepository.obtenerEstadisticasEmpleados();
   }
 
 }

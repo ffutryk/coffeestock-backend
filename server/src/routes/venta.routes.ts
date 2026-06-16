@@ -13,6 +13,7 @@ const ventaController = new VentaController(ventaService);
 router.post("/", auth, validateBody(CrearVentaSchema), ventaController.crear);
 router.put("/:id", auth, validateBody(ActualizarVentaSchema), ventaController.actualizar);
 router.get("/", auth, validateQuery(PaginacionQuerySchema), ventaController.obtenerMuchas);
+router.get("/:id", auth, ventaController.obtenerUna);
 router.delete("/:id", auth, ventaController.eliminar);
 
 export default router;

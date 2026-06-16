@@ -24,5 +24,11 @@ router.get(
   roles([RolUsuario.GERENTE]),
   estadisticaController.obtenerEstadisticasProductos,
 );
+router.get(
+  "/empleados",
+  auth,
+  roles([RolUsuario.GERENTE]),
+  estadisticaController.obtenerEstadisticasEmpleados,
+);
 
 export default router;
