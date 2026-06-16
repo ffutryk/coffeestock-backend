@@ -191,7 +191,7 @@
 }
 
 .control-btn {
-  padding: 0.6rem 0;
+    padding: 1rem;
   border: 1px solid var(--border-color);
   border-radius: 10px;
   background: var(--white);
@@ -245,4 +245,11 @@
   font-size: 1.2rem;
   color: var(--coffee-light);
   font-weight: 600;
+}
+
+.floating-bottom-right {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  display: flex;
 }
