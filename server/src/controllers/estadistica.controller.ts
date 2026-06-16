@@ -40,15 +40,4 @@ export class EstadisticaController {
       next(err);
     }
   };
-
-  obtenerEstadisticasEmpleados = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const estadisticas: EmpleadoEstadistica[] =
-        await this.estadisticaService.obtenerEstadisticasEmpleados();
-
-      return res.status(200).json(estadisticas);
-    } catch (err) {
-      next(err);
-    }
-  };
 }
