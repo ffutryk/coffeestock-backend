@@ -14,6 +14,8 @@ import Empleados from "./pages/Empleados";
 import HistorialInventario from "./pages/HistorialInventario";
 import EstadisticasEmpleados from "./pages/EstadisticasEmpleados";
 import EstadisticasProductos from "./pages/EstadisticasProductos";
+import EditarVenta from "./pages/EditarVenta";
+import EditarCombo from "./pages/EditarCombo";
 
 function decodeToken(token) {
   try {
@@ -54,21 +56,42 @@ function App() {
       <Route path="/login" element={<Login onLogin={handleLogin} />} />
 
       {/* Rutas Protegidas dentro del Layout */}
-      <Route element={<ProtectedRoute usuario={usuario}><Layout usuario={usuario} onLogout={handleLogout} /></ProtectedRoute>}>
-        <Route path="/dashboard" element={<Dashboard usuario={usuario} onLogout={handleLogout} />} />
+      <Route
+        element={
+          <ProtectedRoute usuario={usuario}>
+            <Layout usuario={usuario} onLogout={handleLogout} />
+          </ProtectedRoute>
+        }
+      >
+        <Route
+          path="/dashboard"
+          element={<Dashboard usuario={usuario} onLogout={handleLogout} />}
+        />
         <Route path="/vender" element={<Vender />} />
         {/* Placeholder para otras rutas */}
-        <Route path="/inventario" element={<Inventario/>} />
-        <Route path="/auditoria" element={<div className="placeholder-page"><h2>Auditoría (Próximamente)</h2></div>} />
-        <Route 
-          path="/reportes" 
+        <Route path="/inventario" element={<Inventario />} />
+        <Route
+          path="/auditoria"
+          element={
+            <div className="placeholder-page">
+              <h2>Auditoría (Próximamente)</h2>
+            </div>
+          }
+        />
+        <Route
+          path="/reportes"
           element={
             <ProtectedRoute usuario={usuario} allowedRoles={["GERENTE"]}>
-              <div className="placeholder-page"><h2>Reportes (Próximamente)</h2></div>
+              <div className="placeholder-page">
+                <h2>Reportes (Próximamente)</h2>
+              </div>
             </ProtectedRoute>
           }
         />
-        <Route path="/historial-ventas" element={<HistorialVentas usuario={usuario} />} />
+        <Route
+          path="/historial-ventas"
+          element={<HistorialVentas usuario={usuario} />}
+        />
         <Route
           path="/empleados"
           element={
@@ -93,6 +116,8 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route path="/ventas/:id" element={<EditarVenta />} />
+        <Route path="/combos/editar/:comboId" element={<EditarCombo />} />
       </Route>
 
       <Route
@@ -103,9 +128,18 @@ function App() {
           </ProtectedRoute>
         }
       />
-      <Route path="/dashboard" element={<Dashboard usuario={usuario} onLogout={handleLogout} />} />
-      <Route path="/historial-ventas" element={<HistorialVentas usuario={usuario} />} />
-      <Route path="/historial-inventario" element={<HistorialInventario usuario={usuario} />} />
+      <Route
+        path="/dashboard"
+        element={<Dashboard usuario={usuario} onLogout={handleLogout} />}
+      />
+      <Route
+        path="/historial-ventas"
+        element={<HistorialVentas usuario={usuario} />}
+      />
+      <Route
+        path="/historial-inventario"
+        element={<HistorialInventario usuario={usuario} />}
+      />
       <Route path="*" element={<Login onLogin={handleLogin} />} />
     </Routes>
   );

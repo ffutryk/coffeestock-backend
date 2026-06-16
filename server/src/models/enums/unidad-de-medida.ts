@@ -1,6 +1,7 @@
 export enum UnidadDeMedida {
   KG = "Kilogramos",
-  MG = "Miligramos",
-  ML = "Mililitros",
+  G = "Gramos",
   L = "Litros",
+  ML = "Mililitros",
+  U = "Unidades",
 }
