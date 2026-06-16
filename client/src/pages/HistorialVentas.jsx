@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import api from "../services/api";
 import "./HistorialVentas.css";
 import "./Empleados.css"; // para compartir estilos de tabla y botones
+import { eliminarVenta } from "../services/ventas";
 import { useNavigate } from "react-router-dom";
 
 const MEDIOS_PAGO = {
@@ -28,6 +29,9 @@ export default function HistorialVentas({ usuario }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [ventaExpandida, setVentaExpandida] = useState(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [ventaSeleccionada, setVentaSeleccionada] = useState(null);
   const navigate = useNavigate();
   const [filtro, setFiltro] = useState("TODAS");
 
@@ -57,10 +61,20 @@ export default function HistorialVentas({ usuario }) {
     setVentaExpandida(ventaExpandida === id ? null : id);
   };
 
-  const handleEliminarVenta = (venta) => {
-    console.log(
-      "Acá se supone que se eliminaría la venta, no se por qué quisieras hacer eso willis",
-    );
+  const handleEliminarVenta = async (venta) => {
+    setDeleting(true);
+
+    try {
+      await eliminarVenta(venta.id);
+      setVentaSeleccionada(null);
+      cargarVentas(pagina);
+    } catch (err) {
+      setError("No se pudo eliminar la venta.");
+    } finally {
+      setDeleting(false);
+      setShowDeleteModal(false);
+    }
+
   };
 
   return (
@@ -228,6 +242,35 @@ export default function HistorialVentas({ usuario }) {
             </button>
           </div>
         </>
+      )}
+      {showDeleteModal && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <h3>Eliminar venta</h3>
+
+            <p>¿Estás seguro de que querés eliminar la venta?</p>
+
+            <p className="modal-warning">Esta acción no se puede deshacer.</p>
+
+            <div className="modal-actions">
+              <button
+                className="modal-cancel"
+                onClick={() => setShowDeleteModal(false)}
+                disabled={deleting}
+              >
+                Cancelar
+              </button>
+
+              <button
+                className="modal-delete"
+                onClick={() => handleEliminarVenta(ventaSeleccionada)}
+                disabled={deleting}
+              >
+                {deleting ? "Eliminando..." : "Eliminar"}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

@@ -247,9 +247,27 @@
   font-weight: 600;
 }
 
+.historial-button {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  background-color: #D2B48C; /* Sandy beige */
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  z-index: 10; /* Ensure it's above other content */
+  transition: background-color 0.3s ease;
+}
+
+.historial-button:hover {
+  background-color: #C3A87A; /* Slightly darker beige on hover */
+}
 .floating-bottom-right {
   position: fixed;
   bottom: 20px;
-  right: 20px;
+  left: 20px;
   display: flex;
 }

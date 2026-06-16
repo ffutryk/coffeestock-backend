@@ -1,7 +1,7 @@
 import type { NextFunction, Request, Response } from "express";
 import { EstadisticaService } from "../services/estadistica.service";
 import { FiltrarEstadisticasVentasDTO } from "../dtos/estadistica/filtrar-ventas.dto";
-import { ReporteEstadisticasDTO } from "../models/types/estadisticas";
+import { ReporteEstadisticasDTO, EmpleadoEstadistica } from "../models/types/estadisticas";
 
 export class EstadisticaController {
   constructor(private readonly estadisticaService: EstadisticaService) {}
@@ -22,6 +22,17 @@ export class EstadisticaController {
 
       const estadisticas: ReporteEstadisticasDTO =
         await this.estadisticaService.obtenerEstadisticasProductos(userId);
+
+      return res.status(200).json(estadisticas);
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  obtenerEstadisticasEmpleados = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const estadisticas: EmpleadoEstadistica[] =
+        await this.estadisticaService.obtenerEstadisticasEmpleados();
 
       return res.status(200).json(estadisticas);
     } catch (err) {

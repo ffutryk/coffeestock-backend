@@ -10,3 +10,11 @@ export interface ReporteEstadisticasDTO {
   gananciasTotales: number;
   promedioVentaPorTicket: number;
 }
+
+export interface EmpleadoEstadistica {
+  id: number;
+  nombre: string;
+  totalSales: number;
+  last30DaysSales: number;
+  totalRevenue: number;
+}
