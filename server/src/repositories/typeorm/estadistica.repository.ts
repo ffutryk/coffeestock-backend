@@ -47,27 +47,27 @@ export class TypeORMEstadisticaRepository implements EstadisticaRepository {
     // Query para el TOP 5 de productos mas vendidos y sus ganancias
     const productosRaw = await itemVentaRepo
       .createQueryBuilder("item")
-      .select("item.idProducto", "idProducto")
-      .addSelect("item.nombreProducto", "nombre")
-      .addSelect("SUM(item.cantidad)", "cantidadVendida")
-      .addSelect("SUM(item.cantidad * item.precioProducto)", "gananciaGenerada")
-      .groupBy("item.idProducto")
-      .addGroupBy("item.nombreProducto")
-      .orderBy("cantidadVendida", "DESC")
+      .select("item.productoId", "idProducto")
+      .addSelect("item.nombre", "nombre")
+      .addSelect("SUM(item.cantidad)", "cantidad")
+      .addSelect("SUM(item.cantidad * item.precio)", "gananciaGenerada")
+      .groupBy("item.productoId")
+      .addGroupBy("item.nombre")
+      .orderBy("cantidad", "DESC")
       .limit(5)
       .getRawMany();
 
     const productosMasVendidos = productosRaw.map((p) => ({
       idProducto: Number(p.idProducto),
       nombre: p.nombre,
-      cantidadVendida: Number(p.cantidadVendida),
+      cantidadVendida: Number(p.cantidad),
       gananciaGenerada: Number(p.gananciaGenerada),
     }));
 
     // Query para calcular las ganancias totales
     const ganancias = await itemVentaRepo
       .createQueryBuilder("item")
-      .select("SUM(item.cantidad * item.precioProducto)", "total")
+      .select("SUM(item.cantidad * item.precio)", "total")
       .getRawOne();
 
     const gananciasTotales = Number(ganancias?.total || 0);
@@ -75,13 +75,13 @@ export class TypeORMEstadisticaRepository implements EstadisticaRepository {
     // Query para el promedio de ventas realizadas (promedio por ticket)
     const subQuery = itemVentaRepo
       .createQueryBuilder("item")
-      .select("SUM(item.cantidad * item.precioProducto)", "totalVenta")
-      .groupBy("item.idVenta")
+      .select("SUM(item.cantidad * item.precio)", "total_venta")
+      .groupBy("item.ventaId")
       .getQuery();
 
     const promedio = await AppDataSource.manager
       .createQueryBuilder()
-      .select("AVG(sub.totalVenta)", "promedio")
+      .select("AVG(sub.total_venta)", "promedio")
       .from(`(${subQuery})`, "sub")
       .setParameters(itemVentaRepo.createQueryBuilder("item").getParameters())
       .getRawOne();
@@ -100,8 +100,8 @@ export class TypeORMEstadisticaRepository implements EstadisticaRepository {
 
     const rawResults = await usuarioRepo
       .createQueryBuilder("u")
-      .innerJoin("ventas", "v", "v.created_by = u.id")
-      .innerJoin("item_venta", "iv", "iv.ventaId = v.id")
+      .innerJoin(Venta, "v", "v.created_by = u.id")
+      .innerJoin(ItemVenta, "iv", "iv.ventaId = v.id")
       .select("u.id", "id")
       .addSelect("CONCAT(u.nombre, ' ', u.apellido)", "nombre")
       .addSelect("COUNT(DISTINCT v.id)", "totalSales")
@@ -114,7 +114,7 @@ export class TypeORMEstadisticaRepository implements EstadisticaRepository {
       .groupBy("u.id")
       .addGroupBy("u.nombre")
       .addGroupBy("u.apellido")
-      .orderBy('"totalSales"', "DESC")
+      .orderBy("totalSales", "DESC")
       .getRawMany();
 
     return rawResults.map((r) => ({
