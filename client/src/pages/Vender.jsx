@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
 import api from "../services/api";
+import { eliminarCombo } from "../services/combos";
 import ProductoCard from "../components/ProductoCard";
 import "./Vender.css";
 import CrearComboModal from "../components/CrearComboModal";
+import ModalEliminarItem from "../components/modals/ModalEliminarItem";
 import { useNavigate } from "react-router-dom";
 
 export default function Vender() {
@@ -30,10 +32,10 @@ export default function Vender() {
     if (!itemAEliminar) return;
     try {
       if (itemAEliminar.tipo === "COMBO") {
-        await api.delete(`/combos/${itemAEliminar.id}`);
+        eliminarCombo(itemAEliminar.id);
         fetchCombos();
       } else {
-        await api.delete(`/productos/${itemAEliminar.id}`);
+        await api.delete(`/productos/${itemAEliminar.id}`); //eliminarProducto(itemAEliminar.id); del service de producto
         fetchProductos();
       }
       showMensaje("Eliminado con éxito", "success");
@@ -417,7 +419,7 @@ export default function Vender() {
           </div>
         </div>
         {itemAEliminar && (
-          <ModalEliminar
+          <ModalEliminarItem
             title="Eliminar Producto"
             message="¿Estás seguro de que quieres eliminar este producto?"
             onConfirm={handleEliminarItem}
