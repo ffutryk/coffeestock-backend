@@ -32,15 +32,16 @@ export default function Vender() {
     if (!itemAEliminar) return;
     try {
       if (itemAEliminar.tipo === "COMBO") {
-        eliminarCombo(itemAEliminar.id);
+        await eliminarCombo(itemAEliminar.id);
         fetchCombos();
       } else {
-        await api.delete(`/productos/${itemAEliminar.id}`); //eliminarProducto(itemAEliminar.id); del service de producto
+        await api.delete(`/productos/${itemAEliminar.id}`);
         fetchProductos();
       }
-      showMensaje("Eliminado con éxito", "success");
+      showMensaje("Eliminado con éxito", "success"); // ✅ solo si no hubo error
     } catch (error) {
-      showMensaje("Error al eliminar", "error");
+      console.error(error);
+      showMensaje("Error al eliminar", "error"); // ✅ captura el fallo
     } finally {
       setItemAEliminar(null);
     }
@@ -61,7 +62,6 @@ export default function Vender() {
   const fetchCombos = async () => {
     try {
       const response = await api.get("/combos");
-      console.log(response.data.data);
       setCombos(
         response.data.data.map((combo) => ({
           ...combo,
