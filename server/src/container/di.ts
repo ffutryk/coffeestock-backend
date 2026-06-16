@@ -19,6 +19,8 @@ import { MovimientoInventarioEventHandler, StockBajoAlertaEventHandler } from ".
 import { eventBus } from "../models/events/event-bus";
 import { TypeOrmAlertaRepository } from "../repositories/typeorm/alerta.repository";
 import { WebsocketService } from "../services/websocket.service";
+import { TypeOrmComboRepository } from "../repositories/typeorm/combo.repository";
+import { ComboService } from "../services/combo.service";
 
 const estadisticasRepository = new TypeORMEstadisticaRepository();
 const inventariosRepository = new TypeOrmInventarioRepository();
@@ -29,6 +31,7 @@ const recetasRepository = new TypeOrmRecetaRepository();
 const usuariosRepository = new TypeOrmUsuarioRepository();
 const ventasRepository = new TypeOrmVentaRepository();
 const alertaRepository = new TypeOrmAlertaRepository();
+const combosRepository = new TypeOrmComboRepository();
 
 export const tokenService = new TokenService();
 export const authService = new AuthService(tokenService, usuariosRepository);
@@ -49,6 +52,10 @@ export const ventaService = new VentaService(
   ventasRepository,
   productosRepository,
   movimientosRepository,
+);
+export const comboService = new ComboService(
+  combosRepository,
+  productosRepository
 );
 
 export const wsService = WebsocketService.getInstance();

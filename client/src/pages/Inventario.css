@@ -191,7 +191,7 @@
 }
 
 .control-btn {
-  padding: 0.6rem 0;
+    padding: 1rem;
   border: 1px solid var(--border-color);
   border-radius: 10px;
   background: var(--white);
@@ -264,4 +264,10 @@
 
 .historial-button:hover {
   background-color: #C3A87A; /* Slightly darker beige on hover */
+}
+.floating-bottom-right {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  display: flex;
 }

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import api from "../services/api";
 import "./Inventario.css";
+import { useModal } from "../context/ModalContext";
 
 const InventoryItemCard = ({ item, onUpdateStock }) => {
   const pct = item.stockMinimo > 0
@@ -61,6 +62,7 @@ export default function Inventario() {
   const [inventory, setInventory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [mensaje, setMensaje] = useState({ text: "", type: "" });
+  const { abrir } = useModal();
 
   useEffect(() => {
     fetchInventory();
@@ -105,7 +107,7 @@ export default function Inventario() {
     setMensaje({ text, type });
     setTimeout(() => setMensaje({ text: "", type: "" }), 3000);
   };
-
+    
   const lowStockItems = inventory.filter(
     (i) => i.stockActual < i.stockMinimo && i.stockActual >= i.stockMinimo / 2
   ).length;
@@ -115,8 +117,14 @@ export default function Inventario() {
 
   if (loading) return <div className="loading">Cargando inventario...</div>;
 
+  const handleAgregarMateriaPrima = () => {
+    abrir("crear-materia-prima", {
+      onSuccess: fetchInventory,
+    });
+  };
+    
   return (
-    <div className="inventario-container">
+      <div className="inventario-container">
       <h2 className="page-title">Inventario</h2>
 
       <SummaryCards
@@ -143,6 +151,12 @@ export default function Inventario() {
       <button className="historial-button" onClick={() => window.location.href = "/historial-inventario"}>
         Ver Historial
       </button>
+          
+      <div className="floating-bottom-right">
+        <button onClick={handleAgregarMateriaPrima} className="control-btn">
+          Agregar Materia Prima
+        </button>
+      </div>
     </div>
   );
 }
