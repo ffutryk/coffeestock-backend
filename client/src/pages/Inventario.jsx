@@ -147,7 +147,10 @@ export default function Inventario() {
         <div className={`mensaje-alerta ${mensaje.type}`}>
           {mensaje.text}
         </div>
-          )}
+      )}
+      <button className="historial-button" onClick={() => window.location.href = "/historial-inventario"}>
+        Ver Historial
+      </button>
           
       <div className="floating-bottom-right">
         <button onClick={handleAgregarMateriaPrima} className="control-btn">

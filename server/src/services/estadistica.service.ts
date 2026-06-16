@@ -59,4 +59,8 @@ export class EstadisticaService {
     return await this.estadisticaRepository.obtenerEstadisticasEmpleados();
   }
 
+  async obtenerEstadisticasEmpleados(): Promise<EmpleadoEstadistica[]> {
+    return await this.estadisticaRepository.obtenerEstadisticasEmpleados();
+  }
+
 }
