@@ -159,12 +159,26 @@ export default function Vender() {
     }
 
     try {
+      const itemsVenta = [];
+      orden.forEach((item) => {
+        const esCombo = item.items !== undefined;
+        if (esCombo) {
+          item.items.forEach((comboItem) => {
+            itemsVenta.push({
+              productoId: comboItem.producto.id,
+              cantidad: comboItem.cantidad * item.cantidad,
+            });
+          });
+        } else {
+            itemsVenta.push({
+              productoId: item.id,
+              cantidad: item.cantidad,
+            });
+          }
+      });
       const payload = {
         medioDePago,
-        items: orden.map((item) => ({
-          productoId: item.id,
-          cantidad: item.cantidad,
-        })),
+        items: itemsVenta,
         descuentoTipo: discountType,
         descuentoValor: Number(discountValue),
       };
@@ -176,6 +190,7 @@ export default function Vender() {
       setDiscountValue(0);
       setDiscountError("");
       fetchProductos(); // Refrescar stock
+      fetchCombos();
     } catch (error) {
       console.error("Error al realizar venta:", error);
       showMensaje("Error al procesar la venta", "error");
