@@ -23,19 +23,36 @@ export class EstadisticaService {
     return await this.estadisticaRepository.obtenerEstadisticasVentas(inicio, fin);
   }
 
-  async obtenerEstadisticasProductos(user: string): Promise<ReporteEstadisticasDTO> {
-    if(!user) {
+  async obtenerEstadisticasProductos(user: string, fechaInicio?: string, fechaFin?: string): Promise<ReporteEstadisticasDTO> {
+    if (!user) {
       throw new Error("Usuario no autenticado");
     }
 
-    const estadisticas = await this.estadisticaRepository.obtenerMetricasGenerales();
+    let inicio: Date | undefined;
+    let fin: Date | undefined;
+
+    if (fechaInicio) {
+      inicio = new Date(fechaInicio);
+    }
+
+    if (fechaFin) {
+      fin = new Date(fechaFin);
+      if (fechaFin.indexOf("T") === -1) {
+        fin.setHours(23, 59, 59, 999);
+      }
+    }
+
+    const estadisticas = await this.estadisticaRepository.obtenerMetricasGenerales(inicio, fin);
 
     if (!estadisticas) {
-      throw new Error("No hay ventas disponibles para realizar estadísticas");
+      return {
+        productosMasVendidos: [],
+        gananciasTotales: 0,
+        promedioVentaPorTicket: 0,
+      };
     }
 
     return estadisticas;
-
   }
 
   async obtenerEstadisticasEmpleados(): Promise<EmpleadoEstadistica[]> {

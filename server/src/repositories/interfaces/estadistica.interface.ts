@@ -7,7 +7,7 @@ export interface EstadisticasVentasDTO {
 }
 
 export interface EstadisticaRepository {
-  obtenerMetricasGenerales(): Promise<ReporteEstadisticasDTO | null>;
+  obtenerMetricasGenerales(fechaInicio?: Date, fechaFin?: Date): Promise<ReporteEstadisticasDTO | null>;
   obtenerEstadisticasVentas(fechaInicio?: Date, fechaFin?: Date): Promise<EstadisticasVentasDTO>;
   obtenerEstadisticasEmpleados(): Promise<EmpleadoEstadistica[]>;
 }

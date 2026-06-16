@@ -19,9 +19,10 @@ export class EstadisticaController {
   obtenerEstadisticasProductos = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const userId = req.user!.id.toString();
+      const { fechaInicio, fechaFin } = req.validatedQuery as FiltrarEstadisticasVentasDTO;
 
       const estadisticas: ReporteEstadisticasDTO =
-        await this.estadisticaService.obtenerEstadisticasProductos(userId);
+        await this.estadisticaService.obtenerEstadisticasProductos(userId, fechaInicio, fechaFin);
 
       return res.status(200).json(estadisticas);
     } catch (err) {

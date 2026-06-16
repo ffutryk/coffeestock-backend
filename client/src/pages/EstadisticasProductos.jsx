@@ -7,11 +7,11 @@ import api from '../services/api';
 
 const MOCK_DATA = {
   productosMasVendidos: [
-    { id: 1, nombre: 'Café Latte', unidadesVendidas: 245, gananciasGeneradas: 122500 },
-    { id: 2, nombre: 'Capuchino', unidadesVendidas: 198, gananciasGeneradas: 99000 },
-    { id: 3, nombre: 'Espresso', unidadesVendidas: 156, gananciasGeneradas: 46800 },
-    { id: 4, nombre: 'Mocha', unidadesVendidas: 134, gananciasGeneradas: 67000 },
-    { id: 5, nombre: 'Americano', unidadesVendidas: 98, gananciasGeneradas: 29400 },
+    { id: 1, nombre: 'Café Latte', cantidadVendida: 245, gananciaGenerada: 122500 },
+    { id: 2, nombre: 'Capuchino', cantidadVendida: 198, gananciaGenerada: 99000 },
+    { id: 3, nombre: 'Espresso', cantidadVendida: 156, gananciaGenerada: 46800 },
+    { id: 4, nombre: 'Mocha', cantidadVendida: 134, gananciaGenerada: 67000 },
+    { id: 5, nombre: 'Americano', cantidadVendida: 98, gananciaGenerada: 29400 },
   ],
   gananciasTotales: 364700,
   promedioVentaPorTicket: 4250,
@@ -28,6 +28,7 @@ function EstadisticasProductos() {
   const [fechaInicio, setFechaInicio] = useState('');
   const [fechaFin, setFechaFin] = useState('');
   const [dateError, setDateError] = useState('');
+  const [filterApplied, setFilterApplied] = useState(false);
   const location = useLocation();
 
   const fetchProductStats = async (inicio, fin) => {
@@ -41,20 +42,25 @@ function EstadisticasProductos() {
       if (fin) params.fechaFin = fin;
 
       // TODO: Reemplazar con el llamado real al endpoint cuando esté disponible
-       const res = await api.get('/estadisticas/productos'/*, { params }*/);
+       const res = await api.get('/estadisticas/productos', { params });
        setStats(res.data);
 
       // Mock de desarrollo - simula demora de red
       await new Promise(resolve => setTimeout(resolve, 400));
       //setStats(MOCK_DATA);
     } catch (err) {
-      setError(err.response?.data?.message || err.message || 'Error al cargar estadísticas');
+      if (err.response?.status === 404 || err.response?.status === 500) {
+        setStats({ productosMasVendidos: [], gananciasTotales: 0, promedioVentaPorTicket: 0 });
+      } else {
+        setError(err.response?.data?.message || err.message || 'Error al cargar estadísticas');
+      }
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
+    setFilterApplied(false);
     fetchProductStats();
   }, []);
 
@@ -69,11 +75,12 @@ function EstadisticasProductos() {
       }
     }
 
+    setFilterApplied(true);
     fetchProductStats(fechaInicio, fechaFin);
   };
 
   const totalUnidades = stats?.productosMasVendidos?.reduce(
-    (sum, p) => sum + p.unidadesVendidas, 0
+    (sum, p) => sum + p.cantidadVendida, 0
   ) ?? 0;
 
   const hasSales = stats && stats.productosMasVendidos?.length > 0;
@@ -141,10 +148,30 @@ function EstadisticasProductos() {
         {dateError && <span className="date-error">{dateError}</span>}
       </form>
 
-      {!hasSales ? (
+      {!hasSales && !filterApplied ? (
         <div className="no-data-message">
-          <p>No existen ventas disponibles para generar estadísticas de productos</p>
+          <p>No hay ventas disponibles para realizar estadísticas</p>
         </div>
+      ) : !hasSales && filterApplied ? (
+        <>
+          <div className="stats-cards">
+            <div className="stats-card">
+              <span className="stats-card-label">Total facturado</span>
+              <span className="stats-card-value">$0</span>
+            </div>
+            <div className="stats-card">
+              <span className="stats-card-label">Total unidades vendidas</span>
+              <span className="stats-card-value">0</span>
+            </div>
+            <div className="stats-card">
+              <span className="stats-card-label">Promedio por ticket</span>
+              <span className="stats-card-value">$0</span>
+            </div>
+          </div>
+          <div className="no-data-message">
+            <p>No existen ventas disponibles para generar estadísticas de productos</p>
+          </div>
+        </>
       ) : (
         <>
           <div className="stats-cards">
