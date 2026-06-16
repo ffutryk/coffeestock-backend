@@ -19,7 +19,7 @@ export class Venta extends Auditable {
   @Column({ type: "float", name: "descuento_valor", default: 0 })
   descuentoValor!: number;
 
-  @OneToMany(() => ItemVenta, (item) => item.venta, { cascade: true })
+  @OneToMany(() => ItemVenta, (item) => item.venta, { cascade: true, orphanedRowAction: "delete" })
   items!: ItemVenta[];
 
   getPrecioTotal(): number {

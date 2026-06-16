@@ -115,6 +115,11 @@
   cursor: pointer;
 }
 
+.historial-acciones {
+  display: flex;
+  gap: 0.5rem;
+}
+ 
 .historial-header {
   display: flex;
   justify-content: space-between;

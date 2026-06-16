@@ -52,6 +52,7 @@ export class VentaService {
 
       // Persistir reversión de stock
       await this.productoRepository.save(productosARevertir);
+      await this.ventaRepository.deleteItems(id);
 
       const ids = datos.items.map((i) => i.productoId);
       const productos = await this.productoRepository.findWithInventarios(ids);

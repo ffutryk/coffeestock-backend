@@ -74,6 +74,7 @@ export default function HistorialVentas({ usuario }) {
       setDeleting(false);
       setShowDeleteModal(false);
     }
+
   };
 
   return (
@@ -152,10 +153,7 @@ export default function HistorialVentas({ usuario }) {
                       <button
                         className="btn-accion delete"
                         title="Eliminar"
-                        onClick={() => {
-                          setVentaSeleccionada(venta);
-                          setShowDeleteModal(true);
-                        }}
+                        onClick={() => handleEliminarVenta(venta)}
                       >
                         <svg
                           width="18"
