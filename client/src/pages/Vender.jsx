@@ -125,6 +125,12 @@ export default function Vender() {
             </span>
             <div className="filtros">
               <button
+                className="crear-combo-btn"
+                onClick={() => setMostrarModalCombo(true)}
+              >
+                + Crear Combo
+              </button>
+              <button
                 className={
                   filtro === "TODOS" ? "filtro-btn activo" : "filtro-btn"
                 }
