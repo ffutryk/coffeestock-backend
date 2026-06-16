@@ -8,3 +8,7 @@ export const actualizarCombo = async (id, data) => {
   const response = await api.put(`/combos/${id}`, data);
   return response.data;
 };
+export const eliminarCombo = async (id) => {
+  const response = await api.delete(`/combos/${id}`);
+  return response.data;
+};

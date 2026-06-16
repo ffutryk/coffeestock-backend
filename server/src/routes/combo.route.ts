@@ -35,4 +35,11 @@ router.get(
   comboController.obtenerPorId,
 );
 
+router.delete(
+  "/:id",
+  auth,
+  roles([RolUsuario.EMPLEADO, RolUsuario.GERENTE]),
+  comboController.eliminar,
+);
+
 export default router;
