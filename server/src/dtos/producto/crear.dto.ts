@@ -1,5 +1,6 @@
 import z from "zod";
 import { TipoItemVenta } from "../../models/enums/tipo-item-venta";
+import { IngredienteSchema } from "../receta/crear.dto";
 
 export const CrearProductoSchema = z
   .object({
@@ -9,6 +10,7 @@ export const CrearProductoSchema = z
     precio: z.number().min(0, "El precio no puede ser negativo"),
     tipo: z.enum(TipoItemVenta),
     sinTacc: z.boolean().optional(),
+    ingredientes: z.array(IngredienteSchema).optional(),
   })
   .strict();
 

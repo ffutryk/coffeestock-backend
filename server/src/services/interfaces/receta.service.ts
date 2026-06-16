@@ -1,6 +1,6 @@
 import { CrearRecetaDTO } from "../../dtos/receta/crear.dto";
-import { RecetaResponseDTO } from "../../dtos/receta/response.dto";
+import { Receta } from "../../models/entities/receta";
 
 export interface IRecetaService {
-    crearReceta(datos: CrearRecetaDTO, createdBy: number): Promise<RecetaResponseDTO>;
+  crearReceta(datos: CrearRecetaDTO): Promise<Receta[]>;
 }
