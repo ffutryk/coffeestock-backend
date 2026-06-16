@@ -24,7 +24,7 @@ export default function ProductComparisonChart({ data }) {
                   className="chart-bar-fill"
                   style={{ width: `${barWidth}%` }}
                 >
-                  <span className="chart-bar-value">{prod.unidadesVendidas.toLocaleString('es-AR')}</span>
+                  <span className="chart-bar-value">{prod.cantidadVendida.toLocaleString('es-AR')}</span>
                 </div>
               </div>
             </div>

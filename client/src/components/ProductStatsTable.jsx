@@ -60,8 +60,8 @@ export default function ProductStatsTable({ data }) {
           <div key={prod.id} className="stats-row">
             <div className="stats-cell col-index">{idx + 1}</div>
             <div className="stats-cell col-name">{prod.nombre}</div>
-            <div className="stats-cell col-numeric">{prod.unidadesVendidas.toLocaleString('es-AR')}</div>
-            <div className="stats-cell col-numeric">{formatCurrency(prod.gananciasGeneradas)}</div>
+            <div className="stats-cell col-numeric">{prod.cantidadVendida.toLocaleString('es-AR')}</div>
+            <div className="stats-cell col-numeric">{formatCurrency(prod.gananciaGenerada)}</div>
           </div>
         ))}
       </div>
