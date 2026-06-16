@@ -2,6 +2,42 @@
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.estadisticas-toggle {
+  display: flex;
+  gap: 0;
+  background: var(--white);
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+  align-self: flex-start;
+}
+
+.toggle-tab {
+  padding: 0.75rem 1.5rem;
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  transition: all 0.2s;
+  background: var(--white);
+}
+
+.toggle-tab:hover {
+  background: var(--latte-bg);
+  color: var(--coffee-dark);
+}
+
+.toggle-tab.active {
+  background: var(--coffee-dark);
+  color: var(--white);
 }
 
 .estadisticas-empleados-header {
