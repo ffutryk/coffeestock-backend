@@ -16,7 +16,7 @@ import EstadisticasEmpleados from "./pages/EstadisticasEmpleados";
 import EstadisticasProductos from "./pages/EstadisticasProductos";
 import EditarVenta from "./pages/EditarVenta";
 import EditarCombo from "./pages/EditarCombo";
-import Productos from "./pages/Productos"
+import Productos from "./pages/Productos";
 
 function decodeToken(token) {
   try {
@@ -78,16 +78,6 @@ function App() {
             <div className="placeholder-page">
               <h2>Auditoría (Próximamente)</h2>
             </div>
-          }
-        />
-        <Route
-          path="/reportes"
-          element={
-            <ProtectedRoute usuario={usuario} allowedRoles={["GERENTE"]}>
-              <div className="placeholder-page">
-                <h2>Reportes (Próximamente)</h2>
-              </div>
-            </ProtectedRoute>
           }
         />
         <Route
