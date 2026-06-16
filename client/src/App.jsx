@@ -13,6 +13,7 @@ import HistorialVentas from "./pages/HistorialVentas";
 import Empleados from "./pages/Empleados";
 import HistorialInventario from "./pages/HistorialInventario";
 import EstadisticasEmpleados from "./pages/EstadisticasEmpleados";
+import EstadisticasProductos from "./pages/EstadisticasProductos";
 import EditarVenta from "./pages/EditarVenta";
 import EditarCombo from "./pages/EditarCombo";
 import Productos from "./pages/Productos"
@@ -106,6 +107,14 @@ function App() {
           element={
             <ProtectedRoute usuario={usuario} allowedRoles={["GERENTE"]}>
               <EstadisticasEmpleados />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/estadisticas/productos"
+          element={
+            <ProtectedRoute usuario={usuario} allowedRoles={["GERENTE"]}>
+              <EstadisticasProductos />
             </ProtectedRoute>
           }
         />
