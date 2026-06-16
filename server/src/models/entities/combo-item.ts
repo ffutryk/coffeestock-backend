@@ -1,9 +1,10 @@
 import { Entity, ManyToOne, JoinColumn, PrimaryColumn, Column } from "typeorm";
 import { Combo } from "./combo";
 import { Producto } from "./producto";
+import { Auditable } from "../base/auditable";
 
 @Entity({ name: "combo_items" })
-export class ComboItem {
+export class ComboItem extends Auditable {
   aumentarCantidad(cantidad: number) {
     throw new Error("Method not implemented.");
   }

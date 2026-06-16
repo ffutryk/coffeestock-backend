@@ -38,10 +38,10 @@ export default function Vender() {
         await api.delete(`/productos/${itemAEliminar.id}`);
         fetchProductos();
       }
-      showMensaje("Eliminado con éxito", "success"); // ✅ solo si no hubo error
+      showMensaje("Eliminado con éxito", "success");
     } catch (error) {
       console.error(error);
-      showMensaje("Error al eliminar", "error"); // ✅ captura el fallo
+      showMensaje("Error al eliminar", "error");
     } finally {
       setItemAEliminar(null);
     }

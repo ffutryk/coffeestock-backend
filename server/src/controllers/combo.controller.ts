@@ -41,4 +41,13 @@ export class ComboController {
       next(err);
     }
   };
+
+  eliminar = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      await this.comboService.eliminarCombo(Number(req.params.id));
+      return res.status(204).send();
+    } catch (err) {
+      next(err);
+    }
+  };
 }
