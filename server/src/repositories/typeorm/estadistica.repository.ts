@@ -35,55 +35,91 @@ export class TypeORMEstadisticaRepository implements EstadisticaRepository {
     };
   }
 
-  async obtenerMetricasGenerales(): Promise<ReporteEstadisticasDTO | null> {
+  async obtenerMetricasGenerales(fechaInicio?: Date, fechaFin?: Date): Promise<ReporteEstadisticasDTO | null> {
     const itemVentaRepo = AppDataSource.getRepository(ItemVenta);
     const ventaRepo = AppDataSource.getRepository(Venta);
 
-    const totalVentas = await ventaRepo.count();
+    const totalVentasQuery = ventaRepo.createQueryBuilder("venta");
+    if (fechaInicio) {
+      totalVentasQuery.andWhere("venta.createdAt >= :fechaInicio", { fechaInicio });
+    }
+
+    if (fechaFin) {
+      totalVentasQuery.andWhere("venta.createdAt <= :fechaFin", { fechaFin });
+    }
+
+    const totalVentas = await totalVentasQuery.getCount();
     if (totalVentas === 0) {
       return null;
     }
 
+    const applyFechaFiltro = (query: any) => {
+      if (fechaInicio) {
+        query.andWhere("venta.createdAt >= :fechaInicio", { fechaInicio });
+      }
+
+      if (fechaFin) {
+        query.andWhere("venta.createdAt <= :fechaFin", { fechaFin });
+      }
+
+      return query;
+    };
+
     // Query para el TOP 5 de productos mas vendidos y sus ganancias
-    const productosRaw = await itemVentaRepo
+    const productosRawQuery = itemVentaRepo
       .createQueryBuilder("item")
-      .select("item.idProducto", "idProducto")
-      .addSelect("item.nombreProducto", "nombre")
-      .addSelect("SUM(item.cantidad)", "cantidadVendida")
-      .addSelect("SUM(item.cantidad * item.precioProducto)", "gananciaGenerada")
-      .groupBy("item.idProducto")
-      .addGroupBy("item.nombreProducto")
-      .orderBy("cantidadVendida", "DESC")
+      .innerJoin("item.venta", "venta");
+
+    applyFechaFiltro(productosRawQuery);
+
+    const productosRaw = await productosRawQuery
+      .select("item.productoId", "idProducto")
+      .addSelect("item.nombre", "nombre")
+      .addSelect("SUM(item.cantidad)", "cantidad")
+      .addSelect("SUM(item.cantidad * item.precio)", "gananciaGenerada")
+      .groupBy("item.productoId")
+      .addGroupBy("item.nombre")
+      .orderBy("cantidad", "DESC")
       .limit(5)
       .getRawMany();
 
     const productosMasVendidos = productosRaw.map((p) => ({
       idProducto: Number(p.idProducto),
       nombre: p.nombre,
-      cantidadVendida: Number(p.cantidadVendida),
+      cantidadVendida: Number(p.cantidad),
       gananciaGenerada: Number(p.gananciaGenerada),
     }));
 
     // Query para calcular las ganancias totales
-    const ganancias = await itemVentaRepo
+    const gananciasQuery = itemVentaRepo
       .createQueryBuilder("item")
-      .select("SUM(item.cantidad * item.precioProducto)", "total")
+      .innerJoin("item.venta", "venta");
+
+    applyFechaFiltro(gananciasQuery);
+
+    const ganancias = await gananciasQuery
+      .select("SUM(item.cantidad * item.precio)", "total")
       .getRawOne();
 
     const gananciasTotales = Number(ganancias?.total || 0);
 
     // Query para el promedio de ventas realizadas (promedio por ticket)
-    const subQuery = itemVentaRepo
+    const subQueryBuilder = itemVentaRepo
       .createQueryBuilder("item")
-      .select("SUM(item.cantidad * item.precioProducto)", "totalVenta")
-      .groupBy("item.idVenta")
+      .innerJoin("item.venta", "venta");
+
+    applyFechaFiltro(subQueryBuilder);
+
+    const subQuery = subQueryBuilder
+      .select("SUM(item.cantidad * item.precio)", "total_venta")
+      .groupBy("item.ventaId")
       .getQuery();
 
     const promedio = await AppDataSource.manager
       .createQueryBuilder()
-      .select("AVG(sub.totalVenta)", "promedio")
+      .select("AVG(sub.total_venta)", "promedio")
       .from(`(${subQuery})`, "sub")
-      .setParameters(itemVentaRepo.createQueryBuilder("item").getParameters())
+      .setParameters(subQueryBuilder.getParameters())
       .getRawOne();
 
     const promedioVentaPorTicket = Number(promedio?.promedio || 0);
@@ -100,8 +136,8 @@ export class TypeORMEstadisticaRepository implements EstadisticaRepository {
 
     const rawResults = await usuarioRepo
       .createQueryBuilder("u")
-      .innerJoin("ventas", "v", "v.created_by = u.id")
-      .innerJoin("item_venta", "iv", "iv.ventaId = v.id")
+      .innerJoin(Venta, "v", "v.created_by = u.id")
+      .innerJoin(ItemVenta, "iv", "iv.ventaId = v.id")
       .select("u.id", "id")
       .addSelect("CONCAT(u.nombre, ' ', u.apellido)", "nombre")
       .addSelect("COUNT(DISTINCT v.id)", "totalSales")

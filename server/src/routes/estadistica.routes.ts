@@ -22,6 +22,7 @@ router.get(
   "/productos",
   auth,
   roles([RolUsuario.GERENTE]),
+  validateQuery(FiltrarEstadisticasVentasSchema),
   estadisticaController.obtenerEstadisticasProductos,
 );
 router.get(
