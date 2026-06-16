@@ -15,6 +15,14 @@ export class ComboService implements IComboService {
     private readonly productoRepository: ProductoRepository,
   ) {}
 
+  async eliminarCombo(id: number): Promise<void> {
+    const combo = await this.comboRepository.findById(id);
+    if (!combo) {
+      throw new NotFoundError("Combo no encontrado");
+    }
+    await this.comboRepository.delete(id);
+  }
+
   async obtenerPorId(id: number): Promise<ComboResponseDTO> {
     const combo = await this.comboRepository.findById(id);
     if (!combo) {
