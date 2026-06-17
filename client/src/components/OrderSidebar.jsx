@@ -97,6 +97,7 @@ export default function OrderSidebar({
         descuentoValor: Number(discountValue),
       };
 
+      console.log(payload);
       await api.post("/ventas", payload);
       showMensaje("Venta realizada con éxito", "success");
       setOrden([]);

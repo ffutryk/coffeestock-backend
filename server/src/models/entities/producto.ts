@@ -69,6 +69,14 @@ export class Producto extends Auditable {
     }
   }
 
+  calcularStock(): number {
+    if (!this.tieneReceta()) return this.stock ?? 0;
+    if (!this.recetas?.length) return 0;
+    return Math.min(
+      ...this.recetas.map((r) => Math.floor(r.materiaPrima.inventario.stockActual / r.cantidad))
+    );
+  }
+
   construirReceta(ingredientes: { materiaPrima: MateriaPrima; cantidad: number }[]): Receta[] {
     const ids = ingredientes.map((i) => i.materiaPrima.id);
 
