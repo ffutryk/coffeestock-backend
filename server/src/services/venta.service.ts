@@ -18,14 +18,19 @@ export class VentaService {
   ) {}
 
   async crearVenta(datos: CrearVentaDTO): Promise<Venta> {
-    const ids = datos.items.map((i) => i.productoId);
-    const productos = await this.productoRepository.findWithInventarios(ids);
-    if (productos.length !== ids.length) throw new NotFoundError("Uno o más productos no existen");
+    const idsUnicos = [...new Set(datos.items.map((i) => i.productoId))];
+    const productos = await this.productoRepository.findWithInventarios(idsUnicos);
+    if (productos.length !== idsUnicos.length)
+      throw new NotFoundError("Uno o más productos no existen");
 
     const productosMap = new Map(productos.map((p) => [p.id, p]));
     const venta = Venta.crear(datos.medioDePago, datos.descuentoTipo, datos.descuentoValor);
 
+    const itemsAgrupados = new Map<number, number>();
     for (const { productoId, cantidad } of datos.items) {
+      itemsAgrupados.set(productoId, (itemsAgrupados.get(productoId) || 0) + cantidad);
+    }
+    for (const [productoId, cantidad] of itemsAgrupados) {
       venta.agregarItem(productosMap.get(productoId)!, cantidad);
     }
 
@@ -54,13 +59,17 @@ export class VentaService {
       await this.productoRepository.save(productosARevertir);
       await this.ventaRepository.deleteItems(id);
 
-      const ids = datos.items.map((i) => i.productoId);
-      const productos = await this.productoRepository.findWithInventarios(ids);
-      if (productos.length !== ids.length)
+      const idsUnicos = [...new Set(datos.items.map((i) => i.productoId))];
+      const productos = await this.productoRepository.findWithInventarios(idsUnicos);
+      if (productos.length !== idsUnicos.length)
         throw new NotFoundError("Uno o más productos no existen");
 
       const productosMap = new Map(productos.map((p) => [p.id, p]));
+      const itemsAgrupados = new Map<number, number>();
       for (const { productoId, cantidad } of datos.items) {
+        itemsAgrupados.set(productoId, (itemsAgrupados.get(productoId) || 0) + cantidad);
+      }
+      for (const [productoId, cantidad] of itemsAgrupados) {
         ventaExistente.agregarItem(productosMap.get(productoId)!, cantidad);
       }
 

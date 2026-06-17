@@ -22,7 +22,7 @@ export class ProductoResponseDTO {
     dto.precio = Number(producto.precio);
     dto.tipo = producto.tipo;
     dto.sinTacc = producto.sinTacc;
-    dto.stock = producto.stock;
+    dto.stock = producto.calcularStock();
     dto.tieneReceta = producto.tieneReceta();
     dto.ingredientes = (producto.recetas ?? []).map(RecetaResponseDTO.from);
 
