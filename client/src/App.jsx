@@ -17,6 +17,9 @@ import EstadisticasProductos from "./pages/EstadisticasProductos";
 import EditarVenta from "./pages/EditarVenta";
 import EditarCombo from "./pages/EditarCombo";
 import Productos from "./pages/Productos";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { AlertasListener } from "./components/AlertasListener";
 
 function decodeToken(token) {
   try {
@@ -52,6 +55,14 @@ function App() {
   };
 
   return (
+    <>          
+    {usuario && <AlertasListener />}
+    <ToastContainer
+      position="bottom-left"
+      newestOnTop
+      pauseOnHover
+      pauseOnFocusLoss={false}
+    />     
     <Routes>
       <Route path="/" element={<Login onLogin={handleLogin} />} />
       <Route path="/login" element={<Login onLogin={handleLogin} />} />
@@ -134,6 +145,7 @@ function App() {
       />
       <Route path="*" element={<Login onLogin={handleLogin} />} />
     </Routes>
+    </>      
   );
 }
 
