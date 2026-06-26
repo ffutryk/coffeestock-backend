@@ -2,75 +2,168 @@ name: CI
 
 on:
   push:
-    branches: [main, dev]
+    branches: [main, develop]
   pull_request:
-    branches: [main, dev]
+    branches: [main, develop]
+
+env:
+  NODE_VERSION: 20
+
+permissions:
+  contents: read
 
 jobs:
-  lint:
+  detect-changes:
     runs-on: ubuntu-latest
 
-    env:
-      CI: true
+    outputs:
+      frontend: ${{ steps.filter.outputs.frontend }}
+      backend: ${{ steps.filter.outputs.backend }}
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
         with:
-          node-version: 20
-          cache: "npm"
-          cache-dependency-path: package-lock.json
+          filters: |
+            frontend:
+              - 'client/**'
+              - '.github/workflows/**'
+            backend:
+              - 'server/**'
+              - '.github/workflows/**'
 
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Lint
-        run: npm run lint --if-present
-
-  test:
+  frontend-build:
+    needs:
+      - detect-changes
+    if: needs.detect-changes.outputs.frontend == 'true'
     runs-on: ubuntu-latest
-
-    env:
-      CI: true
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: "npm"
-          cache-dependency-path: package-lock.json
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: client/package-lock.json
 
       - name: Install dependencies
-        run: npm ci
-
-      - name: Tests
-        run: npm run test:run
-
-  build:
-    runs-on: ubuntu-latest
-
-    env:
-      CI: true
-
-    needs: [lint, test]
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: "npm"
-          cache-dependency-path: package-lock.json
-
-      - name: Install dependencies
+        working-directory: ./client
         run: npm ci
 
       - name: Build
+        working-directory: ./client
         run: npm run build
+
+  backend-lint:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.backend == 'true'
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: server/package-lock.json
+
+      - name: Install dependencies
+        working-directory: ./server
+        run: npm ci
+
+      - name: Lint
+        working-directory: ./server
+        run: npm run lint --if-present
+
+  backend-test:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.backend == 'true'
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: server/package-lock.json
+
+      - name: Install dependencies
+        working-directory: ./server
+        run: npm ci
+
+      - name: Run tests
+        working-directory: ./server
+        run: npm run test:run
+
+  backend-build:
+    needs:
+      - detect-changes
+      - backend-lint
+      - backend-test
+    if: needs.detect-changes.outputs.backend == 'true'
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: server/package-lock.json
+
+      - name: Install dependencies
+        working-directory: ./server
+        run: npm ci
+
+      - name: Build
+        working-directory: ./server
+        run: npm run build
+
+  all-checks-passed:
+    name: All checks passed
+    if: always()
+    needs:
+      - frontend-build
+      - backend-build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check all required jobs succeeded
+        run: |
+          frontend="${{ needs.frontend-build.result }}"
+          backend="${{ needs.backend-build.result }}"
+
+          echo "Frontend: $frontend"
+          echo "Backend:  $backend"
+
+          is_valid() {
+            [[ "$1" == "success" || "$1" == "skipped" ]]
+          }
+
+          if ! is_valid "$frontend"; then
+            echo "❌ Invalid frontend status: $frontend"
+            exit 1
+          fi
+
+          if ! is_valid "$backend"; then
+            echo "❌ Invalid backend status: $backend"
+            exit 1
+          fi
+
+          [[ "$frontend" == "success" ]] \
+            && echo "  • Frontend: ✅ Built successfully" \
+            || echo "  • Frontend: ⏭️  Skipped (no changes)"
+
+          [[ "$backend" == "success" ]] \
+            && echo "  • Backend:  ✅ Built successfully" \
+            || echo "  • Backend:  ⏭️  Skipped (no changes)"
+
+          echo ""
+          echo "✅ All CI checks passed!"
